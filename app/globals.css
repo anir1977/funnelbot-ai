@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --wa-green: #25D366;
+  --wa-teal: #128C7E;
+  --wa-dark: #075E54;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-cairo), "Cairo", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  .wa-gradient {
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  }
+
+  .green-glow {
+    box-shadow: 0 0 40px rgba(37, 211, 102, 0.3);
+  }
+
+  .card-shadow {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .card-shadow-lg {
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.1);
+  }
+}
