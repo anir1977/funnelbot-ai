@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { BookOpen, Eye, EyeOff, Loader2, Star, CheckCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { BookOpen, Eye, EyeOff, Loader2, Star, CheckCircle, AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 const inputCls = "w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] transition-all";
 
@@ -25,28 +27,54 @@ const miniChats = [
 ];
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail]       = useState("");
+  const [password, setPassword] = useState("");
   const [showPw, setShowPw]     = useState(false);
   const [loading, setLoading]   = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [remember, setRemember] = useState(false);
-  const [success, setSuccess]   = useState(false);
+  const [error, setError]       = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
-    setTimeout(() => {
+
+    const supabase = createClient();
+    const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (authError) {
+      setError(
+        authError.message === "Invalid login credentials"
+          ? "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+          : "حدث خطأ، حاول مجدداً"
+      );
       setLoading(false);
-      setSuccess(true);
-    }, 1800);
+      return;
+    }
+
+    router.push("/dashboard");
+    router.refresh();
+  };
+
+  const handleGoogle = async () => {
+    setError(null);
+    setGoogleLoading(true);
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=/dashboard` },
+    });
   };
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
 
-      {/* ── Form pane (first in RTL = right side) ── */}
+      {/* ── Form pane ── */}
       <div className="flex-1 lg:max-w-[480px] flex flex-col items-center justify-center p-6 lg:p-12 bg-white relative z-10">
         <div className="w-full max-w-sm">
 
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 mb-8 group">
             <div className="w-9 h-9 bg-[#25D366] rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
               <BookOpen className="w-4 h-4 text-white" strokeWidth={2.5} />
@@ -59,104 +87,105 @@ export default function LoginPage() {
           <h1 className="text-2xl font-black text-gray-900 mb-1">أهلاً بعودتك 👋</h1>
           <p className="text-gray-500 text-sm mb-7">سجّل دخولك لإدارة متجرك</p>
 
-          {success ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-[#25D366]" />
+          {error && (
+            <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-5">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">البريد الإلكتروني</label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                className={inputCls}
+                dir="ltr"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">كلمة المرور</label>
+              <div className="relative">
+                <input
+                  type={showPw ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  className={`${inputCls} pl-10`}
+                  dir="ltr"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw(v => !v)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
-              <p className="font-black text-gray-900 text-lg mb-1">تم تسجيل الدخول!</p>
-              <p className="text-gray-500 text-sm mb-6">جارٍ التوجيه للوحة التحكم...</p>
-              <Link href="/dashboard" className="inline-flex bg-[#25D366] text-white font-bold px-6 py-3 rounded-xl hover:-translate-y-0.5 transition-all shadow-md shadow-green-200">
-                فتح لوحة التحكم
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer group">
+                <div
+                  onClick={() => setRemember(v => !v)}
+                  className={`w-4 h-4 rounded flex items-center justify-center border-2 transition-all cursor-pointer ${remember ? "bg-[#25D366] border-[#25D366]" : "border-gray-300 group-hover:border-[#25D366]/50"}`}
+                >
+                  {remember && <CheckCircle className="w-3 h-3 text-white" />}
+                </div>
+                <span className="text-xs text-gray-600 select-none">تذكرني</span>
+              </label>
+              <Link href="/forgot-password" className="text-xs text-[#25D366] font-semibold hover:underline">
+                نسيت كلمة المرور؟
               </Link>
             </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
 
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">البريد الإلكتروني</label>
-                <input type="email" placeholder="you@example.com" className={inputCls} dir="ltr" required />
-              </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1eb85a] disabled:opacity-70 text-white font-bold py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-green-200 hover:-translate-y-0.5 active:translate-y-0 disabled:translate-y-0"
+            >
+              {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> جاري الدخول...</> : "تسجيل الدخول"}
+            </button>
+          </form>
 
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">كلمة المرور</label>
-                <div className="relative">
-                  <input
-                    type={showPw ? "text" : "password"}
-                    placeholder="••••••••"
-                    className={`${inputCls} pl-10`}
-                    dir="ltr"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPw(v => !v)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
+          <div className="my-5 flex items-center gap-3">
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-xs text-gray-400 font-medium">أو</span>
+            <div className="flex-1 h-px bg-gray-200" />
+          </div>
 
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer group">
-                  <div
-                    onClick={() => setRemember(v => !v)}
-                    className={`w-4 h-4 rounded flex items-center justify-center border-2 transition-all cursor-pointer ${remember ? "bg-[#25D366] border-[#25D366]" : "border-gray-300 group-hover:border-[#25D366]/50"}`}
-                  >
-                    {remember && <CheckCircle className="w-3 h-3 text-white" />}
-                  </div>
-                  <span className="text-xs text-gray-600 select-none">تذكرني</span>
-                </label>
-                <Link href="/forgot-password" className="text-xs text-[#25D366] font-semibold hover:underline">
-                  نسيت كلمة المرور؟
-                </Link>
-              </div>
+          <button
+            onClick={handleGoogle}
+            disabled={googleLoading}
+            className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 rounded-xl transition-all duration-200 text-sm disabled:opacity-60"
+          >
+            {googleLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <GoogleIcon />}
+            المتابعة عبر Google
+          </button>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1eb85a] disabled:opacity-70 text-white font-bold py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-green-200 hover:-translate-y-0.5 active:translate-y-0 disabled:translate-y-0"
-              >
-                {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> جاري الدخول...</> : "تسجيل الدخول"}
-              </button>
-            </form>
-          )}
-
-          {!success && (
-            <>
-              <div className="my-5 flex items-center gap-3">
-                <div className="flex-1 h-px bg-gray-200" />
-                <span className="text-xs text-gray-400 font-medium">أو</span>
-                <div className="flex-1 h-px bg-gray-200" />
-              </div>
-
-              <button className="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 rounded-xl transition-all duration-200 text-sm">
-                <GoogleIcon />
-                المتابعة عبر Google
-              </button>
-
-              <p className="text-center text-sm text-gray-500 mt-6">
-                ما عندكش حساب؟{" "}
-                <Link href="/signup" className="text-[#25D366] font-bold hover:underline">
-                  سجّل الآن مجاناً
-                </Link>
-              </p>
-            </>
-          )}
+          <p className="text-center text-sm text-gray-500 mt-6">
+            ما عندكش حساب؟{" "}
+            <Link href="/signup" className="text-[#25D366] font-bold hover:underline">
+              سجّل الآن مجاناً
+            </Link>
+          </p>
         </div>
       </div>
 
-      {/* ── Illustration pane (second in RTL = left side) ── */}
+      {/* ── Illustration pane ── */}
       <div className="hidden lg:flex flex-1 relative overflow-hidden flex-col items-center justify-center p-12">
-        {/* Background layers */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0f172a] via-[#064e3b] to-[#025c3b]" />
         <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "radial-gradient(white 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
         <div className="absolute top-1/4 right-1/4 w-72 h-72 bg-[#25D366]/15 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-1/3 w-56 h-56 bg-emerald-500/10 rounded-full blur-3xl" />
 
         <div className="relative z-10 max-w-md mx-auto w-full">
-          {/* Tagline */}
           <div className="mb-8">
             <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-2 mb-5">
               <span className="w-2 h-2 bg-[#25D366] rounded-full animate-pulse" />
@@ -172,9 +201,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Phone mockup */}
           <div className="relative mx-auto w-52">
-            {/* Floating cards */}
             <div className="absolute -right-14 top-8 bg-white rounded-2xl shadow-2xl px-3 py-2.5 z-20">
               <p className="text-[10px] text-gray-400">طلبات اليوم</p>
               <p className="text-sm font-black text-gray-900">28 طلب ✅</p>
@@ -183,8 +210,6 @@ export default function LoginPage() {
               <p className="text-[10px] text-gray-400">مبيعات</p>
               <p className="text-sm font-black text-gray-900">6,840 د 💰</p>
             </div>
-
-            {/* Phone */}
             <div className="bg-gray-900 rounded-[32px] p-[7px] shadow-2xl ring-1 ring-gray-700/50">
               <div className="bg-[#ECE5DD] rounded-[26px] overflow-hidden h-[260px] flex flex-col" dir="ltr">
                 <div className="bg-[#075E54] text-white px-3 pt-6 pb-2.5 flex items-center gap-2 shrink-0">
@@ -218,7 +243,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Testimonial */}
           <div className="mt-8 bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/15">
             <div className="flex gap-0.5 mb-2">
               {[1,2,3,4,5].map(i => <Star key={i} className="w-3 h-3 text-yellow-400 fill-yellow-400" />)}

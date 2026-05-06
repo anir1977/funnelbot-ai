@@ -2,26 +2,38 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { BookOpen, Mail, Loader2, CheckCircle, ArrowRight } from "lucide-react";
+import { BookOpen, Mail, Loader2, CheckCircle, ArrowRight, AlertCircle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail]     = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent]       = useState(false);
+  const [error, setError]     = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
-    setTimeout(() => {
+
+    const supabase = createClient();
+    const { error: authError } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
+    });
+
+    if (authError) {
+      setError("حدث خطأ، تأكد من البريد الإلكتروني وحاول مجدداً");
       setLoading(false);
-      setSent(true);
-    }, 1600);
+      return;
+    }
+
+    setLoading(false);
+    setSent(true);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30 flex flex-col items-center justify-center p-6">
 
-      {/* Logo */}
       <Link href="/" className="flex items-center gap-2.5 mb-10 group">
         <div className="w-9 h-9 bg-[#25D366] rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
           <BookOpen className="w-4 h-4 text-white" strokeWidth={2.5} />
@@ -33,7 +45,6 @@ export default function ForgotPasswordPage() {
 
       <div className="w-full max-w-sm bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/60 p-8">
         {sent ? (
-          /* Success state */
           <div className="text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
               <CheckCircle className="w-8 h-8 text-[#25D366]" />
@@ -63,7 +74,6 @@ export default function ForgotPasswordPage() {
             </div>
           </div>
         ) : (
-          /* Email form */
           <>
             <div className="w-12 h-12 bg-[#25D366]/10 rounded-2xl flex items-center justify-center mb-5">
               <Mail className="w-6 h-6 text-[#25D366]" />
@@ -72,6 +82,13 @@ export default function ForgotPasswordPage() {
             <p className="text-gray-500 text-sm mb-6 leading-relaxed">
               أدخل بريدك الإلكتروني وغادي نرسلك رابط لإعادة التعيين.
             </p>
+
+            {error && (
+              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-5">
+                <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
