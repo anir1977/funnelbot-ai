@@ -82,14 +82,20 @@ export default function SignupPage() {
     });
 
     if (authError) {
+      console.error("[signup] Supabase auth error:", authError);
+      const msg = authError.message ?? "";
       setError(
-        authError.message.includes("already registered")
+        msg.toLowerCase().includes("already registered") || msg.toLowerCase().includes("already been registered")
           ? "هذا البريد الإلكتروني مسجّل مسبقاً"
-          : "حدث خطأ في التسجيل، حاول مجدداً"
+          : msg.toLowerCase().includes("password")
+          ? `خطأ في كلمة المرور: ${msg}`
+          : `خطأ في التسجيل: ${msg}`
       );
       setLoading(false);
       return;
     }
+
+    console.log("[signup] signUp response data:", JSON.stringify(data, null, 2));
 
     // If email confirmation is disabled, user is immediately logged in
     if (data.session) {
