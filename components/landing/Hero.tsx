@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowLeft, MessageCircle, Star, CheckCircle, Sparkles, Phone } from "lucide-react";
+import { WA_URL } from "@/lib/whatsapp";
 
 const chatMessages = [
   { id: 1, sender: "user",  text: "السلام، شحال ثمن السيروم؟ واش التوصيل لكازا؟", time: "10:24" },
@@ -131,14 +132,18 @@ export default function Hero() {
               className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10"
             >
               <a
-                href="#how-it-works"
+                href={WA_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group flex items-center gap-2 bg-[#25D366] hover:bg-[#1eb85a] text-white font-bold px-7 py-4 rounded-2xl text-base transition-all duration-200 shadow-lg shadow-green-200 hover:shadow-xl hover:shadow-green-300 hover:-translate-y-0.5 w-full sm:w-auto justify-center"
               >
                 جرّب العرض التوضيحي
                 <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
               </a>
               <a
-                href="#pricing"
+                href={WA_URL}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-2.5 bg-white text-gray-700 font-semibold px-6 py-4 rounded-2xl text-base border border-gray-200 hover:border-[#25D366] hover:text-[#25D366] transition-all duration-200 w-full sm:w-auto justify-center"
               >
                 <Phone className="w-4 h-4" />

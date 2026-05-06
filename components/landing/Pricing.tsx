@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle, X, Zap, Star, Building2 } from "lucide-react";
+import { WA_URL } from "@/lib/whatsapp";
 
 const plans = [
   {
@@ -146,7 +147,7 @@ export default function Pricing() {
                   </div>
                 </div>
 
-                <a href="#" className={`block w-full text-center font-bold py-3.5 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 mb-6 ${plan.ctaClass}`}>
+                <a href={WA_URL} target="_blank" rel="noopener noreferrer" className={`block w-full text-center font-bold py-3.5 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 mb-6 ${plan.ctaClass}`}>
                   {plan.cta}
                 </a>
 

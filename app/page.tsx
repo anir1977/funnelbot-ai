@@ -9,6 +9,7 @@ import Pricing from "@/components/landing/Pricing";
 import Testimonials from "@/components/landing/Testimonials";
 import FAQ from "@/components/landing/FAQ";
 import CTAFooter from "@/components/landing/CTAFooter";
+import WhatsAppFloat from "@/components/landing/WhatsAppFloat";
 
 export default function Home() {
   return (
@@ -24,6 +25,7 @@ export default function Home() {
       <Testimonials />
       <FAQ />
       <CTAFooter />
+      <WhatsAppFloat />
     </main>
   );
 }

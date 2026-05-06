@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { PlugZap, Sliders, TrendingUp, ArrowLeft } from "lucide-react";
+import { WA_URL } from "@/lib/whatsapp";
 
 const steps = [
   {
@@ -182,7 +183,9 @@ export default function HowItWorks() {
           className="text-center mt-14"
         >
           <a
-            href="#pricing"
+            href={WA_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="group inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1eb85a] text-white font-bold px-8 py-4 rounded-2xl transition-all duration-200 shadow-lg shadow-green-200 hover:shadow-xl hover:-translate-y-0.5"
           >
             ابدأ الآن مجاناً

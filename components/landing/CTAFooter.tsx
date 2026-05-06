@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowLeft, BookOpen, Mail, Phone, Instagram, Facebook } from "lucide-react";
+import { WA_URL } from "@/lib/whatsapp";
 
 const footerLinks = {
   المنتج:   ["المميزات", "كيف يعمل", "الأسعار", "التحديثات"],
@@ -61,14 +62,16 @@ export default function CTAFooter() {
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a
-                  href="#pricing"
+                  href={WA_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="group flex items-center gap-2 bg-white text-[#075E54] font-black px-8 py-4 rounded-2xl text-base hover:bg-green-50 transition-all duration-200 shadow-xl hover:-translate-y-0.5 w-full sm:w-auto justify-center"
                 >
                   جرّب مجاناً 14 يوم
                   <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
                 </a>
                 <a
-                  href="https://wa.me/212600000000"
+                  href={WA_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 border-2 border-white/40 text-white font-semibold px-7 py-4 rounded-2xl text-base hover:bg-white/10 transition-all duration-200 w-full sm:w-auto justify-center"

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { WA_URL } from "@/lib/whatsapp";
 
 const navLinks = [
   { label: "المميزات", href: "#features" },
@@ -63,7 +64,9 @@ export default function Navbar() {
               تسجيل الدخول
             </a>
             <a
-              href="#pricing"
+              href={WA_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-[#25D366] hover:bg-[#1eb85a] text-white font-semibold text-sm px-5 py-2.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
             >
               جرّب مجاناً
@@ -104,7 +107,9 @@ export default function Navbar() {
               ))}
               <div className="pt-3 border-t border-gray-100">
                 <a
-                  href="#pricing"
+                  href={WA_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={() => setMobileOpen(false)}
                   className="block w-full text-center bg-[#25D366] text-white font-bold py-3 rounded-full"
                 >
