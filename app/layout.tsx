@@ -10,17 +10,15 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "FunnelBot AI — حوّل واتساب إلى آلة مبيعات 24/7",
+  title: "FunnelsLibrary — بوت واتساب ذكي لمتجرك المغربي",
   description:
-    "بوت واتساب الذكي الذي يرد على عملائك، يولد عملاء محتملين، ويحول المحادثات إلى مبيعات — تلقائياً",
-  keywords: ["واتساب بوت", "ذكاء اصطناعي", "تسويق", "مبيعات", "FunnelBot"],
+    "منصة تساعد أصحاب المتاجر في المغرب على الرد على الزبناء، عرض الأسعار، تأكيد الطلبات، والتوصيل — تلقائياً واحترافياً.",
+  keywords: ["واتساب بوت", "متجر إلكتروني", "المغرب", "FunnelsLibrary", "الدفع عند الاستلام"],
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ar" dir="rtl" className={cairo.variable}>
       <body className="font-sans antialiased bg-white text-gray-900">

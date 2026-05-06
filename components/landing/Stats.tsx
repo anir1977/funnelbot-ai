@@ -1,44 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Users, Clock, TrendingUp, Star } from "lucide-react";
+import { Store, Clock, TrendingUp, ThumbsUp } from "lucide-react";
 
 const stats = [
-  {
-    icon: Users,
-    value: "+500",
-    label: "عميل نشط",
-    color: "text-blue-600",
-    bg: "bg-blue-50",
-  },
-  {
-    icon: Clock,
-    value: "24/7",
-    label: "متاح دائماً",
-    color: "text-[#25D366]",
-    bg: "bg-green-50",
-  },
-  {
-    icon: TrendingUp,
-    value: "10x",
-    label: "زيادة المبيعات",
-    color: "text-purple-600",
-    bg: "bg-purple-50",
-  },
-  {
-    icon: Star,
-    value: "98%",
-    label: "رضا العملاء",
-    color: "text-yellow-600",
-    bg: "bg-yellow-50",
-  },
+  { icon: Store,      value: "+1,200", label: "متجر مغربي نشط",    color: "text-[#25D366]", bg: "bg-green-50"  },
+  { icon: Clock,      value: "24/7",   label: "رد تلقائي بلا توقف", color: "text-blue-600",  bg: "bg-blue-50"   },
+  { icon: TrendingUp, value: "3x",     label: "زيادة الطلبات",      color: "text-purple-600",bg: "bg-purple-50" },
+  { icon: ThumbsUp,   value: "98%",    label: "رضا الزبناء",        color: "text-amber-600", bg: "bg-amber-50"  },
 ];
 
 export default function Stats() {
   return (
     <section className="py-14 border-y border-gray-100 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {stats.map((s, i) => {
             const Icon = s.icon;
             return (

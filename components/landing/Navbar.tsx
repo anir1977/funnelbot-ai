@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, MessageCircle } from "lucide-react";
+import { Menu, X, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
   { label: "المميزات", href: "#features" },
-  { label: "لوحة التحكم", href: "#dashboard" },
+  { label: "كيف يعمل", href: "#how-it-works" },
   { label: "الأسعار", href: "#pricing" },
   { label: "آراء العملاء", href: "#testimonials" },
   { label: "الأسئلة الشائعة", href: "#faq" },
@@ -28,7 +28,7 @@ export default function Navbar() {
       className={cn(
         "fixed top-0 inset-x-0 z-50 transition-all duration-300",
         scrolled
-          ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100"
+          ? "bg-white/96 backdrop-blur-md shadow-sm border-b border-gray-100"
           : "bg-transparent"
       )}
     >
@@ -37,10 +37,10 @@ export default function Navbar() {
           {/* Logo */}
           <a href="#" className="flex items-center gap-2.5 shrink-0">
             <div className="w-9 h-9 bg-[#25D366] rounded-xl flex items-center justify-center shadow-md">
-              <MessageCircle className="w-5 h-5 text-white fill-white" />
+              <BookOpen className="w-4.5 h-4.5 text-white" strokeWidth={2.5} />
             </div>
             <span className="text-xl font-black tracking-tight text-gray-900">
-              Funnel<span className="text-[#25D366]">Bot</span>
+              Funnels<span className="text-[#25D366]">Library</span>
             </span>
           </a>
 
@@ -59,17 +59,14 @@ export default function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-3">
-            <a
-              href="#pricing"
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-            >
+            <a href="#pricing" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
               تسجيل الدخول
             </a>
             <a
               href="#pricing"
               className="bg-[#25D366] hover:bg-[#1eb85a] text-white font-semibold text-sm px-5 py-2.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
             >
-              ابدأ مجاناً ←
+              جرّب مجاناً
             </a>
           </div>
 
@@ -84,7 +81,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -112,7 +108,7 @@ export default function Navbar() {
                   onClick={() => setMobileOpen(false)}
                   className="block w-full text-center bg-[#25D366] text-white font-bold py-3 rounded-full"
                 >
-                  ابدأ مجاناً
+                  جرّب مجاناً
                 </a>
               </div>
             </div>
