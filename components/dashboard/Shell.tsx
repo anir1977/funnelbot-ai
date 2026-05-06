@@ -1,13 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   LayoutDashboard, MessageCircle, Package, ShoppingBag, Truck,
   HelpCircle, Settings, Store, BookOpen, Bell, ChevronDown,
   Menu, X, Wifi, LogOut, ArrowLeft,
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+
+type Profile = { full_name: string | null; email: string; plan: string } | null;
+type StoreData = { id: string; name: string; active: boolean; bot_tone: string } | null;
 
 const nav = [
   { href: "/dashboard",          icon: LayoutDashboard, label: "الرئيسية",         badge: null },
@@ -19,11 +23,40 @@ const nav = [
   { href: "/dashboard/settings", icon: Settings,         label: "الإعدادات",        badge: null },
 ];
 
-function SidebarContent({ onClose }: { onClose?: () => void }) {
+const planLabel: Record<string, string> = {
+  trial:   "تجريبي",
+  starter: "Starter",
+  pro:     "Pro",
+  agency:  "Agency",
+};
+
+function initial(name: string | null | undefined): string {
+  return name?.trim()?.[0]?.toUpperCase() ?? "م";
+}
+
+function SidebarContent({
+  profile, store, onClose,
+}: {
+  profile: Profile;
+  store: StoreData;
+  onClose?: () => void;
+}) {
   const pathname = usePathname();
+  const router   = useRouter();
 
   const isActive = (href: string) =>
     href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href);
+
+  const handleSignOut = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+    router.refresh();
+  };
+
+  const storeInitial   = initial(store?.name);
+  const profileInitial = initial(profile?.full_name);
+  const planText       = planLabel[profile?.plan ?? "trial"] ?? "تجريبي";
 
   return (
     <div className="flex flex-col h-full">
@@ -53,11 +86,13 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       <div className="px-3 py-2.5 border-b border-white/10">
         <button className="w-full flex items-center gap-2.5 bg-white/5 hover:bg-white/10 rounded-xl px-3 py-2.5 transition-colors text-right">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
-            ع
+            {storeInitial}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white text-xs font-semibold truncate">عطور الريم</p>
-            <p className="text-gray-400 text-[10px]">باقة Pro · نشط</p>
+            <p className="text-white text-xs font-semibold truncate">{store?.name ?? "—"}</p>
+            <p className="text-gray-400 text-[10px]">
+              باقة {planText} · {store?.active ? "نشط" : "متوقف"}
+            </p>
           </div>
           <ChevronDown className="w-3.5 h-3.5 text-gray-400 shrink-0" />
         </button>
@@ -66,7 +101,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       {/* Nav items */}
       <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
         {nav.map((item) => {
-          const Icon = item.icon;
+          const Icon   = item.icon;
           const active = isActive(item.href);
           return (
             <Link
@@ -107,16 +142,22 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
       <div className="p-3 border-t border-white/10">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
-            م
+            {profileInitial}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white text-xs font-semibold truncate">محمد قاسمي</p>
+            <p className="text-white text-xs font-semibold truncate">
+              {profile?.full_name ?? profile?.email ?? "—"}
+            </p>
             <p className="text-gray-500 text-[10px]">مدير المتجر</p>
           </div>
           <Link href="/" title="العودة للموقع" className="p-1.5 text-gray-500 hover:text-gray-300 transition-colors rounded-lg hover:bg-white/5">
             <ArrowLeft className="w-3.5 h-3.5" />
           </Link>
-          <button className="p-1.5 text-gray-500 hover:text-gray-300 transition-colors rounded-lg hover:bg-white/5">
+          <button
+            onClick={handleSignOut}
+            title="تسجيل الخروج"
+            className="p-1.5 text-gray-500 hover:text-red-400 transition-colors rounded-lg hover:bg-white/5"
+          >
             <LogOut className="w-3.5 h-3.5" />
           </button>
         </div>
@@ -125,29 +166,36 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
   );
 }
 
-export default function Shell({ children }: { children: React.ReactNode }) {
+export default function Shell({
+  children, profile, store,
+}: {
+  children: React.ReactNode;
+  profile: Profile;
+  store: StoreData;
+}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
   const pageTitle = () => {
-    if (pathname === "/dashboard")           return { title: "الرئيسية", sub: "نظرة عامة على متجرك" };
-    if (pathname.startsWith("/dashboard/store"))    return { title: "إعدادات المتجر", sub: "بيانات متجرك الأساسية" };
-    if (pathname.startsWith("/dashboard/products")) return { title: "المنتجات", sub: "إدارة كتالوج منتجاتك" };
-    if (pathname.startsWith("/dashboard/orders"))   return { title: "الطلبات", sub: "متابعة وإدارة الطلبات" };
-    if (pathname.startsWith("/dashboard/delivery")) return { title: "التوصيل", sub: "أسعار ومناطق التوصيل" };
-    if (pathname.startsWith("/dashboard/faq"))      return { title: "الأسئلة الشائعة", sub: "الردود التلقائية على الأسئلة المتكررة" };
-    if (pathname.startsWith("/dashboard/settings")) return { title: "الإعدادات", sub: "ضبط إعدادات البوت والتكاملات" };
+    if (pathname === "/dashboard")                    return { title: "الرئيسية",          sub: "نظرة عامة على متجرك" };
+    if (pathname.startsWith("/dashboard/store"))      return { title: "إعدادات المتجر",    sub: "بيانات متجرك الأساسية" };
+    if (pathname.startsWith("/dashboard/products"))   return { title: "المنتجات",           sub: "إدارة كتالوج منتجاتك" };
+    if (pathname.startsWith("/dashboard/orders"))     return { title: "الطلبات",            sub: "متابعة وإدارة الطلبات" };
+    if (pathname.startsWith("/dashboard/delivery"))   return { title: "التوصيل",            sub: "أسعار ومناطق التوصيل" };
+    if (pathname.startsWith("/dashboard/faq"))        return { title: "الأسئلة الشائعة",   sub: "الردود التلقائية على الأسئلة المتكررة" };
+    if (pathname.startsWith("/dashboard/settings"))   return { title: "الإعدادات",         sub: "ضبط إعدادات البوت والتكاملات" };
     return { title: "FunnelsLibrary", sub: "" };
   };
 
   const { title, sub } = pageTitle();
+  const profileInitial = initial(profile?.full_name);
 
   return (
     <div className="min-h-screen bg-[#f8f9fc]">
 
-      {/* Desktop sidebar — fixed on right */}
+      {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col fixed top-0 right-0 bottom-0 w-64 bg-[#1a1f2e] z-30">
-        <SidebarContent />
+        <SidebarContent profile={profile} store={store} />
       </aside>
 
       {/* Mobile overlay */}
@@ -164,10 +212,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <SidebarContent onClose={() => setOpen(false)} />
+        <SidebarContent profile={profile} store={store} onClose={() => setOpen(false)} />
       </aside>
 
-      {/* Main content area */}
+      {/* Main content */}
       <div className="lg:mr-64 flex flex-col min-h-screen">
 
         {/* Topbar */}
@@ -195,7 +243,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white" />
             </button>
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white text-sm font-bold cursor-pointer">
-              م
+              {profileInitial}
             </div>
           </div>
         </header>
