@@ -5,6 +5,7 @@ import Features from "@/components/landing/Features";
 import HowItWorks from "@/components/landing/HowItWorks";
 import Dashboard from "@/components/landing/Dashboard";
 import MobilePreviews from "@/components/landing/MobilePreviews";
+import UseCases from "@/components/landing/UseCases";
 import Pricing from "@/components/landing/Pricing";
 import Testimonials from "@/components/landing/Testimonials";
 import FAQ from "@/components/landing/FAQ";
@@ -21,6 +22,7 @@ export default function Home() {
       <HowItWorks />
       <Dashboard />
       <MobilePreviews />
+      <UseCases />
       <Pricing />
       <Testimonials />
       <FAQ />

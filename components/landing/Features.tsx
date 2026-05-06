@@ -6,63 +6,75 @@ import { MessageSquareText, PackageCheck, Truck, Share2, BarChart3, LayoutTempla
 const features = [
   {
     icon: MessageSquareText,
-    title: "رد فوري على أسئلة الزبناء",
+    title: "رد فوري بالدارجة",
     description:
-      "البوت يرد في ثوانٍ على أسئلة الثمن، المقاسات، المخزون، وطرق الدفع — بلغة زبنائك وبأسلوب متجرك.",
+      "ثمن، مقاس، مخزون، توصيل — البوت يرد في ثوانٍ بأسلوب متجرك وبلغة زبنائك الحقيقية.",
     color: "text-green-600",
-    bg: "bg-green-50",
+    bg: "bg-gradient-to-br from-green-50 to-emerald-50",
     border: "border-green-100",
+    iconGradient: "from-green-400 to-emerald-500",
     tag: "الأكثر استخداماً",
+    tagColor: "bg-green-100 text-green-700 border-green-200",
   },
   {
     icon: PackageCheck,
-    title: "تأكيد الطلبات تلقائياً",
+    title: "طلبات COD تلقائية",
     description:
-      "يجمع اسم الزبون، عنوانه، ورقم هاتفه ويسجّل الطلب مباشرة — أنت فقط تستلم وتشحن.",
+      "يجمع الاسم والعنوان والهاتف ويسجّل الطلب بالدفع عند الاستلام مباشرة — أنت فقط تشحن.",
     color: "text-blue-600",
-    bg: "bg-blue-50",
+    bg: "bg-gradient-to-br from-blue-50 to-indigo-50",
     border: "border-blue-100",
+    iconGradient: "from-blue-400 to-indigo-500",
     tag: null,
+    tagColor: "",
   },
   {
     icon: Truck,
-    title: "معلومات التوصيل لكل مدينة",
+    title: "أسعار التوصيل لكل مدينة",
     description:
-      "يُخبر الزبون تلقائياً بتكلفة التوصيل لمدينته ومدة الوصول — سواء كازا، الرباط، مراكش أو غيرها.",
+      "يُخبر الزبون تلقائياً بثمن التوصيل ومدة الوصول — كازا، الرباط، مراكش، أكادير وأكثر.",
     color: "text-purple-600",
-    bg: "bg-purple-50",
+    bg: "bg-gradient-to-br from-purple-50 to-violet-50",
     border: "border-purple-100",
+    iconGradient: "from-purple-400 to-violet-500",
     tag: null,
+    tagColor: "",
   },
   {
     icon: Share2,
     title: "واتساب + إنستغرام + فيسبوك",
     description:
-      "بوت واحد يغطي جميع قنواتك: واتساب، DM إنستغرام، وفيسبوك ماسنجر — من لوحة تحكم واحدة.",
+      "بوت واحد يغطي جميع قنواتك من لوحة تحكم واحدة — بدون ما تفتح 3 تطبيقات.",
     color: "text-rose-600",
-    bg: "bg-rose-50",
+    bg: "bg-gradient-to-br from-rose-50 to-pink-50",
     border: "border-rose-100",
+    iconGradient: "from-rose-400 to-pink-500",
     tag: "جديد",
+    tagColor: "bg-blue-50 text-blue-600 border-blue-200",
   },
   {
     icon: BarChart3,
-    title: "تقارير الطلبات والمبيعات",
+    title: "تقارير مبيعات يومية",
     description:
-      "تابع طلباتك اليومية، عدد المحادثات، ومعدل التحويل — كل شيء في تقارير واضحة وبسيطة.",
+      "طلبات اليوم، معدل التحويل، المنتجات الأكثر مبيعاً — كل شيء في تقارير واضحة بالدرهم.",
     color: "text-orange-600",
-    bg: "bg-orange-50",
+    bg: "bg-gradient-to-br from-orange-50 to-amber-50",
     border: "border-orange-100",
+    iconGradient: "from-orange-400 to-amber-500",
     tag: null,
+    tagColor: "",
   },
   {
     icon: LayoutTemplate,
-    title: "قوالب جاهزة لكل نوع متجر",
+    title: "قوالب جاهزة — ابدأ في 10 دقائق",
     description:
-      "قوالب مخصصة للكوزميتيك، الملابس، الإكسسوارات، الطعام، والمزيد — ابدأ في أقل من 10 دقائق.",
+      "قوالب مخصصة للملابس، العطور، المكملات، الإلكترونيات والمزيد — ابدأ بدون خبرة تقنية.",
     color: "text-teal-600",
-    bg: "bg-teal-50",
+    bg: "bg-gradient-to-br from-teal-50 to-cyan-50",
     border: "border-teal-100",
+    iconGradient: "from-teal-400 to-cyan-500",
     tag: null,
+    tagColor: "",
   },
 ];
 
@@ -97,34 +109,36 @@ export default function Features() {
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
             className="text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed"
           >
-            منصة شاملة تحول واتساب متجرك من مجرد تطبيق مراسلة إلى نظام مبيعات
-            متكامل يعمل طوال اليوم بدون أن ترد بنفسك.
+            من أول رسالة يرسلها الزبون حتى تأكيد التسليم — FunnelsLibrary يتكلف
+            بالمبيعات وأنت تركز على النمو.
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((f, i) => {
             const Icon = f.icon;
             return (
               <motion.div
                 key={f.title}
                 variants={cardVariants} initial="hidden" whileInView="show" viewport={{ once: true }} custom={i}
-                className={`group relative bg-white border ${f.border} rounded-2xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 card-shadow overflow-hidden`}
+                className={`group relative ${f.bg} border ${f.border} rounded-2xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden`}
               >
-                {/* Subtle bg circle */}
-                <div className={`absolute -bottom-6 -left-6 w-24 h-24 ${f.bg} rounded-full opacity-60 group-hover:scale-150 transition-transform duration-500`} />
+                {/* Glass highlight */}
+                <div className="absolute inset-0 bg-white/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
 
                 <div className="relative z-10">
                   {f.tag && (
-                    <span className={`inline-block text-[10px] font-bold px-2.5 py-1 rounded-full mb-3 ${f.tag === "جديد" ? "bg-blue-50 text-blue-600 border border-blue-200" : "bg-green-50 text-green-700 border border-green-200"}`}>
+                    <span className={`inline-block text-[10px] font-bold px-2.5 py-1 rounded-full mb-3 border ${f.tagColor}`}>
                       {f.tag}
                     </span>
                   )}
-                  <div className={`w-12 h-12 ${f.bg} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className={`w-5 h-5 ${f.color}`} />
+
+                  <div className={`w-11 h-11 bg-gradient-to-br ${f.iconGradient} rounded-xl flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                    <Icon className="w-5 h-5 text-white" />
                   </div>
+
                   <h3 className="text-base font-bold text-gray-900 mb-2">{f.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{f.description}</p>
+                  <p className="text-gray-600 text-sm leading-relaxed">{f.description}</p>
                 </div>
               </motion.div>
             );

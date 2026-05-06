@@ -5,42 +5,51 @@ import { CheckCircle } from "lucide-react";
 
 const stores = [
   {
-    name: "متجر لونا كوسميتيك 🌿",
-    type: "كوزميتيك",
+    name: "ملابس كلاسيك 👗",
+    type: "ملابس",
+    city: "الدار البيضاء",
     tilt: "-rotate-6 lg:-rotate-3",
     zIndex: "z-10",
-    gradient: "from-rose-400 to-pink-600",
+    gradient: "from-[#25D366] to-[#128C7E]",
+    headerGradient: "from-emerald-400 to-teal-600",
+    headerInitial: "م",
     conversation: [
-      { s: "user", t: "السلام، شحال السيروم؟ واش التوصيل لكازا؟" },
-      { s: "bot",  t: "مرحبا بك في متجر لونا 🌿\nسيروم C — 149 درهم\nالتوصيل لكازا 25 د 🚚\nبغيتي نأكد؟" },
-      { s: "user", t: "إيه واحد من فضلك" },
-      { s: "bot",  t: "✅ تسجّل طلبك!\nعطيني الاسم والعنوان." },
+      { s: "user", t: "السلام، واش عندكم جلابة كازاوية بالبيج؟ شحال ثمنها؟" },
+      { s: "bot",  t: "وعليكم السلام! 👗\nالجلابة الكازاوية بيج:\n• M — 320 درهم\n• L — 320 درهم\n• XL — 340 درهم\nالتوصيل لكازا 20 درهم 🚚\nالدفع عند الاستلام ✅" },
+      { s: "user", t: "L من فضلك" },
+      { s: "bot",  t: "ممتاز! 🎉 عطيني:\n• الاسم والعنوان\n• رقم الهاتف\nجاي ليك في 48 ساعة!" },
     ],
   },
   {
-    name: "متجر الأناقة للملابس 👗",
-    type: "ملابس",
+    name: "عطور الريم 🌸",
+    type: "عطور",
+    city: "الرباط",
     tilt: "rotate-0 scale-105",
     zIndex: "z-20",
-    gradient: "from-[#25D366] to-[#128C7E]",
+    gradient: "from-amber-400 to-orange-500",
+    headerGradient: "from-amber-300 to-amber-500",
+    headerInitial: "ع",
     conversation: [
-      { s: "user", t: "السلام عليكم، واش عندكم القفطان بالأزرق؟ شنو المقاسات؟" },
-      { s: "bot",  t: "وعليكم السلام! 👗\nنعم القفطان الأزرق متوفر:\n• S / M / L / XL / XXL\nثمنه 350 درهم — توصيل مجاني 🎁\nأي مقاس تبغيه؟" },
-      { s: "user", t: "L من فضلك" },
-      { s: "bot",  t: "ممتاز! 🎉 عطيني:\n• الاسم والعنوان\n• رقم الهاتف" },
+      { s: "user", t: "السلام، واش عندكم بلو دي شانيل 100ml أصلي؟" },
+      { s: "bot",  t: "وعليكم السلام! 🌸\nبلو دي شانيل أصلي 100%:\n100ml — 640 درهم\nالتوصيل للرباط 30 درهم\nالدفع عند الاستلام ✅\nتبغي تكد؟" },
+      { s: "user", t: "إيه — أنا فحي أكدال" },
+      { s: "bot",  t: "✅ #FL-2847 تسجّل!\nالإجمالي: 670 درهم COD\nعطيني اسمك ورقم هاتفك 📝" },
     ],
   },
   {
-    name: "ترند أكسسوارز ✨",
-    type: "إكسسوارات",
+    name: "فيت ستور 💪",
+    type: "مكملات",
+    city: "أكادير",
     tilt: "rotate-6 lg:rotate-3",
     zIndex: "z-10",
-    gradient: "from-amber-400 to-orange-500",
+    gradient: "from-blue-500 to-indigo-600",
+    headerGradient: "from-blue-400 to-indigo-600",
+    headerInitial: "ف",
     conversation: [
-      { s: "user", t: "السلام، واش عندكم نظارات شمسية؟ شحال؟" },
-      { s: "bot",  t: "أهلاً! ✨\nنعم عندنا نظارات شمسية:\n🕶️ كلاسيك — 89 درهم\n😎 سبورت — 110 درهم\n👓 فاشيون — 129 درهم\nأي نوع يعجبك؟" },
-      { s: "user", t: "الفاشيون" },
-      { s: "bot",  t: "اختيار راقي! 🙌\n129 درهم + توصيل 20 د\nأكد طلبك — عطيني الاسم والعنوان." },
+      { s: "user", t: "السلام، واش عندكم ويي بروتين؟ شحال 1kg؟" },
+      { s: "bot",  t: "أهلاً! 💪\nWhey Protein 1kg:\n🍫 شوكولاتة — 280 درهم\n🍦 فانيليا — 280 درهم\n🍓 فراولة — 280 درهم\nالتوصيل لأكادير 35 درهم\nالدفع عند الاستلام ✅" },
+      { s: "user", t: "بغيت شوكولاتة" },
+      { s: "bot",  t: "اختيار ممتاز! 🎉\n315 درهم (الدفع عند الاستلام)\nعطيني اسمك وعنوانك 📦" },
     ],
   },
 ];
@@ -48,25 +57,22 @@ const stores = [
 function PhoneChat({ store }: { store: typeof stores[0] }) {
   return (
     <div className="flex flex-col h-full bg-[#ECE5DD]" dir="ltr">
-      {/* Header */}
       <div className="bg-[#075E54] text-white px-3 pt-7 pb-2.5 flex items-center gap-2 shrink-0">
-        <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${store.gradient} flex items-center justify-center text-white text-xs font-bold shrink-0`}>
-          {store.name[6]}
+        <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${store.headerGradient} flex items-center justify-center text-white text-xs font-bold shrink-0`}>
+          {store.headerInitial}
         </div>
-        <div>
-          <p className="text-[10px] font-bold leading-tight">{store.name}</p>
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-bold leading-tight truncate">{store.name}</p>
           <p className="text-[8px] opacity-70 flex items-center gap-1">
-            <span className="inline-block w-1 h-1 bg-green-400 rounded-full" />يرد تلقائياً
+            <span className="inline-block w-1 h-1 bg-green-400 rounded-full" />يرد تلقائياً دائماً
           </p>
         </div>
       </div>
 
-      {/* Date badge */}
       <div className="flex justify-center pt-2">
         <span className="bg-black/10 text-gray-600 text-[8px] px-2 py-0.5 rounded-full">اليوم</span>
       </div>
 
-      {/* Messages */}
       <div className="flex-1 overflow-hidden px-2 py-1.5 flex flex-col gap-1.5">
         {store.conversation.map((msg, i) => (
           <motion.div
@@ -78,7 +84,7 @@ function PhoneChat({ store }: { store: typeof stores[0] }) {
             className={`flex ${msg.s === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[82%] px-2.5 py-1.5 rounded-2xl text-[9px] shadow-sm leading-relaxed ${
+              className={`max-w-[84%] px-2.5 py-1.5 rounded-2xl text-[9px] shadow-sm leading-relaxed ${
                 msg.s === "user" ? "bg-[#DCF8C6] rounded-tr-sm" : "bg-white rounded-tl-sm"
               }`}
               dir="rtl"
@@ -89,7 +95,6 @@ function PhoneChat({ store }: { store: typeof stores[0] }) {
         ))}
       </div>
 
-      {/* Input */}
       <div className="bg-[#F0F0F0] px-2 py-1.5 flex gap-1.5 shrink-0">
         <div className="flex-1 bg-white rounded-full px-3 py-1.5 text-[8px] text-gray-300" dir="rtl">رسالة...</div>
         <div className="w-6 h-6 bg-[#25D366] rounded-full flex items-center justify-center shrink-0">
@@ -110,7 +115,7 @@ export default function MobilePreviews() {
             initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="inline-flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm font-semibold px-4 py-2 rounded-full mb-4"
           >
-            🛍️ أمثلة حقيقية
+            🛍️ أمثلة حقيقية من المغرب
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
@@ -123,8 +128,8 @@ export default function MobilePreviews() {
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
             className="text-gray-500 text-lg max-w-xl mx-auto"
           >
-            سواء كنت تبيع كوزميتيك، ملابس، إكسسوارات أو أي منتج آخر — البوت يتكيّف
-            مع لغة زبنائك وأسلوب متجرك.
+            ملابس، عطور، مكملات، إلكترونيات — البوت يتعلم أسلوب متجرك ويرد
+            كأنه أحد فريقك.
           </motion.p>
         </div>
 
@@ -139,17 +144,17 @@ export default function MobilePreviews() {
               transition={{ delay: i * 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               className={`relative ${store.tilt} ${store.zIndex} hover:rotate-0 hover:scale-105 transition-all duration-400`}
             >
-              {/* Store type badge */}
-              <div className="text-center mb-3">
+              {/* City + type badge */}
+              <div className="text-center mb-3 space-y-1">
                 <span className={`inline-block bg-gradient-to-r ${store.gradient} text-white text-[10px] font-bold px-3 py-1 rounded-full shadow`}>
                   {store.type}
                 </span>
+                <p className="text-[9px] text-gray-400 font-medium">{store.city}</p>
               </div>
 
-              {/* Phone */}
               <div className="w-[120px] sm:w-[140px] lg:w-[165px]">
-                <div className="bg-gray-900 rounded-[26px] p-[7px] shadow-xl ring-1 ring-gray-700/60">
-                  <div className="absolute top-[26px] left-1/2 -translate-x-1/2 w-12 h-3 bg-gray-900 rounded-b-xl z-10" />
+                <div className="bg-gray-900 rounded-[26px] p-[7px] shadow-xl ring-1 ring-gray-700/60 relative">
+                  <div className="absolute top-[7px] left-1/2 -translate-x-1/2 w-12 h-3 bg-gray-900 rounded-b-xl z-10" />
                   <div className="bg-white rounded-[20px] overflow-hidden h-[260px] sm:h-[300px] lg:h-[360px]">
                     <PhoneChat store={store} />
                   </div>
@@ -159,10 +164,23 @@ export default function MobilePreviews() {
           ))}
         </div>
 
+        {/* Also available label */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}
+          className="flex flex-wrap justify-center gap-2 mt-10"
+        >
+          <p className="w-full text-center text-sm text-gray-400 mb-2">يشتغل كذلك مع:</p>
+          {["إلكترونيات", "حلويات وكيك", "زيت أركان وصابون بلدي", "أثاث ومفروشات", "ألعاب أطفال", "حقائب وأحذية"].map((tag) => (
+            <span key={tag} className="bg-gray-50 border border-gray-200 text-gray-500 text-xs font-medium px-3 py-1.5 rounded-full">
+              {tag}
+            </span>
+          ))}
+        </motion.div>
+
         {/* Checklist */}
-        <div className="flex flex-wrap justify-center gap-3 mt-14">
-          {["واجهة عربية بالكامل", "يفهم الدارجة والفصحى", "يعمل على واتساب وإنستغرام", "قوالب جاهزة لكل متجر", "لا خبرة تقنية مطلوبة"].map((tag) => (
-            <span key={tag} className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 text-gray-600 text-sm font-medium px-4 py-2 rounded-full">
+        <div className="flex flex-wrap justify-center gap-3 mt-8">
+          {["يفهم الدارجة والعربية", "COD مدعوم بالكامل", "يعمل 24/7 بدون توقف", "قوالب جاهزة لكل متجر", "إعداد في 10 دقائق"].map((tag) => (
+            <span key={tag} className="flex items-center gap-1.5 bg-green-50 border border-green-100 text-green-700 text-sm font-medium px-4 py-2 rounded-full">
               <CheckCircle className="w-3.5 h-3.5 text-[#25D366]" />
               {tag}
             </span>
