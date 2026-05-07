@@ -1,78 +1,73 @@
-"use client";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  HelpCircle,
+  MessageCircle,
+  Package,
+  RefreshCw,
+  ShoppingBag,
+  TrendingUp,
+  Truck,
+  Zap,
+} from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 
-import { ArrowUpRight, ArrowDownRight, MessageCircle, ShoppingBag, Clock, TrendingUp, RefreshCw, CheckCircle2, Truck, XCircle, FileSpreadsheet, Zap } from "lucide-react";
+type Store = {
+  id: string;
+  name: string;
+  active: boolean;
+  bot_tone: string;
+};
 
-const metrics = [
-  {
-    label: "إجمالي المحادثات",
-    value: "1,247",
-    change: "+18%",
-    up: true,
-    sub: "هذا الشهر",
-    icon: MessageCircle,
-    gradient: "from-blue-500 to-indigo-600",
-    bg: "from-blue-50 to-indigo-50",
-    border: "border-blue-100",
-  },
-  {
-    label: "طلبات مؤكدة",
-    value: "284",
-    change: "+34%",
-    up: true,
-    sub: "هذا الشهر",
-    icon: CheckCircle2,
-    gradient: "from-[#25D366] to-emerald-600",
-    bg: "from-green-50 to-emerald-50",
-    border: "border-green-100",
-  },
-  {
-    label: "طلبات معلقة",
-    value: "38",
-    change: "-12%",
-    up: false,
-    sub: "تحتاج متابعة",
-    icon: Clock,
-    gradient: "from-amber-500 to-orange-500",
-    bg: "from-amber-50 to-orange-50",
-    border: "border-amber-100",
-  },
-  {
-    label: "الإيرادات التقديرية",
-    value: "84,650 د",
-    change: "+29%",
-    up: true,
-    sub: "هذا الشهر",
-    icon: TrendingUp,
-    gradient: "from-purple-500 to-violet-600",
-    bg: "from-purple-50 to-violet-50",
-    border: "border-purple-100",
-  },
-];
+type Profile = {
+  full_name: string | null;
+};
 
-const conversations = [
-  { id: 1, name: "محمد قاسمي",      phone: "0661234567", msg: "بغيت نأكد الطلب — بلو دي شانيل 100ml",    time: "الآن",   unread: 2, status: "new" },
-  { id: 2, name: "فاطمة بنعلي",     phone: "0677345678", msg: "شحال التوصيل لكازا؟",                         time: "5 دق",   unread: 0, status: "replied" },
-  { id: 3, name: "سلمى المنصوري",   phone: "0652345678", msg: "واش الدفع عند الاستلام متاح؟",               time: "12 دق",  unread: 1, status: "new" },
-  { id: 4, name: "يوسف الإدريسي",   phone: "0661987654", msg: "عطيني المقاسات المتوفرة للقفطان",            time: "28 دق",  unread: 0, status: "replied" },
-  { id: 5, name: "خديجة الغازي",    phone: "0672456789", msg: "✅ شكراً — الطلب وصلني بخير",               time: "1 س",    unread: 0, status: "done" },
-  { id: 6, name: "نور الهدى",        phone: "0661876543", msg: "واش عندكم بلو دي شانيل 50ml؟",            time: "2 س",    unread: 0, status: "replied" },
-];
+type Product = {
+  id: string;
+  name: string;
+  price: number | string;
+  stock: number;
+  active: boolean;
+};
 
-const recentOrders = [
-  { id: "#FL-2847", name: "محمد قاسمي",    product: "بلو دي شانيل 100ml",  city: "الرباط",   total: "670 د",  status: "جديد",       statusColor: "bg-blue-100 text-blue-700" },
-  { id: "#FL-2846", name: "فاطمة بنعلي",   product: "قفطان كازاوي L",       city: "كازا",     total: "340 د",  status: "مؤكد",       statusColor: "bg-green-100 text-green-700" },
-  { id: "#FL-2845", name: "سلمى المنصوري", product: "واي بروتين شوكولاتة",  city: "أكادير",   total: "315 د",  status: "تم الإرسال", statusColor: "bg-purple-100 text-purple-700" },
-  { id: "#FL-2844", name: "يوسف الإدريسي", product: "لالابيل الوردي 50ml",  city: "الرباط",   total: "310 د",  status: "مؤكد",       statusColor: "bg-green-100 text-green-700" },
-  { id: "#FL-2843", name: "خديجة الغازي",  product: "كريم ترطيب ليلي",     city: "طنجة",     total: "145 د",  status: "ملغي",       statusColor: "bg-red-100 text-red-600" },
-];
+type Order = {
+  id: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_city: string;
+  product_snapshot: { name?: string; price?: number } | null;
+  quantity: number;
+  total: number | string | null;
+  status: "new" | "confirmed" | "shipped" | "cancelled";
+  created_at: string;
+};
 
-const barData = [42, 58, 51, 74, 63, 88, 72, 95, 80, 107, 91, 124];
-const months  = ["ي","ف","م","أ","م","ي","ي","أ","س","أ","ن","د"];
+type Conversation = {
+  id: string;
+  customer_phone: string;
+  customer_name: string | null;
+  last_message_at: string | null;
+  unread_count: number;
+  status: "open" | "resolved";
+  created_at: string;
+};
 
-const statusIcon = (s: string) => {
-  if (s === "new")     return <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />;
-  if (s === "replied") return <span className="w-2 h-2 rounded-full bg-[#25D366]" />;
-  return <span className="w-2 h-2 rounded-full bg-gray-300" />;
+type Message = {
+  conversation_id: string;
+  body: string;
+  role: "user" | "bot" | "agent";
+  created_at: string;
+};
+
+const statusConfig: Record<Order["status"], { label: string; cls: string }> = {
+  new: { label: "جديد", cls: "bg-blue-100 text-blue-700" },
+  confirmed: { label: "مؤكد", cls: "bg-green-100 text-green-700" },
+  shipped: { label: "تم الإرسال", cls: "bg-purple-100 text-purple-700" },
+  cancelled: { label: "ملغي", cls: "bg-red-100 text-red-600" },
 };
 
 const avatarColors = [
@@ -84,233 +79,450 @@ const avatarColors = [
   "from-teal-400 to-cyan-500",
 ];
 
-export default function DashboardPage() {
+function money(value: number | string | null | undefined) {
+  const n = Number(value ?? 0);
+  return `${new Intl.NumberFormat("fr-MA", { maximumFractionDigits: 0 }).format(n)} د`;
+}
+
+function shortId(id: string) {
+  return `#FL-${id.slice(-5).toUpperCase()}`;
+}
+
+function firstName(profile: Profile | null, fallback = "صاحب المتجر") {
+  return profile?.full_name?.trim()?.split(/\s+/)[0] || fallback;
+}
+
+function productName(order: Order) {
+  return order.product_snapshot?.name || "طلب واتساب";
+}
+
+function formatRelative(iso: string | null | undefined) {
+  if (!iso) return "—";
+  const diff = Date.now() - new Date(iso).getTime();
+  const minutes = Math.max(0, Math.floor(diff / 60000));
+  if (minutes < 1) return "الآن";
+  if (minutes < 60) return `${minutes} دق`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} س`;
+  const days = Math.floor(hours / 24);
+  return `${days} يوم`;
+}
+
+function monthStartIso() {
+  const d = new Date();
+  return new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
+}
+
+function MiniMetric({
+  label,
+  value,
+  sub,
+  icon: Icon,
+  tone,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  icon: React.ElementType;
+  tone: "blue" | "green" | "amber" | "purple";
+}) {
+  const styles = {
+    blue: {
+      bg: "from-blue-50 to-indigo-50",
+      border: "border-blue-100",
+      icon: "from-blue-500 to-indigo-600",
+    },
+    green: {
+      bg: "from-green-50 to-emerald-50",
+      border: "border-green-100",
+      icon: "from-[#25D366] to-emerald-600",
+    },
+    amber: {
+      bg: "from-amber-50 to-orange-50",
+      border: "border-amber-100",
+      icon: "from-amber-500 to-orange-500",
+    },
+    purple: {
+      bg: "from-purple-50 to-violet-50",
+      border: "border-purple-100",
+      icon: "from-purple-500 to-violet-600",
+    },
+  }[tone];
+
+  return (
+    <div className={`bg-gradient-to-br ${styles.bg} border ${styles.border} rounded-2xl p-4 relative overflow-hidden`}>
+      <div className={`absolute -bottom-5 -left-5 w-20 h-20 bg-gradient-to-br ${styles.icon} opacity-10 rounded-full blur-xl`} />
+      <div className="relative z-10">
+        <div className={`w-9 h-9 bg-gradient-to-br ${styles.icon} rounded-xl flex items-center justify-center mb-3 shadow-md`}>
+          <Icon className="w-4 h-4 text-white" />
+        </div>
+        <p className="text-2xl font-black text-gray-900 leading-none">{value}</p>
+        <p className="text-xs text-gray-500 mt-1">{label}</p>
+        <div className="flex items-center gap-1 mt-2 text-xs font-semibold text-gray-500">
+          <TrendingUp className="w-3.5 h-3.5 text-[#25D366]" />
+          <span className="font-normal">{sub}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EmptyState({ text, href, action }: { text: string; href: string; action: string }) {
+  return (
+    <div className="px-4 py-8 text-center">
+      <p className="text-sm text-gray-500 mb-3">{text}</p>
+      <Link href={href} className="inline-flex items-center justify-center text-xs font-bold text-[#25D366] hover:underline">
+        {action}
+      </Link>
+    </div>
+  );
+}
+
+export default async function DashboardPage() {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const [{ data: profile }, { data: stores }] = await Promise.all([
+    supabase.from("profiles").select("full_name").eq("id", user.id).single(),
+    supabase
+      .from("stores")
+      .select("id, name, active, bot_tone")
+      .eq("user_id", user.id)
+      .order("created_at")
+      .limit(1),
+  ]);
+
+  const store = (stores?.[0] ?? null) as Store | null;
+  if (!store) redirect("/onboarding");
+
+  const start = monthStartIso();
+
+  const [
+    { count: conversationCount },
+    { count: unreadConversationCount },
+    { count: productCount },
+    { count: activeFaqCount },
+    { count: deliveryZoneCount },
+    { data: monthOrders },
+    { data: recentOrders },
+    { data: recentConversations },
+  ] = await Promise.all([
+    supabase
+      .from("conversations")
+      .select("id", { count: "exact", head: true })
+      .eq("store_id", store.id),
+    supabase
+      .from("conversations")
+      .select("id", { count: "exact", head: true })
+      .eq("store_id", store.id)
+      .gt("unread_count", 0),
+    supabase
+      .from("products")
+      .select("id", { count: "exact", head: true })
+      .eq("store_id", store.id)
+      .eq("active", true),
+    supabase
+      .from("faqs")
+      .select("id", { count: "exact", head: true })
+      .eq("store_id", store.id)
+      .eq("active", true),
+    supabase
+      .from("delivery_zones")
+      .select("id", { count: "exact", head: true })
+      .eq("store_id", store.id)
+      .eq("active", true),
+    supabase
+      .from("orders")
+      .select("id, total, status, created_at")
+      .eq("store_id", store.id)
+      .gte("created_at", start),
+    supabase
+      .from("orders")
+      .select("id, customer_name, customer_phone, customer_city, product_snapshot, quantity, total, status, created_at")
+      .eq("store_id", store.id)
+      .order("created_at", { ascending: false })
+      .limit(5),
+    supabase
+      .from("conversations")
+      .select("id, customer_phone, customer_name, last_message_at, unread_count, status, created_at")
+      .eq("store_id", store.id)
+      .order("last_message_at", { ascending: false, nullsFirst: false })
+      .limit(6),
+  ]);
+
+  const conversations = (recentConversations ?? []) as Conversation[];
+  const orders = (recentOrders ?? []) as Order[];
+  const orderRows = (monthOrders ?? []) as Pick<Order, "id" | "total" | "status" | "created_at">[];
+  const conversationIds = conversations.map((c) => c.id);
+
+  const { data: latestMessages } = conversationIds.length
+    ? await supabase
+      .from("messages")
+      .select("conversation_id, body, role, created_at")
+      .in("conversation_id", conversationIds)
+      .order("created_at", { ascending: false })
+      .limit(30)
+    : { data: [] };
+
+  const messagesByConversation = ((latestMessages ?? []) as Message[]).reduce<Record<string, Message>>((acc, message) => {
+    if (!acc[message.conversation_id]) acc[message.conversation_id] = message;
+    return acc;
+  }, {});
+
+  const confirmedOrders = orderRows.filter((o) => o.status === "confirmed" || o.status === "shipped").length;
+  const pendingOrders = orderRows.filter((o) => o.status === "new").length;
+  const revenue = orderRows
+    .filter((o) => o.status !== "cancelled")
+    .reduce((sum, order) => sum + Number(order.total ?? 0), 0);
+
+  const readiness = [
+    { label: "منتج نشط", ok: (productCount ?? 0) > 0, href: "/dashboard/products" },
+    { label: "منطقة توصيل", ok: (deliveryZoneCount ?? 0) > 0, href: "/dashboard/delivery" },
+    { label: "أسئلة جاهزة", ok: (activeFaqCount ?? 0) > 0, href: "/dashboard/faq" },
+    { label: "البوت شغال", ok: store.active, href: "/dashboard/settings" },
+  ];
+
   return (
     <div className="space-y-5">
-
-      {/* Welcome bar */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-black text-gray-900">مرحباً محمد 👋</h2>
-          <p className="text-sm text-gray-500 mt-0.5">الأربعاء، 6 ماي 2026 · عطور الريم</p>
+          <h2 className="text-xl font-black text-gray-900">مرحباً {firstName(profile)}</h2>
+          <p className="text-sm text-gray-500 mt-0.5">
+            {store.name} · نظرة مباشرة على بيانات متجرك الحقيقية
+          </p>
         </div>
         <div className="hidden sm:flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-500 shadow-sm">
           <RefreshCw className="w-3.5 h-3.5 text-[#25D366]" />
-          آخر تحديث منذ دقيقتين
+          آخر تحديث الآن
         </div>
       </div>
 
-      {/* Metric cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {metrics.map((m) => {
-          const Icon = m.icon;
-          return (
-            <div key={m.label} className={`bg-gradient-to-br ${m.bg} border ${m.border} rounded-2xl p-4 relative overflow-hidden`}>
-              <div className={`absolute -bottom-5 -left-5 w-20 h-20 bg-gradient-to-br ${m.gradient} opacity-10 rounded-full blur-xl`} />
-              <div className="relative z-10">
-                <div className={`w-9 h-9 bg-gradient-to-br ${m.gradient} rounded-xl flex items-center justify-center mb-3 shadow-md`}>
-                  <Icon className="w-4 h-4 text-white" />
-                </div>
-                <p className="text-2xl font-black text-gray-900 leading-none">{m.value}</p>
-                <p className="text-xs text-gray-500 mt-1">{m.label}</p>
-                <div className={`flex items-center gap-1 mt-2 text-xs font-semibold ${m.up ? "text-green-600" : "text-red-500"}`}>
-                  {m.up ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
-                  {m.change}
-                  <span className="text-gray-400 font-normal">{m.sub}</span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        <MiniMetric
+          label="إجمالي المحادثات"
+          value={`${conversationCount ?? 0}`}
+          sub={`${unreadConversationCount ?? 0} تحتاج متابعة`}
+          icon={MessageCircle}
+          tone="blue"
+        />
+        <MiniMetric
+          label="طلبات مؤكدة"
+          value={`${confirmedOrders}`}
+          sub="هذا الشهر"
+          icon={CheckCircle2}
+          tone="green"
+        />
+        <MiniMetric
+          label="طلبات معلقة"
+          value={`${pendingOrders}`}
+          sub="تحتاج تأكيد"
+          icon={Clock}
+          tone="amber"
+        />
+        <MiniMetric
+          label="الإيرادات التقديرية"
+          value={money(revenue)}
+          sub="من الطلبات غير الملغاة"
+          icon={TrendingUp}
+          tone="purple"
+        />
       </div>
 
-      {/* Two column: conversations + orders */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-
-        {/* Recent conversations */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3.5 border-b border-gray-50">
             <div className="flex items-center gap-2">
               <MessageCircle className="w-4 h-4 text-[#25D366]" />
               <h3 className="font-bold text-gray-900 text-sm">آخر المحادثات</h3>
             </div>
-            <span className="text-[10px] bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded-full">3 جديدة</span>
+            <span className="text-[10px] bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded-full">
+              {unreadConversationCount ?? 0} غير مقروءة
+            </span>
           </div>
           <div className="divide-y divide-gray-50">
-            {conversations.map((c, i) => (
-              <div key={c.id} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
-                <div className="relative shrink-0">
-                  <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${avatarColors[i % avatarColors.length]} flex items-center justify-center text-white text-xs font-bold`}>
-                    {c.name[0]}
+            {conversations.length === 0 ? (
+              <EmptyState
+                text="مازال ما كايناش محادثات من واتساب."
+                href="/dashboard/conversations"
+                action="فتح صندوق المحادثات"
+              />
+            ) : conversations.map((conversation, i) => {
+              const last = messagesByConversation[conversation.id];
+              const name = conversation.customer_name || conversation.customer_phone;
+              return (
+                <Link
+                  key={conversation.id}
+                  href="/dashboard/conversations"
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                >
+                  <div className="relative shrink-0">
+                    <div className={`w-9 h-9 rounded-full bg-gradient-to-br ${avatarColors[i % avatarColors.length]} flex items-center justify-center text-white text-xs font-bold`}>
+                      {name[0]}
+                    </div>
+                    <div className="absolute -bottom-0.5 -right-0.5">
+                      <span className={`w-2 h-2 rounded-full block ${conversation.status === "open" ? "bg-[#25D366]" : "bg-gray-300"}`} />
+                    </div>
                   </div>
-                  <div className="absolute -bottom-0.5 -right-0.5">{statusIcon(c.status)}</div>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs font-bold text-gray-900 truncate">{c.name}</p>
-                    <span className="text-[10px] text-gray-400 shrink-0 mr-2">{c.time}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-bold text-gray-900 truncate">{name}</p>
+                      <span className="text-[10px] text-gray-400 shrink-0 mr-2">
+                        {formatRelative(conversation.last_message_at || conversation.created_at)}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 truncate mt-0.5">
+                      {last?.body || "محادثة جديدة"}
+                    </p>
                   </div>
-                  <p className="text-[11px] text-gray-500 truncate mt-0.5">{c.msg}</p>
-                </div>
-                {c.unread > 0 && (
-                  <span className="w-4.5 h-4.5 min-w-[18px] bg-[#25D366] text-white text-[9px] font-bold rounded-full flex items-center justify-center shrink-0">
-                    {c.unread}
-                  </span>
-                )}
-              </div>
-            ))}
+                  {conversation.unread_count > 0 && (
+                    <span className="min-w-[18px] h-[18px] bg-[#25D366] text-white text-[9px] font-bold rounded-full flex items-center justify-center shrink-0">
+                      {conversation.unread_count}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
           </div>
           <div className="px-4 py-3 border-t border-gray-50">
-            <button className="text-xs text-[#25D366] font-semibold hover:underline">عرض كل المحادثات</button>
+            <Link href="/dashboard/conversations" className="text-xs text-[#25D366] font-semibold hover:underline">
+              عرض كل المحادثات
+            </Link>
           </div>
         </div>
 
-        {/* Recent orders + chart */}
         <div className="lg:col-span-3 space-y-4">
-
-          {/* Mini chart */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-bold text-gray-900 text-sm">المبيعات الشهرية</h3>
-              <span className="text-xs text-green-600 font-semibold bg-green-50 px-2 py-1 rounded-full">+29% هذا الشهر</span>
+              <h3 className="font-bold text-gray-900 text-sm">جاهزية البوت</h3>
+              <span className={`text-xs font-semibold px-2 py-1 rounded-full ${store.active ? "text-green-600 bg-green-50" : "text-red-600 bg-red-50"}`}>
+                {store.active ? "نشط" : "متوقف"}
+              </span>
             </div>
-            <div className="flex items-end gap-1 h-16" dir="ltr">
-              {barData.map((h, i) => {
-                const pct = (h / Math.max(...barData)) * 100;
-                return (
-                  <div
-                    key={i}
-                    className={`flex-1 rounded-t-sm transition-all duration-300 ${i === barData.length - 1 ? "bg-[#25D366]" : "bg-[#25D366]/30"}`}
-                    style={{ height: `${pct}%` }}
-                  />
-                );
-              })}
-            </div>
-            <div className="flex gap-1 mt-1" dir="ltr">
-              {months.map((m, i) => (
-                <div key={i} className="flex-1 text-center text-[8px] text-gray-300">{m}</div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {readiness.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 rounded-xl px-3 py-3 transition-colors"
+                >
+                  {item.ok
+                    ? <CheckCircle2 className="w-4 h-4 text-[#25D366] shrink-0" />
+                    : <AlertCircle className="w-4 h-4 text-amber-500 shrink-0" />
+                  }
+                  <span className="text-xs font-semibold text-gray-700">{item.label}</span>
+                </Link>
               ))}
             </div>
           </div>
 
-          {/* Orders table */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3.5 border-b border-gray-50">
               <div className="flex items-center gap-2">
                 <ShoppingBag className="w-4 h-4 text-[#25D366]" />
                 <h3 className="font-bold text-gray-900 text-sm">آخر الطلبات</h3>
               </div>
-              <button className="text-xs text-[#25D366] font-semibold hover:underline">عرض الكل</button>
+              <Link href="/dashboard/orders" className="text-xs text-[#25D366] font-semibold hover:underline">
+                عرض الكل
+              </Link>
             </div>
             <div className="divide-y divide-gray-50">
-              {recentOrders.map((o) => (
-                <div key={o.id} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                  <span className="text-[10px] text-gray-400 font-mono shrink-0">{o.id}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-gray-900 truncate">{o.name}</p>
-                    <p className="text-[11px] text-gray-400 truncate">{o.product} · {o.city}</p>
-                  </div>
-                  <p className="text-xs font-black text-gray-800 shrink-0">{o.total}</p>
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${o.statusColor}`}>
-                    {o.status}
-                  </span>
-                </div>
-              ))}
+              {orders.length === 0 ? (
+                <EmptyState
+                  text="مازال ما تسجل حتى طلب."
+                  href="/dashboard/orders"
+                  action="فتح صفحة الطلبات"
+                />
+              ) : orders.map((order) => {
+                const status = statusConfig[order.status];
+                return (
+                  <Link
+                    key={order.id}
+                    href="/dashboard/orders"
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                  >
+                    <span className="text-[10px] text-gray-400 font-mono shrink-0">{shortId(order.id)}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-gray-900 truncate">{order.customer_name}</p>
+                      <p className="text-[11px] text-gray-400 truncate">
+                        {productName(order)} · {order.customer_city}
+                      </p>
+                    </div>
+                    <p className="text-xs font-black text-gray-800 shrink-0">{money(order.total)}</p>
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${status.cls}`}>
+                      {status.label}
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom row: Google Sheets + Quick actions */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-        {/* Google Sheets sync */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+        <Link href="/dashboard/products" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:-translate-y-0.5 hover:shadow-md transition-all">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
-              <FileSpreadsheet className="w-5 h-5 text-green-600" />
+              <Package className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm font-bold text-gray-900">Google Sheets</p>
-              <p className="text-xs text-gray-400">مزامنة الطلبات</p>
-            </div>
-            <div className="mr-auto flex items-center gap-1.5 bg-green-50 border border-green-200 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-              نشط
+              <p className="text-sm font-bold text-gray-900">المنتجات</p>
+              <p className="text-xs text-gray-400">كتالوج البوت</p>
             </div>
           </div>
-          <div className="bg-gray-50 rounded-xl p-3 space-y-1.5">
-            <div className="flex justify-between text-xs">
-              <span className="text-gray-500">آخر مزامنة</span>
-              <span className="font-semibold text-gray-800">منذ 5 دقائق</span>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-gray-500">إجمالي الصفوف</span>
-              <span className="font-semibold text-gray-800">284 طلب</span>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-gray-500">جدول البيانات</span>
-              <span className="font-semibold text-[#25D366] truncate max-w-[120px]">طلبات-عطور-الريم-2026</span>
-            </div>
-          </div>
-          <button className="mt-3 w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-gray-600 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 rounded-xl py-2 transition-colors">
-            <RefreshCw className="w-3.5 h-3.5" />
-            مزامنة الآن
-          </button>
-        </div>
+          <p className="text-2xl font-black text-gray-900">{productCount ?? 0}</p>
+          <p className="text-xs text-gray-500 mt-1">منتج نشط يستعمله البوت في الردود.</p>
+        </Link>
 
-        {/* Bot activity */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Zap className="w-4 h-4 text-[#25D366]" />
-            <h3 className="font-bold text-gray-900 text-sm">نشاط البوت اليوم</h3>
+        <Link href="/dashboard/delivery" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:-translate-y-0.5 hover:shadow-md transition-all">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
+              <Truck className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-gray-900">التوصيل</p>
+              <p className="text-xs text-gray-400">المدن والأسعار</p>
+            </div>
           </div>
-          <div className="space-y-2.5">
-            {[
-              { label: "رسائل مُعالجة",     value: "143",  pct: 100, color: "bg-[#25D366]" },
-              { label: "طلبات مؤكدة",       value: "28",   pct: 65,  color: "bg-blue-500" },
-              { label: "أسئلة مُجابة",      value: "89",   pct: 82,  color: "bg-purple-500" },
-              { label: "تحويل للمشرف",      value: "6",    pct: 15,  color: "bg-amber-500" },
-            ].map((row) => (
-              <div key={row.label}>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-gray-500">{row.label}</span>
-                  <span className="font-bold text-gray-900">{row.value}</span>
-                </div>
-                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div className={`h-full ${row.color} rounded-full`} style={{ width: `${row.pct}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+          <p className="text-2xl font-black text-gray-900">{deliveryZoneCount ?? 0}</p>
+          <p className="text-xs text-gray-500 mt-1">منطقة توصيل نشطة للبوت.</p>
+        </Link>
 
-        {/* Pending tasks */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Clock className="w-4 h-4 text-amber-500" />
-            <h3 className="font-bold text-gray-900 text-sm">يحتاج متابعة</h3>
+        <Link href="/dashboard/faq" className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:-translate-y-0.5 hover:shadow-md transition-all">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center shrink-0">
+              <HelpCircle className="w-5 h-5 text-purple-600" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-gray-900">الأسئلة الشائعة</p>
+              <p className="text-xs text-gray-400">ردود جاهزة</p>
+            </div>
           </div>
-          <div className="space-y-2">
-            {[
-              { icon: ShoppingBag,  color: "text-blue-500",   bg: "bg-blue-50",  label: "38 طلب جديد لم يُؤكد",       cta: "مراجعة" },
-              { icon: Truck,        color: "text-purple-500", bg: "bg-purple-50",label: "12 طلب قيد التوصيل",          cta: "متابعة" },
-              { icon: XCircle,      color: "text-red-500",    bg: "bg-red-50",   label: "3 طلبات مُلغاة اليوم",        cta: "عرض" },
-              { icon: MessageCircle,color: "text-[#25D366]",  bg: "bg-green-50", label: "6 محادثات تحتاج ردًا يدوياً", cta: "فتح" },
-            ].map((t, i) => {
-              const Icon = t.icon;
-              return (
-                <div key={i} className="flex items-center gap-2.5 p-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
-                  <div className={`w-7 h-7 ${t.bg} rounded-lg flex items-center justify-center shrink-0`}>
-                    <Icon className={`w-3.5 h-3.5 ${t.color}`} />
-                  </div>
-                  <p className="text-xs text-gray-700 font-medium flex-1">{t.label}</p>
-                  <span className="text-[10px] text-[#25D366] font-bold shrink-0">{t.cta}</span>
-                </div>
-              );
-            })}
+          <p className="text-2xl font-black text-gray-900">{activeFaqCount ?? 0}</p>
+          <p className="text-xs text-gray-500 mt-1">جواب نشط يمكن للبوت استعماله.</p>
+        </Link>
+      </div>
+
+      <div className="bg-[#1a1f2e] rounded-2xl p-4 border border-gray-800 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-[#25D366]/15 rounded-xl flex items-center justify-center">
+            <Zap className="w-5 h-5 text-[#25D366]" />
+          </div>
+          <div>
+            <p className="text-sm font-black">الخطوة التالية</p>
+            <p className="text-xs text-gray-400 mt-0.5">
+              زيد المنتجات والمناطق باش FunnelBot يعطي أجوبة أدق ويحول الرسائل لطلبات.
+            </p>
           </div>
         </div>
+        <Link
+          href="/dashboard/products"
+          className="bg-[#25D366] hover:bg-[#1eb85a] text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors text-center"
+        >
+          إضافة منتج
+        </Link>
       </div>
     </div>
   );
