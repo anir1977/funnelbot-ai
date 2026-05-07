@@ -3,13 +3,15 @@
 import { useState } from "react";
 import {
   Search, Download, CheckCircle, XCircle, Truck, Clock,
-  ChevronDown, ShoppingBag, Loader2,
+  ChevronDown, ShoppingBag, Loader2, Plus, X,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
 type OrderStatus = "new" | "confirmed" | "shipped" | "cancelled";
+
+type Product = { id: string; name: string; price: number };
 
 type Order = {
   id: string;
@@ -135,19 +137,219 @@ function StatusSelect({
   );
 }
 
+// ── Create order modal ────────────────────────────────────────────────────────
+
+function CreateOrderModal({
+  storeId,
+  products,
+  onClose,
+  onCreated,
+}: {
+  storeId: string;
+  products: Product[];
+  onClose: () => void;
+  onCreated: (order: Order) => void;
+}) {
+  const [customerName,  setCustomerName]  = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerCity,  setCustomerCity]  = useState("");
+  const [productId,     setProductId]     = useState(products[0]?.id ?? "");
+  const [quantity,      setQuantity]      = useState(1);
+  const [deliveryFee,   setDeliveryFee]   = useState(30);
+  const [saving,        setSaving]        = useState(false);
+  const [error,         setError]         = useState("");
+
+  const selectedProduct = products.find(p => p.id === productId);
+  const unitPrice       = selectedProduct?.price ?? 0;
+  const total           = quantity * unitPrice + deliveryFee;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedProduct) return;
+    setError("");
+    setSaving(true);
+
+    const supabase = createClient();
+    const { data, error: err } = await supabase
+      .from("orders")
+      .insert({
+        store_id:         storeId,
+        customer_name:    customerName.trim(),
+        customer_phone:   customerPhone.trim(),
+        customer_city:    customerCity.trim(),
+        product_snapshot: { name: selectedProduct.name, price: selectedProduct.price },
+        quantity,
+        unit_price:       unitPrice,
+        delivery_fee:     deliveryFee,
+        status:           "new",
+      })
+      .select("id, customer_name, customer_phone, customer_city, product_snapshot, quantity, unit_price, delivery_fee, total, status, notes, created_at")
+      .single();
+
+    setSaving(false);
+    if (err) {
+      console.error("[create order]", err);
+      setError("حدث خطأ أثناء الحفظ، حاول مجدداً");
+      return;
+    }
+    if (data) onCreated(data as Order);
+    onClose();
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between p-5 border-b border-gray-100">
+          <h3 className="text-base font-black text-gray-900">إنشاء طلب تجريبي</h3>
+          <button onClick={onClose} className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          {/* Customer name */}
+          <div>
+            <label className="block text-xs font-bold text-gray-700 mb-1.5">اسم الزبون</label>
+            <input
+              required
+              value={customerName}
+              onChange={e => setCustomerName(e.target.value)}
+              placeholder="مثال: محمد الأمين"
+              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] transition-all"
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="block text-xs font-bold text-gray-700 mb-1.5">رقم الهاتف</label>
+            <input
+              required
+              dir="ltr"
+              value={customerPhone}
+              onChange={e => setCustomerPhone(e.target.value)}
+              placeholder="+212 6XX XXX XXX"
+              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] transition-all"
+            />
+          </div>
+
+          {/* City */}
+          <div>
+            <label className="block text-xs font-bold text-gray-700 mb-1.5">المدينة</label>
+            <input
+              required
+              value={customerCity}
+              onChange={e => setCustomerCity(e.target.value)}
+              placeholder="مثال: الدار البيضاء"
+              className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] transition-all"
+            />
+          </div>
+
+          {/* Product */}
+          <div>
+            <label className="block text-xs font-bold text-gray-700 mb-1.5">المنتج</label>
+            {products.length === 0 ? (
+              <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2.5">
+                لا توجد منتجات نشطة. أضف منتجاً أولاً من صفحة المنتجات.
+              </p>
+            ) : (
+              <select
+                required
+                value={productId}
+                onChange={e => setProductId(e.target.value)}
+                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] transition-all bg-white"
+              >
+                {products.map(p => (
+                  <option key={p.id} value={p.id}>{p.name} — {p.price} د</option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          {/* Quantity + delivery */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5">الكمية</label>
+              <input
+                type="number"
+                required
+                min={1}
+                value={quantity}
+                onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-1.5">رسوم التوصيل (د)</label>
+              <input
+                type="number"
+                required
+                min={0}
+                value={deliveryFee}
+                onChange={e => setDeliveryFee(Math.max(0, parseInt(e.target.value) || 0))}
+                className="w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] transition-all"
+              />
+            </div>
+          </div>
+
+          {/* Total preview */}
+          <div className="bg-gray-50 rounded-xl px-4 py-3 flex items-center justify-between">
+            <span className="text-xs text-gray-500">الإجمالي المتوقع</span>
+            <span className="text-base font-black text-gray-900">{total.toLocaleString()} درهم</span>
+          </div>
+
+          {error && (
+            <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-xl px-3.5 py-2.5">{error}</p>
+          )}
+
+          {/* Actions */}
+          <div className="flex gap-2.5 pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm py-2.5 rounded-xl transition-colors"
+            >
+              إلغاء
+            </button>
+            <button
+              type="submit"
+              disabled={saving || products.length === 0}
+              className="flex-1 bg-[#25D366] hover:bg-[#1fb954] disabled:opacity-60 text-white font-bold text-sm py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2"
+            >
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+              {saving ? "جاري الحفظ..." : "إنشاء الطلب"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function OrdersClient({
   storeId,
   initialOrders,
+  initialProducts,
 }: {
   storeId: string;
   initialOrders: Order[];
+  initialProducts: Product[];
 }) {
-  const [orders, setOrders]     = useState<Order[]>(initialOrders);
-  const [search, setSearch]     = useState("");
-  const [activeTab, setTab]     = useState<"all" | OrderStatus>("all");
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [orders, setOrders]         = useState<Order[]>(initialOrders);
+  const [search, setSearch]         = useState("");
+  const [activeTab, setTab]         = useState<"all" | OrderStatus>("all");
+  const [expanded, setExpanded]     = useState<string | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
+
+  // ── Create order ──────────────────────────────────────────────────────────
+
+  const handleOrderCreated = (order: Order) => {
+    setOrders(prev => [order, ...prev]);
+  };
 
   // ── Filtering ──────────────────────────────────────────────────────────────
 
@@ -205,16 +407,34 @@ export default function OrdersClient({
   return (
     <div className="space-y-5">
 
+      {showCreate && (
+        <CreateOrderModal
+          storeId={storeId}
+          products={initialProducts}
+          onClose={() => setShowCreate(false)}
+          onCreated={handleOrderCreated}
+        />
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-black text-gray-900">الطلبات</h2>
           <p className="text-sm text-gray-500">{orders.length} طلب إجمالاً</p>
         </div>
-        <button className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 font-semibold text-sm px-4 py-2.5 rounded-xl hover:bg-gray-50 shadow-sm transition-colors w-fit">
-          <Download className="w-4 h-4" />
-          تصدير Excel
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowCreate(true)}
+            className="flex items-center gap-2 bg-[#25D366] hover:bg-[#1fb954] text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-sm shadow-green-200 transition-colors w-fit"
+          >
+            <Plus className="w-4 h-4" />
+            إنشاء طلب تجريبي
+          </button>
+          <button className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 font-semibold text-sm px-4 py-2.5 rounded-xl hover:bg-gray-50 shadow-sm transition-colors w-fit">
+            <Download className="w-4 h-4" />
+            تصدير Excel
+          </button>
+        </div>
       </div>
 
       {/* Status tabs */}

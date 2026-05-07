@@ -18,12 +18,20 @@ export default async function OrdersPage() {
   const store = stores?.[0];
   if (!store) redirect("/onboarding");
 
-  const { data: orders } = await supabase
-    .from("orders")
-    .select("id, customer_name, customer_phone, customer_city, product_snapshot, quantity, unit_price, delivery_fee, total, status, notes, created_at")
-    .eq("store_id", store.id)
-    .order("created_at", { ascending: false })
-    .limit(200);
+  const [{ data: orders }, { data: products }] = await Promise.all([
+    supabase
+      .from("orders")
+      .select("id, customer_name, customer_phone, customer_city, product_snapshot, quantity, unit_price, delivery_fee, total, status, notes, created_at")
+      .eq("store_id", store.id)
+      .order("created_at", { ascending: false })
+      .limit(200),
+    supabase
+      .from("products")
+      .select("id, name, price")
+      .eq("store_id", store.id)
+      .eq("active", true)
+      .order("name"),
+  ]);
 
-  return <OrdersClient storeId={store.id} initialOrders={orders ?? []} />;
+  return <OrdersClient storeId={store.id} initialOrders={orders ?? []} initialProducts={products ?? []} />;
 }
