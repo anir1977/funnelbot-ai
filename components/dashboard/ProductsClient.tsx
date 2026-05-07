@@ -156,9 +156,11 @@ export default function ProductsClient({
     clearInterval(timer);
 
     if (uploadError) {
+      console.error("[products] image upload error:", uploadError);
       setUploading(false);
       setUploadProgress(0);
-      throw new Error(`خطأ في رفع الصورة: ${uploadError.message}`);
+      // Return null instead of throwing — insert will proceed without image
+      return null;
     }
 
     setUploadProgress(100);
@@ -178,43 +180,63 @@ export default function ProductsClient({
     setSaving(true);
 
     const supabase = createClient();
-    let imageUrl: string | null = null;
 
-    try {
+    console.log("[products] handleSave — storeId:", storeId);
+
+    let imageUrl: string | null = null;
+    let imageUploadFailed = false;
+
+    if (imageFile) {
       imageUrl = await uploadImage(supabase);
-    } catch (err) {
-      setFormError(err instanceof Error ? err.message : "خطأ في رفع الصورة");
-      setSaving(false);
-      return;
+      if (imageUrl === null) {
+        imageUploadFailed = true;
+        console.warn("[products] image upload failed, proceeding without image");
+      }
     }
+
+    const payload = {
+      store_id:    storeId,
+      name:        form.name.trim(),
+      description: form.description.trim() || null,
+      price:       parseFloat(form.price),
+      stock:       parseInt(form.stock, 10),
+      category:    form.category.trim() || null,
+      sizes:       form.sizes.trim()   ? form.sizes.split(",").map(s => s.trim()).filter(Boolean)  : null,
+      colors:      form.colors.trim()  ? form.colors.split(",").map(c => c.trim()).filter(Boolean) : null,
+      image_url:   imageUrl,
+      active:      true,
+    };
+
+    console.log("[products] inserting payload:", payload);
 
     const { data, error } = await supabase
       .from("products")
-      .insert({
-        store_id:    storeId,
-        name:        form.name.trim(),
-        description: form.description.trim() || null,
-        price:       parseFloat(form.price),
-        stock:       parseInt(form.stock, 10),
-        category:    form.category.trim() || null,
-        sizes:       form.sizes.trim()   ? form.sizes.split(",").map(s => s.trim()).filter(Boolean)  : null,
-        colors:      form.colors.trim()  ? form.colors.split(",").map(c => c.trim()).filter(Boolean) : null,
-        image_url:   imageUrl,
-        active:      true,
-      })
+      .insert(payload)
       .select("id, name, description, price, stock, category, sizes, colors, image_url, active, created_at")
       .single();
+
+    console.log("[products] insert response — data:", data, "error:", error);
 
     setSaving(false);
 
     if (error) {
-      console.error("[products] insert error:", error);
-      setFormError(`خطأ في الحفظ: ${error.message}`);
+      console.error("[products] insert error (full):", JSON.stringify(error, null, 2));
+      setFormError(`خطأ في الحفظ: ${error.message}${error.details ? ` — ${error.details}` : ""}${error.hint ? ` (${error.hint})` : ""}`);
+      return;
+    }
+
+    if (!data) {
+      console.error("[products] insert returned no data — possible RLS policy blocking SELECT");
+      setFormError("تم الحفظ لكن تعذّر تحميل المنتج. تحقق من صلاحيات RLS أو أعد تحميل الصفحة.");
       return;
     }
 
     setProducts(prev => [data, ...prev]);
     closeModal();
+
+    if (imageUploadFailed) {
+      console.warn("[products] product saved without image due to upload failure");
+    }
   };
 
   // ── Delete ────────────────────────────────────────────────────
