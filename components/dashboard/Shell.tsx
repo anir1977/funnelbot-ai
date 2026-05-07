@@ -58,6 +58,7 @@ function SidebarContent({
   const storeInitial   = initial(store?.name);
   const profileInitial = initial(profile?.full_name);
   const planText       = planLabel[profile?.plan ?? "trial"] ?? "تجريبي";
+  const botIsActive    = Boolean(store?.active);
 
   return (
     <div className="flex flex-col h-full">
@@ -129,13 +130,19 @@ function SidebarContent({
 
       {/* Bot status */}
       <div className="px-3 pb-2">
-        <div className="flex items-center gap-2 bg-[#25D366]/10 border border-[#25D366]/20 rounded-xl px-3 py-2.5">
-          <Wifi className="w-3.5 h-3.5 text-[#25D366] shrink-0" />
+        <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 border ${
+          botIsActive ? "bg-[#25D366]/10 border-[#25D366]/20" : "bg-white/5 border-white/10"
+        }`}>
+          <Wifi className={`w-3.5 h-3.5 shrink-0 ${botIsActive ? "text-[#25D366]" : "text-gray-500"}`} />
           <div className="flex-1">
-            <p className="text-[10px] text-[#25D366] font-bold">البوت نشط</p>
-            <p className="text-[9px] text-gray-500">يرد تلقائياً • 24/7</p>
+            <p className={`text-[10px] font-bold ${botIsActive ? "text-[#25D366]" : "text-gray-400"}`}>
+              {botIsActive ? "البوت نشط" : "البوت متوقف"}
+            </p>
+            <p className="text-[9px] text-gray-500">
+              {botIsActive ? "يرد تلقائياً · 24/7" : "فعّلو من الإعدادات"}
+            </p>
           </div>
-          <div className="w-2 h-2 bg-[#25D366] rounded-full animate-pulse shrink-0" />
+          <div className={`w-2 h-2 rounded-full shrink-0 ${botIsActive ? "bg-[#25D366] animate-pulse" : "bg-gray-600"}`} />
         </div>
       </div>
 
@@ -191,9 +198,10 @@ export default function Shell({
 
   const { title, sub } = pageTitle();
   const profileInitial = initial(profile?.full_name);
+  const botIsActive = Boolean(store?.active);
 
   return (
-    <div className="min-h-screen bg-[#f8f9fc]">
+    <div className="min-h-screen bg-[#f6f7fb]">
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col fixed top-0 right-0 bottom-0 w-64 bg-[#1a1f2e] z-30">
@@ -236,15 +244,16 @@ export default function Shell({
           </div>
 
           <div className="flex items-center gap-2 shrink-0">
-            <div className="hidden sm:flex items-center gap-1.5 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-              البوت نشط
+            <div className={`hidden sm:flex items-center gap-1.5 border text-xs font-semibold px-3 py-1.5 rounded-full ${
+              botIsActive ? "bg-green-50 border-green-200 text-green-700" : "bg-gray-50 border-gray-200 text-gray-500"
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${botIsActive ? "bg-green-500 animate-pulse" : "bg-gray-400"}`} />
+              {botIsActive ? "البوت نشط" : "البوت متوقف"}
             </div>
             <button className="relative w-9 h-9 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center text-gray-500 transition-colors">
               <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white" />
             </button>
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white text-sm font-bold cursor-pointer">
+            <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-sm font-bold cursor-pointer">
               {profileInitial}
             </div>
           </div>

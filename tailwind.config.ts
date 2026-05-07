@@ -10,7 +10,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-cairo)", "Cairo", "sans-serif"],
+        sans: ["IBM Plex Sans Arabic", "Noto Sans Arabic", "Segoe UI", "Tahoma", "Arial", "sans-serif"],
       },
       colors: {
         wa: {
