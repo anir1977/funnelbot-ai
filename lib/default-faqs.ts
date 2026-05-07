@@ -70,3 +70,45 @@ export async function seedDefaultFaqs(
     console.error("[faqs] seed — unexpected error:", err);
   }
 }
+
+/**
+ * Inserts only the default FAQ templates whose questions don't already
+ * exist for the store (per-question deduplication).
+ * Returns the newly inserted FAQ rows, or throws on Supabase error.
+ */
+export async function insertMissingDefaultFaqs(
+  supabase: SupabaseClient,
+  storeId: string,
+): Promise<{ id: string; store_id: string; question: string; answer: string; hit_count: number; active: boolean; created_at: string }[]> {
+  // Fetch existing question texts for this store
+  const { data: existing, error: fetchError } = await supabase
+    .from("faqs")
+    .select("question")
+    .eq("store_id", storeId);
+
+  if (fetchError) throw fetchError;
+
+  const existingQuestions = new Set((existing ?? []).map(r => r.question));
+
+  const toInsert = DEFAULT_FAQS
+    .filter(faq => !existingQuestions.has(faq.question))
+    .map(faq => ({
+      store_id:  storeId,
+      question:  faq.question,
+      answer:    faq.answer,
+      hit_count: 0,
+      active:    true,
+    }));
+
+  if (toInsert.length === 0) return [];
+
+  const { data, error: insertError } = await supabase
+    .from("faqs")
+    .insert(toInsert)
+    .select("id, store_id, question, answer, hit_count, active, created_at");
+
+  if (insertError) throw insertError;
+
+  console.log(`[faqs] inserted ${data?.length ?? 0} missing default FAQs for store ${storeId}`);
+  return data ?? [];
+}

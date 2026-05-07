@@ -3,9 +3,10 @@
 import { useState } from "react";
 import {
   Plus, Search, ToggleLeft, ToggleRight, Pencil, Trash2,
-  MessageCircle, ChevronDown, X, Loader2, AlertCircle,
+  MessageCircle, ChevronDown, X, Loader2, AlertCircle, Sparkles, CheckCircle2,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { insertMissingDefaultFaqs } from "@/lib/default-faqs";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -217,6 +218,8 @@ export default function FaqsClient({
   const [modal,      setModal]     = useState<{ mode: "create" | "edit"; faq?: Faq } | null>(null);
   const [deletingId, setDeletingId]= useState<string | null>(null);
   const [togglingId, setTogglingId]= useState<string | null>(null);
+  const [seeding,    setSeeding]   = useState(false);
+  const [seedMsg,    setSeedMsg]   = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   // ── Derived ──────────────────────────────────────────────────────────────
 
@@ -267,6 +270,28 @@ export default function FaqsClient({
     if (expanded === id) setExpanded(null);
   };
 
+  // ── Seed default FAQs ────────────────────────────────────────────────────
+
+  const handleSeedDefaults = async () => {
+    setSeeding(true);
+    setSeedMsg(null);
+    try {
+      const supabase = createClient();
+      const inserted = await insertMissingDefaultFaqs(supabase, storeId);
+      if (inserted.length === 0) {
+        setSeedMsg({ type: "success", text: "جميع الأسئلة الافتراضية موجودة بالفعل — لا يوجد ما يُضاف." });
+      } else {
+        setFaqs(fs => [...inserted as typeof fs, ...fs]);
+        setSeedMsg({ type: "success", text: `تمت إضافة ${inserted.length} سؤال افتراضي بنجاح.` });
+      }
+    } catch (err) {
+      console.error("[faqs] seed defaults error:", err);
+      setSeedMsg({ type: "error", text: "حدث خطأ أثناء إضافة الأسئلة الافتراضية. حاول مجدداً." });
+    } finally {
+      setSeeding(false);
+    }
+  };
+
   // ── Modal save callback ───────────────────────────────────────────────────
 
   const handleSaved = (faq: Faq) => {
@@ -305,14 +330,47 @@ export default function FaqsClient({
             {activeCount} سؤال نشط · {totalHits.toLocaleString()} رد تلقائي
           </p>
         </div>
-        <button
-          onClick={() => setModal({ mode: "create" })}
-          className="flex items-center gap-2 bg-[#25D366] hover:bg-[#1eb85a] text-white font-bold text-sm px-4 py-2.5 rounded-xl shadow-md shadow-green-200 hover:-translate-y-0.5 transition-all w-fit"
-        >
-          <Plus className="w-4 h-4" />
-          إضافة سؤال
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={handleSeedDefaults}
+            disabled={seeding}
+            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 font-semibold text-sm px-4 py-2.5 rounded-xl shadow-sm hover:-translate-y-0.5 transition-all w-fit disabled:opacity-60 disabled:translate-y-0"
+          >
+            {seeding
+              ? <Loader2 className="w-4 h-4 animate-spin" />
+              : <Sparkles className="w-4 h-4 text-amber-500" />
+            }
+            إضافة الأسئلة الافتراضية
+          </button>
+          <button
+            onClick={() => setModal({ mode: "create" })}
+            className="flex items-center gap-2 bg-[#25D366] hover:bg-[#1eb85a] text-white font-bold text-sm px-4 py-2.5 rounded-xl shadow-md shadow-green-200 hover:-translate-y-0.5 transition-all w-fit"
+          >
+            <Plus className="w-4 h-4" />
+            إضافة سؤال
+          </button>
+        </div>
       </div>
+
+      {/* Seed feedback banner */}
+      {seedMsg && (
+        <div className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl border text-sm font-medium ${
+          seedMsg.type === "success"
+            ? "bg-green-50 border-green-200 text-green-700"
+            : "bg-red-50 border-red-200 text-red-700"
+        }`}>
+          <div className="flex items-center gap-2">
+            {seedMsg.type === "success"
+              ? <CheckCircle2 className="w-4 h-4 shrink-0" />
+              : <AlertCircle  className="w-4 h-4 shrink-0" />
+            }
+            {seedMsg.text}
+          </div>
+          <button onClick={() => setSeedMsg(null)} className="shrink-0 opacity-60 hover:opacity-100 transition-opacity">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
