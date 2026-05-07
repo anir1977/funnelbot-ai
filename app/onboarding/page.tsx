@@ -8,6 +8,7 @@ import {
   CheckCircle, Loader2, ChevronLeft, Zap, MessageCircle, BarChart3, AlertCircle,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { seedDefaultFaqs } from "@/lib/default-faqs";
 
 const bizTypes = [
   { id: "parfum",      icon: Sparkles,    label: "عطور وكوزميتيك",    desc: "بارفان، كريمات، مكياج",     gradient: "from-pink-500 to-rose-500"    },
@@ -53,19 +54,28 @@ export default function OnboardingPage() {
       return;
     }
 
-    const { error: dbError } = await supabase.from("stores").insert({
-      user_id:         user.id,
-      name:            storeName,
-      business_type:   bizType,
-      city,
-      whatsapp_number: `212${waNumber}`,
-      bot_tone:        tone,
-    });
+    const { data: storeData, error: dbError } = await supabase
+      .from("stores")
+      .insert({
+        user_id:         user.id,
+        name:            storeName,
+        business_type:   bizType,
+        city,
+        whatsapp_number: `212${waNumber}`,
+        bot_tone:        tone,
+      })
+      .select("id")
+      .single();
 
     if (dbError) {
       setError("حدث خطأ في حفظ معلومات المتجر. حاول مجدداً.");
       setLoading(false);
       return;
+    }
+
+    // Seed default FAQs — errors are caught inside and never block onboarding
+    if (storeData?.id) {
+      await seedDefaultFaqs(supabase, storeData.id);
     }
 
     setLoading(false);
