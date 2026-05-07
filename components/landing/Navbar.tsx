@@ -4,14 +4,14 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { WA_URL } from "@/lib/whatsapp";
+import Link from "next/link";
 
 const navLinks = [
-  { label: "المميزات", href: "#features" },
-  { label: "كيف يعمل", href: "#how-it-works" },
-  { label: "الأسعار", href: "#pricing" },
-  { label: "آراء العملاء", href: "#testimonials" },
-  { label: "الأسئلة الشائعة", href: "#faq" },
+  { label: "المميزات",     href: "/#features"     },
+  { label: "كيف يعمل",    href: "/#how-it-works"  },
+  { label: "الأسعار",     href: "/#pricing"       },
+  { label: "آراء العملاء", href: "/#testimonials"  },
+  { label: "الأسئلة الشائعة", href: "/#faq"       },
 ];
 
 export default function Navbar() {
@@ -36,14 +36,14 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2.5 shrink-0">
+          <Link href="/" className="flex items-center gap-2.5 shrink-0">
             <div className="w-9 h-9 bg-[#25D366] rounded-xl flex items-center justify-center shadow-md">
               <BookOpen className="w-4.5 h-4.5 text-white" strokeWidth={2.5} />
             </div>
             <span className="text-xl font-black tracking-tight text-gray-900">
               Funnels<span className="text-[#25D366]">Library</span>
             </span>
-          </a>
+          </Link>
 
           {/* Desktop nav */}
           <nav className="hidden lg:flex items-center gap-7">
@@ -60,17 +60,15 @@ export default function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden lg:flex items-center gap-3">
-            <a href="#pricing" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+            <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
               تسجيل الدخول
-            </a>
-            <a
-              href={WA_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            </Link>
+            <Link
+              href="/signup"
               className="bg-[#25D366] hover:bg-[#1eb85a] text-white font-semibold text-sm px-5 py-2.5 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5"
             >
               جرّب مجاناً
-            </a>
+            </Link>
           </div>
 
           {/* Mobile toggle */}
@@ -106,15 +104,13 @@ export default function Navbar() {
                 </a>
               ))}
               <div className="pt-3 border-t border-gray-100">
-                <a
-                  href={WA_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/signup"
                   onClick={() => setMobileOpen(false)}
                   className="block w-full text-center bg-[#25D366] text-white font-bold py-3 rounded-full"
                 >
                   جرّب مجاناً
-                </a>
+                </Link>
               </div>
             </div>
           </motion.div>

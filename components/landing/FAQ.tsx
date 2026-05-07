@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, HelpCircle } from "lucide-react";
+import Link from "next/link";
 
 const faqs = [
   {
@@ -103,7 +104,7 @@ export default function FAQ() {
             className="text-gray-500 text-lg"
           >
             إجابات على أكثر الأسئلة التي يسألها أصحاب المتاجر. لم تجد ما تبحث عنه؟{" "}
-            <a href="#" className="text-[#25D366] font-semibold hover:underline">راسلنا مباشرة</a>
+            <Link href="/contact" className="text-[#25D366] font-semibold hover:underline">راسلنا مباشرة</Link>
           </motion.p>
         </div>
 

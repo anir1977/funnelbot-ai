@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { CheckCircle, X, Zap, Star, Building2 } from "lucide-react";
-import { WA_URL } from "@/lib/whatsapp";
+import Link from "next/link";
 
 const plans = [
   {
@@ -23,6 +23,7 @@ const plans = [
       { text: "مدير حساب مخصص",            included: false },
     ],
     cta: "ابدأ مجاناً",
+    ctaHref: "/signup",
     popular: false,
     border: "border-gray-200",
     ctaClass: "bg-gray-900 hover:bg-gray-700 text-white",
@@ -47,6 +48,7 @@ const plans = [
       { text: "مدير حساب مخصص",            included: false },
     ],
     cta: "ابدأ مجاناً",
+    ctaHref: "/signup",
     popular: true,
     border: "border-[#25D366]",
     ctaClass: "bg-[#25D366] hover:bg-[#1eb85a] text-white shadow-lg shadow-green-200",
@@ -71,6 +73,7 @@ const plans = [
       { text: "مدير حساب مخصص",            included: true },
     ],
     cta: "تواصل معنا",
+    ctaHref: "/contact",
     popular: false,
     border: "border-gray-200",
     ctaClass: "bg-gray-900 hover:bg-gray-700 text-white",
@@ -147,9 +150,9 @@ export default function Pricing() {
                   </div>
                 </div>
 
-                <a href={WA_URL} target="_blank" rel="noopener noreferrer" className={`block w-full text-center font-bold py-3.5 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 mb-6 ${plan.ctaClass}`}>
+                <Link href={plan.ctaHref} className={`block w-full text-center font-bold py-3.5 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 mb-6 ${plan.ctaClass}`}>
                   {plan.cta}
-                </a>
+                </Link>
 
                 <ul className="space-y-2.5">
                   {plan.features.map((f) => (

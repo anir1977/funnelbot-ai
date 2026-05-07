@@ -2,12 +2,27 @@
 
 import { motion } from "framer-motion";
 import { ArrowLeft, BookOpen, Mail, Phone, Instagram, Facebook } from "lucide-react";
-import { WA_URL } from "@/lib/whatsapp";
+import Link from "next/link";
 
 const footerLinks = {
-  المنتج:   ["المميزات", "كيف يعمل", "الأسعار", "التحديثات"],
-  الشركة:   ["من نحن", "المدونة", "الشراكات", "اتصل بنا"],
-  الدعم:    ["مركز المساعدة", "دليل الإعداد", "سياسة الخصوصية", "الشروط والأحكام"],
+  المنتج:  [
+    { label: "المميزات",        href: "/#features"   },
+    { label: "كيف يعمل",       href: "/#how-it-works"},
+    { label: "الأسعار",        href: "/#pricing"     },
+    { label: "التحديثات",      href: "#"             },
+  ],
+  الشركة:  [
+    { label: "من نحن",          href: "/about"    },
+    { label: "المدونة",         href: "#"         },
+    { label: "الشراكات",        href: "#"         },
+    { label: "اتصل بنا",        href: "/contact"  },
+  ],
+  الدعم:   [
+    { label: "مركز المساعدة",    href: "#"          },
+    { label: "دليل الإعداد",     href: "#"          },
+    { label: "سياسة الخصوصية",  href: "/privacy"   },
+    { label: "الشروط والأحكام",  href: "/terms"     },
+  ],
 };
 
 export default function CTAFooter() {
@@ -61,24 +76,20 @@ export default function CTAFooter() {
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a
-                  href={WA_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/signup"
                   className="group flex items-center gap-2 bg-white text-[#075E54] font-black px-8 py-4 rounded-2xl text-base hover:bg-green-50 transition-all duration-200 shadow-xl hover:-translate-y-0.5 w-full sm:w-auto justify-center"
                 >
                   جرّب مجاناً 14 يوم
                   <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                </a>
-                <a
-                  href={WA_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                </Link>
+                <Link
+                  href="/contact"
                   className="flex items-center gap-2 border-2 border-white/40 text-white font-semibold px-7 py-4 rounded-2xl text-base hover:bg-white/10 transition-all duration-200 w-full sm:w-auto justify-center"
                 >
                   <Phone className="w-4 h-4" />
                   تواصل معنا
-                </a>
+                </Link>
               </div>
 
               <div className="flex flex-wrap items-center justify-center gap-5 mt-8 text-green-100 text-sm">
@@ -100,14 +111,14 @@ export default function CTAFooter() {
 
             {/* Brand */}
             <div className="lg:col-span-2">
-              <a href="#" className="flex items-center gap-2.5 mb-4">
+              <Link href="/" className="flex items-center gap-2.5 mb-4">
                 <div className="w-10 h-10 bg-[#25D366] rounded-xl flex items-center justify-center">
                   <BookOpen className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-2xl font-black text-white">
                   Funnels<span className="text-[#25D366]">Library</span>
                 </span>
-              </a>
+              </Link>
               <p className="text-sm leading-relaxed mb-5 max-w-xs">
                 منصة بوت واتساب ذكي مخصصة للمتاجر الإلكترونية في المغرب. ابيع أكثر، اشتغل أقل.
               </p>
@@ -136,8 +147,10 @@ export default function CTAFooter() {
                 <h4 className="text-white font-bold text-sm mb-4">{title}</h4>
                 <ul className="space-y-3">
                   {links.map((link) => (
-                    <li key={link}>
-                      <a href="#" className="text-sm hover:text-[#25D366] transition-colors">{link}</a>
+                    <li key={link.label}>
+                      <Link href={link.href} className="text-sm hover:text-[#25D366] transition-colors">
+                        {link.label}
+                      </Link>
                     </li>
                   ))}
                 </ul>
@@ -148,9 +161,9 @@ export default function CTAFooter() {
           <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
             <p>© 2025 FunnelsLibrary. جميع الحقوق محفوظة — funnelslibrary.com</p>
             <div className="flex items-center gap-4">
-              <a href="#" className="hover:text-[#25D366] transition-colors">سياسة الخصوصية</a>
+              <Link href="/privacy" className="hover:text-[#25D366] transition-colors">سياسة الخصوصية</Link>
               <span className="opacity-30">|</span>
-              <a href="#" className="hover:text-[#25D366] transition-colors">الشروط والأحكام</a>
+              <Link href="/terms" className="hover:text-[#25D366] transition-colors">الشروط والأحكام</Link>
               <span className="opacity-30">|</span>
               <a href="mailto:hello@funnelslibrary.com" className="hover:text-[#25D366] transition-colors flex items-center gap-1">
                 <Mail className="w-3 h-3" />

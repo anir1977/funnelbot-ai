@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowLeft, MessageCircle, Star, CheckCircle, Sparkles, Package } from "lucide-react";
-import { WA_URL } from "@/lib/whatsapp";
+import Link from "next/link";
 
 const chatMessages = [
   { id: 1, sender: "user",  text: "السلام، واش عندكم بلو دي شانيل؟ شحال ثمنو وواش التوصيل لالرباط؟", time: "14:32" },
@@ -124,17 +124,15 @@ export default function Hero() {
               variants={fadeUp} initial="hidden" animate="show" custom={3}
               className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10"
             >
-              <a
-                href={WA_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/signup"
                 className="group flex items-center gap-2 bg-[#25D366] hover:bg-[#1eb85a] text-white font-bold px-7 py-4 rounded-2xl text-base transition-all duration-200 shadow-lg shadow-green-200 hover:shadow-xl hover:shadow-green-300 hover:-translate-y-0.5 w-full sm:w-auto justify-center"
               >
                 جرّب مجاناً 14 يوم
                 <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-              </a>
+              </Link>
               <a
-                href="#how-it-works"
+                href="/#how-it-works"
                 className="flex items-center gap-2.5 bg-white text-gray-700 font-semibold px-6 py-4 rounded-2xl text-base border border-gray-200 hover:border-[#25D366] hover:text-[#25D366] transition-all duration-200 w-full sm:w-auto justify-center"
               >
                 <Package className="w-4 h-4" />
