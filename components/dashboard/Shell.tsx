@@ -14,13 +14,14 @@ type Profile = { full_name: string | null; email: string; plan: string } | null;
 type StoreData = { id: string; name: string; active: boolean; bot_tone: string } | null;
 
 const nav = [
-  { href: "/dashboard",          icon: LayoutDashboard, label: "الرئيسية",         badge: null },
-  { href: "/dashboard/store",    icon: Store,            label: "إعدادات المتجر",   badge: null },
-  { href: "/dashboard/products", icon: Package,          label: "المنتجات",         badge: null },
-  { href: "/dashboard/orders",   icon: ShoppingBag,      label: "الطلبات",          badge: "12" },
-  { href: "/dashboard/delivery", icon: Truck,            label: "التوصيل",          badge: null },
-  { href: "/dashboard/faq",      icon: HelpCircle,       label: "الأسئلة الشائعة",  badge: null },
-  { href: "/dashboard/settings", icon: Settings,         label: "الإعدادات",        badge: null },
+  { href: "/dashboard",               icon: LayoutDashboard, label: "الرئيسية",        badge: null },
+  { href: "/dashboard/store",         icon: Store,            label: "إعدادات المتجر",  badge: null },
+  { href: "/dashboard/products",      icon: Package,          label: "المنتجات",        badge: null },
+  { href: "/dashboard/orders",        icon: ShoppingBag,      label: "الطلبات",         badge: null },
+  { href: "/dashboard/conversations", icon: MessageCircle,    label: "المحادثات",       badge: null },
+  { href: "/dashboard/delivery",      icon: Truck,            label: "التوصيل",         badge: null },
+  { href: "/dashboard/faq",           icon: HelpCircle,       label: "الأسئلة الشائعة", badge: null },
+  { href: "/dashboard/settings",      icon: Settings,         label: "الإعدادات",       badge: null },
 ];
 
 const planLabel: Record<string, string> = {
@@ -180,8 +181,9 @@ export default function Shell({
     if (pathname === "/dashboard")                    return { title: "الرئيسية",          sub: "نظرة عامة على متجرك" };
     if (pathname.startsWith("/dashboard/store"))      return { title: "إعدادات المتجر",    sub: "بيانات متجرك الأساسية" };
     if (pathname.startsWith("/dashboard/products"))   return { title: "المنتجات",           sub: "إدارة كتالوج منتجاتك" };
-    if (pathname.startsWith("/dashboard/orders"))     return { title: "الطلبات",            sub: "متابعة وإدارة الطلبات" };
-    if (pathname.startsWith("/dashboard/delivery"))   return { title: "التوصيل",            sub: "أسعار ومناطق التوصيل" };
+    if (pathname.startsWith("/dashboard/orders"))         return { title: "الطلبات",         sub: "متابعة وإدارة الطلبات" };
+    if (pathname.startsWith("/dashboard/conversations")) return { title: "المحادثات",        sub: "صندوق الرسائل مع الزبناء" };
+    if (pathname.startsWith("/dashboard/delivery"))      return { title: "التوصيل",          sub: "أسعار ومناطق التوصيل" };
     if (pathname.startsWith("/dashboard/faq"))        return { title: "الأسئلة الشائعة",   sub: "الردود التلقائية على الأسئلة المتكررة" };
     if (pathname.startsWith("/dashboard/settings"))   return { title: "الإعدادات",         sub: "ضبط إعدادات البوت والتكاملات" };
     return { title: "FunnelsLibrary", sub: "" };
