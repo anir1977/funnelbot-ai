@@ -1,14 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  Plus, Search, ToggleLeft, ToggleRight, Pencil, Trash2,
-  MessageCircle, ChevronDown, X, Loader2, AlertCircle, Sparkles, CheckCircle2,
+  AlertCircle,
+  CheckCircle2,
+  ChevronDown,
+  Loader2,
+  MessageCircle,
+  Pencil,
+  Plus,
+  Search,
+  Sparkles,
+  ToggleLeft,
+  ToggleRight,
+  Trash2,
+  X,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { insertMissingDefaultFaqs } from "@/lib/default-faqs";
-
-// ── Types ─────────────────────────────────────────────────────────────────────
 
 type Faq = {
   id: string;
@@ -27,11 +36,7 @@ type FaqForm = {
 };
 
 const emptyForm: FaqForm = { question: "", answer: "", active: true };
-
-const textareaCls =
-  "w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] transition-all resize-none";
-
-// ── FAQ Modal (create + edit) ─────────────────────────────────────────────────
+const textareaCls = "w-full resize-none rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-950 outline-none transition focus:border-gray-400 focus:ring-4 focus:ring-gray-100";
 
 function FaqModal({
   mode,
@@ -46,155 +51,96 @@ function FaqModal({
   onClose: () => void;
   onSaved: (faq: Faq) => void;
 }) {
-  const [form,   setForm]   = useState<FaqForm>({
+  const [form, setForm] = useState<FaqForm>({
     question: initial.question,
-    answer:   initial.answer,
-    active:   initial.active,
+    answer: initial.answer,
+    active: initial.active,
   });
   const [saving, setSaving] = useState(false);
-  const [error,  setError]  = useState("");
+  const [error, setError] = useState("");
 
-  const set = (k: keyof FaqForm, v: string | boolean) =>
-    setForm(f => ({ ...f, [k]: v }));
+  const set = (key: keyof FaqForm, value: string | boolean) =>
+    setForm((current) => ({ ...current, [key]: value }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.question.trim()) { setError("السؤال مطلوب"); return; }
-    if (!form.answer.trim())   { setError("الجواب مطلوب");  return; }
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!form.question.trim()) { setError("السؤال مطلوب."); return; }
+    if (!form.answer.trim()) { setError("الجواب مطلوب."); return; }
+
     setError("");
     setSaving(true);
 
-    const supabase = createClient();
-    const payload  = {
+    const payload = {
       question: form.question.trim(),
-      answer:   form.answer.trim(),
-      active:   form.active,
+      answer: form.answer.trim(),
+      active: form.active,
     };
 
-    let data: Faq | null = null;
-    let err: { message: string } | null = null;
+    const supabase = createClient();
+    const query = mode === "create"
+      ? supabase.from("faqs").insert({ store_id: storeId, ...payload })
+      : supabase.from("faqs").update(payload).eq("id", initial.id!);
 
-    if (mode === "create") {
-      const res = await supabase
-        .from("faqs")
-        .insert({ store_id: storeId, ...payload })
-        .select("id, store_id, question, answer, hit_count, active, created_at")
-        .single();
-      data = res.data as Faq;
-      err  = res.error;
-    } else {
-      const res = await supabase
-        .from("faqs")
-        .update(payload)
-        .eq("id", initial.id!)
-        .select("id, store_id, question, answer, hit_count, active, created_at")
-        .single();
-      data = res.data as Faq;
-      err  = res.error;
-    }
+    const { data, error: saveError } = await query
+      .select("id, store_id, question, answer, hit_count, active, created_at")
+      .single();
 
     setSaving(false);
 
-    if (err) {
-      console.error("[faqs] save error:", err);
-      setError(`خطأ في الحفظ: ${err.message}`);
+    if (saveError) {
+      setError(`خطأ في الحفظ: ${saveError.message}`);
       return;
     }
 
-    if (data) onSaved(data);
+    if (data) onSaved(data as Faq);
     onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl z-10">
+      <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl bg-white shadow-2xl">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-100 bg-white p-5">
           <div>
-            <h3 className="text-base font-black text-gray-900">
-              {mode === "create" ? "إضافة سؤال جديد" : "تعديل السؤال"}
-            </h3>
-            <p className="text-xs text-gray-400 mt-0.5">يرد البوت عليه تلقائياً</p>
+            <h3 className="text-base font-extrabold text-gray-950">{mode === "create" ? "إضافة سؤال" : "تعديل السؤال"}</h3>
+            <p className="mt-1 text-xs text-gray-500">البوت يستعمل الجواب مباشرة مع الزبناء.</p>
           </div>
-          <button onClick={onClose} className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
-            <X className="w-4 h-4" />
+          <button onClick={onClose} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+            <X className="h-4 w-4" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 p-5">
           {error && (
-            <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-              <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-              <p className="text-sm text-red-600">{error}</p>
+            <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              {error}
             </div>
           )}
 
-          {/* Question */}
           <div>
-            <label className="block text-xs font-bold text-gray-700 mb-1.5">
-              السؤال <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              required
-              rows={2}
-              value={form.question}
-              onChange={e => set("question", e.target.value)}
-              placeholder="مثال: شحال ثمن التوصيل؟"
-              className={textareaCls}
-            />
+            <label className="mb-1.5 block text-xs font-bold text-gray-700">السؤال</label>
+            <textarea required rows={2} value={form.question} onChange={(event) => set("question", event.target.value)} placeholder="مثال: شحال ثمن التوصيل؟" className={textareaCls} />
           </div>
 
-          {/* Answer */}
           <div>
-            <label className="block text-xs font-bold text-gray-700 mb-1.5">
-              الجواب <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              required
-              rows={4}
-              value={form.answer}
-              onChange={e => set("answer", e.target.value)}
-              placeholder="اكتب الجواب الذي سيرسله البوت تلقائياً..."
-              className={textareaCls}
-            />
+            <label className="mb-1.5 block text-xs font-bold text-gray-700">الجواب</label>
+            <textarea required rows={4} value={form.answer} onChange={(event) => set("answer", event.target.value)} placeholder="اكتب الجواب اللي غادي يرسل البوت..." className={textareaCls} />
           </div>
 
-          {/* Active toggle */}
-          <button
-            type="button"
-            onClick={() => set("active", !form.active)}
-            className="w-full flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3 hover:bg-gray-100 transition-colors"
-          >
-            <div className="flex items-center gap-2.5">
-              <MessageCircle className="w-4 h-4 text-gray-500" />
-              <span className="text-sm font-semibold text-gray-700">تفعيل الرد التلقائي</span>
-            </div>
-            {form.active
-              ? <ToggleRight className="w-7 h-7 text-[#25D366]" />
-              : <ToggleLeft  className="w-7 h-7 text-gray-300" />
-            }
+          <button type="button" onClick={() => set("active", !form.active)} className="flex w-full items-center justify-between rounded-lg border border-gray-100 bg-gray-50 px-3 py-3 hover:bg-gray-100">
+            <span className="flex items-center gap-2 text-sm font-bold text-gray-800">
+              <MessageCircle className="h-4 w-4 text-gray-500" />
+              تفعيل الرد التلقائي
+            </span>
+            {form.active ? <ToggleRight className="h-7 w-7 text-emerald-600" /> : <ToggleLeft className="h-7 w-7 text-gray-300" />}
           </button>
 
-          {/* Actions */}
-          <div className="flex gap-2.5 pt-1">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm py-2.5 rounded-xl transition-colors"
-            >
-              إلغاء
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="flex-1 bg-[#25D366] hover:bg-[#1fb954] disabled:opacity-60 text-white font-bold text-sm py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2"
-            >
-              {saving
-                ? <><Loader2 className="w-4 h-4 animate-spin" />جاري الحفظ...</>
-                : mode === "create" ? "إضافة السؤال" : "حفظ التعديلات"
-              }
+          <div className="flex gap-2 pt-1">
+            <button type="button" onClick={onClose} className="flex-1 rounded-lg border border-gray-200 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50">إلغاء</button>
+            <button type="submit" disabled={saving} className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gray-950 py-2.5 text-sm font-bold text-white hover:bg-gray-800 disabled:opacity-50">
+              {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+              {saving ? "كيحفظ..." : mode === "create" ? "إضافة" : "حفظ"}
             </button>
           </div>
         </form>
@@ -203,8 +149,6 @@ function FaqModal({
   );
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
-
 export default function FaqsClient({
   storeId,
   initialFaqs,
@@ -212,318 +156,192 @@ export default function FaqsClient({
   storeId: string;
   initialFaqs: Faq[];
 }) {
-  const [faqs,       setFaqs]      = useState<Faq[]>(initialFaqs);
-  const [search,     setSearch]    = useState("");
-  const [expanded,   setExpanded]  = useState<string | null>(null);
-  const [modal,      setModal]     = useState<{ mode: "create" | "edit"; faq?: Faq } | null>(null);
-  const [deletingId, setDeletingId]= useState<string | null>(null);
-  const [togglingId, setTogglingId]= useState<string | null>(null);
-  const [seeding,    setSeeding]   = useState(false);
-  const [seedMsg,    setSeedMsg]   = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [faqs, setFaqs] = useState<Faq[]>(initialFaqs);
+  const [search, setSearch] = useState("");
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [modal, setModal] = useState<{ mode: "create" | "edit"; faq?: Faq } | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [seeding, setSeeding] = useState(false);
+  const [notice, setNotice] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // ── Derived ──────────────────────────────────────────────────────────────
+  const filtered = useMemo(() => (
+    faqs.filter((faq) => !search || faq.question.includes(search) || faq.answer.includes(search))
+  ), [faqs, search]);
 
-  const filtered = faqs.filter(f =>
-    !search || f.question.includes(search) || f.answer.includes(search)
-  );
-
-  const totalHits   = faqs.reduce((s, f) => s + (f.hit_count ?? 0), 0);
-  const activeCount = faqs.filter(f => f.active).length;
-
-  // ── Toggle active ─────────────────────────────────────────────────────────
+  const totalHits = faqs.reduce((sum, faq) => sum + (faq.hit_count ?? 0), 0);
+  const activeCount = faqs.filter((faq) => faq.active).length;
 
   const toggleActive = async (id: string, current: boolean) => {
     setTogglingId(id);
-    setFaqs(fs => fs.map(f => f.id === id ? { ...f, active: !current } : f));
+    setFaqs((currentFaqs) => currentFaqs.map((faq) => faq.id === id ? { ...faq, active: !current } : faq));
 
     const supabase = createClient();
-    const { error } = await supabase
-      .from("faqs")
-      .update({ active: !current })
-      .eq("id", id);
+    const { error } = await supabase.from("faqs").update({ active: !current }).eq("id", id);
 
     setTogglingId(null);
-
-    if (error) {
-      console.error("[faqs] toggle error:", error);
-      setFaqs(fs => fs.map(f => f.id === id ? { ...f, active: current } : f));
-    }
+    if (error) setFaqs((currentFaqs) => currentFaqs.map((faq) => faq.id === id ? { ...faq, active: current } : faq));
   };
 
-  // ── Delete ────────────────────────────────────────────────────────────────
-
   const handleDelete = async (id: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذا السؤال؟")) return;
+    if (!confirm("واش متأكد بغيتي تحذف هاد السؤال؟")) return;
     setDeletingId(id);
 
     const supabase = createClient();
     const { error } = await supabase.from("faqs").delete().eq("id", id);
 
     setDeletingId(null);
-
     if (error) {
-      console.error("[faqs] delete error:", error);
       alert(`فشل الحذف: ${error.message}`);
       return;
     }
-    setFaqs(fs => fs.filter(f => f.id !== id));
+    setFaqs((currentFaqs) => currentFaqs.filter((faq) => faq.id !== id));
     if (expanded === id) setExpanded(null);
   };
 
-  // ── Seed default FAQs ────────────────────────────────────────────────────
-
   const handleSeedDefaults = async () => {
     setSeeding(true);
-    setSeedMsg(null);
+    setNotice(null);
     try {
       const supabase = createClient();
       const inserted = await insertMissingDefaultFaqs(supabase, storeId);
       if (inserted.length === 0) {
-        setSeedMsg({ type: "success", text: "جميع الأسئلة الافتراضية موجودة بالفعل — لا يوجد ما يُضاف." });
+        setNotice({ type: "success", text: "الأسئلة الافتراضية موجودة من قبل." });
       } else {
-        setFaqs(fs => [...inserted as typeof fs, ...fs]);
-        setSeedMsg({ type: "success", text: `تمت إضافة ${inserted.length} سؤال افتراضي بنجاح.` });
+        setFaqs((currentFaqs) => [...inserted as Faq[], ...currentFaqs]);
+        setNotice({ type: "success", text: `تزادو ${inserted.length} أسئلة افتراضية.` });
       }
-    } catch (err) {
-      console.error("[faqs] seed defaults error:", err);
-      setSeedMsg({ type: "error", text: "حدث خطأ أثناء إضافة الأسئلة الافتراضية. حاول مجدداً." });
+    } catch (error) {
+      console.error("[faqs] seed defaults error:", error);
+      setNotice({ type: "error", text: "وقع خطأ فإضافة الأسئلة الافتراضية." });
     } finally {
       setSeeding(false);
     }
   };
 
-  // ── Modal save callback ───────────────────────────────────────────────────
-
   const handleSaved = (faq: Faq) => {
     if (modal?.mode === "create") {
-      setFaqs(fs => [faq, ...fs]);
+      setFaqs((currentFaqs) => [faq, ...currentFaqs]);
     } else {
-      setFaqs(fs => fs.map(f => f.id === faq.id ? faq : f));
+      setFaqs((currentFaqs) => currentFaqs.map((current) => current.id === faq.id ? faq : current));
     }
   };
 
-  // ─────────────────────────────────────────────────────────────────────────
-
   return (
-    <div className="space-y-5 max-w-3xl">
-
-      {/* Modal */}
+    <div className="max-w-6xl space-y-5">
       {modal && (
         <FaqModal
           mode={modal.mode}
           storeId={storeId}
-          initial={
-            modal.faq
-              ? { id: modal.faq.id, question: modal.faq.question, answer: modal.faq.answer, active: modal.faq.active }
-              : { ...emptyForm }
-          }
+          initial={modal.faq ? {
+            id: modal.faq.id,
+            question: modal.faq.question,
+            answer: modal.faq.answer,
+            active: modal.faq.active,
+          } : { ...emptyForm }}
           onClose={() => setModal(null)}
-          onSaved={faq => { handleSaved(faq); setModal(null); }}
+          onSaved={(faq) => { handleSaved(faq); setModal(null); }}
         />
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-black text-gray-900">الأسئلة الشائعة</h2>
-          <p className="text-sm text-gray-500">
-            {activeCount} سؤال نشط · {totalHits.toLocaleString()} رد تلقائي
-          </p>
-        </div>
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
-            onClick={handleSeedDefaults}
-            disabled={seeding}
-            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 font-semibold text-sm px-4 py-2.5 rounded-xl shadow-sm hover:-translate-y-0.5 transition-all w-fit disabled:opacity-60 disabled:translate-y-0"
-          >
-            {seeding
-              ? <Loader2 className="w-4 h-4 animate-spin" />
-              : <Sparkles className="w-4 h-4 text-amber-500" />
-            }
-            إضافة الأسئلة الافتراضية
-          </button>
-          <button
-            onClick={() => setModal({ mode: "create" })}
-            className="flex items-center gap-2 bg-[#25D366] hover:bg-[#1eb85a] text-white font-bold text-sm px-4 py-2.5 rounded-xl shadow-md shadow-green-200 hover:-translate-y-0.5 transition-all w-fit"
-          >
-            <Plus className="w-4 h-4" />
-            إضافة سؤال
-          </button>
-        </div>
-      </div>
-
-      {/* Seed feedback banner */}
-      {seedMsg && (
-        <div className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl border text-sm font-medium ${
-          seedMsg.type === "success"
-            ? "bg-green-50 border-green-200 text-green-700"
-            : "bg-red-50 border-red-200 text-red-700"
-        }`}>
-          <div className="flex items-center gap-2">
-            {seedMsg.type === "success"
-              ? <CheckCircle2 className="w-4 h-4 shrink-0" />
-              : <AlertCircle  className="w-4 h-4 shrink-0" />
-            }
-            {seedMsg.text}
+      <header className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="text-xl font-extrabold text-gray-950">الأسئلة الشائعة</h2>
+            <p className="mt-2 text-sm text-gray-500">أجوبة جاهزة كتعاون البوت يرد بسرعة على الأسئلة المتكررة.</p>
           </div>
-          <button onClick={() => setSeedMsg(null)} className="shrink-0 opacity-60 hover:opacity-100 transition-opacity">
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={handleSeedDefaults} disabled={seeding} className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+              {seeding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 text-amber-500" />}
+              أسئلة افتراضية
+            </button>
+            <button onClick={() => setModal({ mode: "create" })} className="inline-flex items-center gap-2 rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-bold text-white hover:bg-gray-800">
+              <Plus className="h-4 w-4" />
+              إضافة سؤال
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          {[
+            ["أسئلة نشطة", activeCount],
+            ["ردود تلقائية", totalHits.toLocaleString()],
+            ["توفير تقديري", `${Math.round(totalHits * 2)} د`],
+          ].map(([label, value]) => (
+            <div key={label} className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-3">
+              <p className="text-xs font-semibold text-gray-500">{label}</p>
+              <p className="mt-2 text-xl font-extrabold text-gray-950">{value}</p>
+            </div>
+          ))}
+        </div>
+      </header>
+
+      {notice && (
+        <div className={`flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm font-semibold ${notice.type === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-red-200 bg-red-50 text-red-700"}`}>
+          <span className="flex items-center gap-2">
+            {notice.type === "success" ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+            {notice.text}
+          </span>
+          <button onClick={() => setNotice(null)} className="opacity-60 hover:opacity-100"><X className="h-4 w-4" /></button>
         </div>
       )}
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-3">
-        {[
-          { label: "أسئلة نشطة",        value: activeCount,                         color: "text-green-600",  bg: "bg-green-50",  border: "border-green-100"  },
-          { label: "ردود تلقائية",       value: totalHits,                           color: "text-blue-600",   bg: "bg-blue-50",   border: "border-blue-100"   },
-          { label: "توفير وقت (دقيقة)", value: Math.round(totalHits * 2),           color: "text-purple-600", bg: "bg-purple-50", border: "border-purple-100" },
-        ].map(s => (
-          <div key={s.label} className={`${s.bg} border ${s.border} rounded-2xl p-3 text-center`}>
-            <p className={`text-2xl font-black ${s.color}`}>{s.value.toLocaleString()}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Search */}
       <div className="relative">
-        <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input
-          type="text"
-          placeholder="ابحث في الأسئلة..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="w-full bg-white border border-gray-200 rounded-xl pr-9 pl-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] shadow-sm transition-all"
-        />
+        <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+        <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="ابحث في الأسئلة..." className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-4 pr-9 text-sm shadow-sm outline-none focus:border-gray-400 focus:ring-4 focus:ring-gray-100" />
       </div>
 
-      {/* FAQ list */}
       <div className="space-y-3">
-        {filtered.map(f => {
-          const isDeleting = deletingId === f.id;
-          const isToggling = togglingId === f.id;
-          const isExpanded = expanded === f.id;
+        {filtered.map((faq) => {
+          const isExpanded = expanded === faq.id;
+          const deleting = deletingId === faq.id;
+          const toggling = togglingId === faq.id;
 
           return (
-            <div
-              key={f.id}
-              className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all ${
-                f.active ? "border-gray-100" : "border-gray-100 opacity-60"
-              } ${isDeleting ? "opacity-30 pointer-events-none" : ""}`}
-            >
-              <div className="px-5 py-4">
+            <div key={faq.id} className={`overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm ${!faq.active ? "opacity-60" : ""} ${deleting ? "pointer-events-none opacity-30" : ""}`}>
+              <div className="p-4">
                 <div className="flex items-start gap-3">
-                  {/* Icon */}
-                  <div className="w-8 h-8 bg-[#25D366]/10 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
-                    <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-gray-50">
+                    <MessageCircle className="h-4 w-4 text-gray-600" />
                   </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <button
-                      onClick={() => setExpanded(isExpanded ? null : f.id)}
-                      className="text-sm font-bold text-gray-900 text-right hover:text-[#25D366] transition-colors flex items-center gap-1 mb-1 w-full"
-                    >
-                      <span className="flex-1 text-right">{f.question}</span>
-                      <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform shrink-0 ${isExpanded ? "rotate-180" : ""}`} />
+                  <div className="min-w-0 flex-1">
+                    <button onClick={() => setExpanded(isExpanded ? null : faq.id)} className="flex w-full items-center gap-2 text-right">
+                      <span className="flex-1 text-sm font-bold text-gray-950">{faq.question}</span>
+                      <ChevronDown className={`h-4 w-4 shrink-0 text-gray-400 transition ${isExpanded ? "rotate-180" : ""}`} />
                     </button>
-                    {f.hit_count > 0 && (
-                      <span className="text-[10px] text-gray-400">{f.hit_count.toLocaleString()} رد تلقائي</span>
-                    )}
+                    <div className="mt-1 flex flex-wrap gap-2 text-[10px] font-semibold text-gray-500">
+                      <span>{faq.hit_count?.toLocaleString() ?? 0} رد تلقائي</span>
+                      <span>{faq.active ? "نشط" : "متوقف"}</span>
+                    </div>
                   </div>
-
-                  {/* Controls */}
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={() => toggleActive(f.id, f.active)}
-                      disabled={isToggling}
-                      title={f.active ? "تعطيل" : "تفعيل"}
-                      className="disabled:opacity-50"
-                    >
-                      {f.active
-                        ? <ToggleRight className="w-6 h-6 text-[#25D366]" />
-                        : <ToggleLeft  className="w-6 h-6 text-gray-300" />
-                      }
+                  <div className="flex shrink-0 items-center gap-1">
+                    <button disabled={toggling} onClick={() => toggleActive(faq.id, faq.active)} title={faq.active ? "تعطيل" : "تفعيل"}>
+                      {faq.active ? <ToggleRight className="h-6 w-6 text-emerald-600" /> : <ToggleLeft className="h-6 w-6 text-gray-300" />}
                     </button>
-                    <button
-                      onClick={() => setModal({ mode: "edit", faq: f })}
-                      className="p-1.5 text-gray-400 hover:text-blue-500 rounded-lg hover:bg-blue-50 transition-colors"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(f.id)}
-                      disabled={isDeleting}
-                      className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-40"
-                    >
-                      {isDeleting
-                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        : <Trash2   className="w-3.5 h-3.5" />
-                      }
+                    <button onClick={() => setModal({ mode: "edit", faq })} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700"><Pencil className="h-3.5 w-3.5" /></button>
+                    <button disabled={deleting} onClick={() => handleDelete(faq.id)} className="rounded-lg p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600">
+                      {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
                     </button>
                   </div>
                 </div>
 
-                {/* Expanded answer */}
                 {isExpanded && (
-                  <div className="mt-3 mr-11 bg-gray-50 rounded-xl p-3 border border-gray-100">
-                    <p className="text-sm text-gray-700 leading-relaxed">{f.answer}</p>
-                    <div className="mt-3 flex gap-2">
-                      <button
-                        onClick={() => setModal({ mode: "edit", faq: f })}
-                        className="text-xs font-semibold text-[#25D366] bg-green-50 border border-green-200 px-3 py-1.5 rounded-lg hover:bg-green-100 transition-colors"
-                      >
-                        تعديل الإجابة
-                      </button>
-                      <button className="text-xs font-semibold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors">
-                        معاينة في البوت
-                      </button>
-                    </div>
+                  <div className="mt-3 rounded-lg border border-gray-100 bg-gray-50 p-3">
+                    <p className="text-sm leading-7 text-gray-700">{faq.answer}</p>
                   </div>
                 )}
               </div>
             </div>
           );
         })}
-
-        {/* Search miss */}
-        {search && filtered.length === 0 && (
-          <div className="py-12 text-center text-gray-400">
-            <Search className="w-8 h-8 mx-auto mb-3 opacity-40" />
-            <p className="text-sm font-medium">لا توجد أسئلة تطابق البحث</p>
-          </div>
-        )}
       </div>
 
-      {/* Empty state */}
-      {faqs.length === 0 && (
+      {filtered.length === 0 && (
         <div className="py-16 text-center">
-          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <MessageCircle className="w-8 h-8 text-gray-300" />
-          </div>
-          <p className="text-gray-500 font-semibold mb-1">لا توجد أسئلة بعد</p>
-          <p className="text-gray-400 text-sm mb-4">أضف أسئلة شائعة وسيرد عليها البوت تلقائياً</p>
-          <button
-            onClick={() => setModal({ mode: "create" })}
-            className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1eb85a] text-white font-bold text-sm px-4 py-2.5 rounded-xl shadow-md shadow-green-200 transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            إضافة أول سؤال
-          </button>
+          <MessageCircle className="mx-auto mb-3 h-9 w-9 text-gray-300" />
+          <p className="text-sm font-semibold text-gray-500">{faqs.length === 0 ? "لا توجد أسئلة بعد" : "لا توجد نتائج"}</p>
+          <p className="mt-1 text-xs text-gray-400">زيد الأسئلة باش البوت يرد بطريقة ثابتة وواضحة.</p>
         </div>
-      )}
-
-      {/* Add card CTA (only shown when there are existing FAQs) */}
-      {faqs.length > 0 && (
-        <button
-          onClick={() => setModal({ mode: "create" })}
-          className="w-full flex flex-col items-center gap-2 bg-white border-2 border-dashed border-gray-200 hover:border-[#25D366]/50 rounded-2xl p-6 text-gray-400 hover:text-[#25D366] transition-all duration-200"
-        >
-          <Plus className="w-6 h-6" />
-          <p className="text-sm font-semibold">إضافة سؤال وجواب جديد</p>
-          <p className="text-xs">يرد البوت عليه تلقائياً لكل الزبناء</p>
-        </button>
       )}
     </div>
   );
