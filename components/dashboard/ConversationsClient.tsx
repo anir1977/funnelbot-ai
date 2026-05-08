@@ -2,12 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  Search, Send, Plus, MessageCircle, Loader2,
+  Search, Send, MessageCircle, Loader2,
   Bot, User, Headphones, ChevronRight, Clock,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-
-// ── Types ─────────────────────────────────────────────────────────────────────
 
 type Conversation = {
   id: string;
@@ -30,8 +28,6 @@ type Message = {
   created_at: string;
 };
 
-// ── Config ────────────────────────────────────────────────────────────────────
-
 const ROLE_CFG: Record<
   Message["role"],
   { bubbleBg: string; bubbleText: string; align: "left" | "right"; Icon: React.ElementType }
@@ -46,25 +42,6 @@ const AVATAR_COLORS = [
   "from-blue-400 to-indigo-500",    "from-amber-400 to-orange-500",
   "from-violet-400 to-purple-500",  "from-teal-400 to-cyan-500",
 ];
-
-// ── Test conversation seed data ───────────────────────────────────────────────
-
-const TEST_CONV_PAYLOAD = {
-  customer_name:   "أيوب المعروف",
-  customer_phone:  "+212612345678",
-  status:          "open" as const,
-  unread_count:    1,
-};
-
-const TEST_MESSAGES: { role: Message["role"]; body: string }[] = [
-  { role: "user",  body: "السلام عليكم، بغيت نعرف شحال ثمن البارفان ديالكم" },
-  { role: "bot",   body: "وعليكم السلام! عندنا بارفانات من 180 درهم لـ 450 درهم حسب الحجم. شنو بغيتي تشري؟" },
-  { role: "user",  body: "باغي واحد 100ml، كيفاش الطلب؟" },
-  { role: "bot",   body: "بساهل! عطيني اسمك والمدينة ديالك وغادي نكملو الطلب فالحال." },
-  { role: "agent", body: "مرحباً، أنا هنا باش نساعدك. واش عندك أي سؤال آخر؟" },
-];
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function relativeTime(iso: string | null): string {
   if (!iso) return "";
@@ -91,8 +68,6 @@ function initial(name: string | null, phone: string): string {
   return name?.trim()[0]?.toUpperCase() ?? phone[1] ?? "؟";
 }
 
-// ── ConvItem ──────────────────────────────────────────────────────────────────
-
 function ConvItem({
   conv, selected, onClick,
 }: {
@@ -104,7 +79,7 @@ function ConvItem({
     <button
       onClick={onClick}
       className={`w-full flex items-center gap-3 px-4 py-3.5 text-right transition-colors ${
-        selected ? "bg-[#25D366]/10 border-r-2 border-[#25D366]" : "hover:bg-gray-50"
+        selected ? "border-r-2 border-gray-950 bg-gray-50" : "hover:bg-gray-50"
       }`}
     >
       <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${avatarColor(conv.id)} flex items-center justify-center text-white text-sm font-bold shrink-0`}>
@@ -122,7 +97,7 @@ function ConvItem({
         <div className="flex items-center justify-between gap-1">
           <p className="text-xs text-gray-500 truncate font-mono" dir="ltr">{conv.customer_phone}</p>
           {conv.unread_count > 0 && (
-            <span className="bg-[#25D366] text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shrink-0 min-w-[18px] text-center">
+            <span className="bg-gray-950 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shrink-0 min-w-[18px] text-center">
               {conv.unread_count}
             </span>
           )}
@@ -131,8 +106,6 @@ function ConvItem({
     </button>
   );
 }
-
-// ── MessageBubble ─────────────────────────────────────────────────────────────
 
 function MessageBubble({ msg }: { msg: Message }) {
   const cfg     = ROLE_CFG[msg.role];
@@ -160,10 +133,7 @@ function MessageBubble({ msg }: { msg: Message }) {
   );
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
-
 export default function ConversationsClient({
-  storeId,
   initialConversations,
 }: {
   storeId: string;
@@ -176,7 +146,6 @@ export default function ConversationsClient({
   const [composer,       setComposer]       = useState("");
   const [loadingMsgs,    setLoadingMsgs]    = useState(false);
   const [sending,        setSending]        = useState(false);
-  const [creatingTest,   setCreatingTest]   = useState(false);
   const [showThread,     setShowThread]     = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -192,12 +161,10 @@ export default function ConversationsClient({
       || c.customer_phone.includes(search);
   });
 
-  // ── Scroll to bottom on new messages ──────────────────────────────────────
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [currentMsgs.length]);
 
-  // ── Load messages when conversation selected (cached after first load) ────
   useEffect(() => {
     if (!selectedId || messagesCache[selectedId] !== undefined) return;
 
@@ -220,14 +187,12 @@ export default function ConversationsClient({
     load();
   }, [selectedId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Select conversation ────────────────────────────────────────────────────
   const selectConv = (id: string) => {
     setSelectedId(id);
     setShowThread(true);
     setConversations(cs => cs.map(c => c.id === id ? { ...c, unread_count: 0 } : c));
   };
 
-  // ── Send agent message ─────────────────────────────────────────────────────
   const handleSend = async () => {
     const body = composer.trim();
     if (!body || !selectedId || sending) return;
@@ -238,7 +203,6 @@ export default function ConversationsClient({
     const supabase = createClient();
     const tempId   = `temp-${Date.now()}`;
 
-    // Optimistic insert
     const tempMsg: Message = {
       id: tempId, conversation_id: selectedId,
       role: "agent", body, read: true,
@@ -263,7 +227,6 @@ export default function ConversationsClient({
       }));
       setComposer(body);
     } else {
-      // Replace temp with persisted row
       setMessagesCache(prev => ({
         ...prev,
         [selectedId]: (prev[selectedId] ?? []).map(m => m.id === tempId ? (data as Message) : m),
@@ -277,54 +240,12 @@ export default function ConversationsClient({
     composerRef.current?.focus();
   };
 
-  // ── Create test conversation ───────────────────────────────────────────────
-  const handleCreateTest = async () => {
-    setCreatingTest(true);
-    const supabase = createClient();
-
-    const { data: conv, error: convErr } = await supabase
-      .from("conversations")
-      .insert({
-        store_id:        storeId,
-        ...TEST_CONV_PAYLOAD,
-        last_message_at: new Date().toISOString(),
-      })
-      .select("id, store_id, customer_phone, customer_name, last_message_at, unread_count, status, created_at, updated_at")
-      .single();
-
-    if (convErr) {
-      console.error("[conversations] create test error:", convErr);
-      alert(`فشل إنشاء المحادثة: ${convErr.message}`);
-      setCreatingTest(false);
-      return;
-    }
-
-    const { data: msgs, error: msgsErr } = await supabase
-      .from("messages")
-      .insert(TEST_MESSAGES.map(m => ({ conversation_id: conv.id, ...m, read: m.role !== "agent" })))
-      .select("id, conversation_id, role, body, read, created_at");
-
-    if (msgsErr) console.error("[conversations] seed messages error:", msgsErr);
-
-    setConversations(prev => [conv as Conversation, ...prev]);
-    setMessagesCache(prev => ({ ...prev, [conv.id]: (msgs ?? []) as Message[] }));
-    setSelectedId(conv.id);
-    setShowThread(true);
-    setCreatingTest(false);
-  };
-
-  // ──────────────────────────────────────────────────────────────────────────
-
   return (
     <div
-      className="flex rounded-2xl overflow-hidden border border-gray-200 shadow-sm bg-white"
+      className="flex overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
       style={{ height: "calc(100vh - 6.5rem)" }}
     >
-
-      {/* ── LEFT: Conversation list ────────────────────────────────────────── */}
       <div className={`flex flex-col w-full sm:w-80 lg:w-96 border-l border-gray-100 bg-white shrink-0 ${showThread ? "hidden sm:flex" : "flex"}`}>
-
-        {/* Header + search */}
         <div className="p-3 border-b border-gray-100 shrink-0">
           <div className="flex items-center gap-2 mb-3">
             <h2 className="text-sm font-black text-gray-900 flex-1">المحادثات</h2>
@@ -344,7 +265,6 @@ export default function ConversationsClient({
           </div>
         </div>
 
-        {/* List */}
         <div className="flex-1 overflow-y-auto divide-y divide-gray-50">
           {search && filtered.length === 0 && (
             <p className="text-xs text-gray-400 text-center py-10">لا توجد نتائج</p>
@@ -364,41 +284,17 @@ export default function ConversationsClient({
                 <MessageCircle className="w-7 h-7 text-gray-300" />
               </div>
               <p className="text-gray-600 font-semibold text-sm mb-1">لا توجد محادثات بعد</p>
-              <p className="text-xs text-gray-400 mb-5 leading-relaxed">
-                ستظهر محادثات زبنائك هنا بعد تفعيل البوت
+              <p className="text-xs text-gray-400 leading-relaxed">
+                ستظهر محادثات الزبناء هنا مباشرة بعد ربط واتساب بالبروتوكول النهائي.
               </p>
-              <button
-                onClick={handleCreateTest}
-                disabled={creatingTest}
-                className="flex items-center gap-2 bg-[#25D366] hover:bg-[#1fb954] disabled:opacity-60 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md shadow-green-200 transition-all"
-              >
-                {creatingTest ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
-                إنشاء محادثة تجريبية
-              </button>
             </div>
           )}
         </div>
-
-        {/* Add test button (when conversations exist) */}
-        {conversations.length > 0 && (
-          <div className="p-3 border-t border-gray-100 shrink-0">
-            <button
-              onClick={handleCreateTest}
-              disabled={creatingTest}
-              className="w-full flex items-center justify-center gap-2 text-xs font-semibold text-gray-500 hover:text-[#25D366] bg-gray-50 hover:bg-green-50 border border-gray-200 hover:border-[#25D366]/30 py-2.5 rounded-xl transition-colors disabled:opacity-50"
-            >
-              {creatingTest ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
-              إضافة محادثة تجريبية
-            </button>
-          </div>
-        )}
       </div>
 
-      {/* ── RIGHT: Thread panel ────────────────────────────────────────────── */}
-      <div className={`flex-1 flex flex-col min-w-0 bg-[#f0f2f5] ${showThread ? "flex" : "hidden sm:flex"}`}>
-
+      <div className={`flex-1 flex flex-col min-w-0 bg-gray-50 ${showThread ? "flex" : "hidden sm:flex"}`}>
         {!selectedConv ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[#f0f2f5]">
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-gray-50">
             <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-sm">
               <MessageCircle className="w-10 h-10 text-gray-300" />
             </div>
@@ -407,7 +303,6 @@ export default function ConversationsClient({
           </div>
         ) : (
           <>
-            {/* Thread header */}
             <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 bg-white shrink-0">
               <button
                 onClick={() => setShowThread(false)}
@@ -428,14 +323,13 @@ export default function ConversationsClient({
               </div>
               <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0 ${
                 selectedConv.status === "open"
-                  ? "bg-green-100 text-green-700"
+                  ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
                   : "bg-gray-100 text-gray-500"
               }`}>
                 {selectedConv.status === "open" ? "مفتوح" : "مغلق"}
               </span>
             </div>
 
-            {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {loadingMsgs ? (
                 <div className="flex items-center justify-center h-full">
@@ -452,7 +346,6 @@ export default function ConversationsClient({
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Composer */}
             <div className="p-3 bg-white border-t border-gray-200 shrink-0">
               <div className="flex items-end gap-2">
                 <textarea
@@ -467,13 +360,13 @@ export default function ConversationsClient({
                   }}
                   placeholder="اكتب رسالة كوكيل... (Enter للإرسال)"
                   rows={1}
-                  className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] transition-all resize-none"
+                  className="flex-1 resize-none rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition focus:border-gray-400 focus:outline-none focus:ring-4 focus:ring-gray-100"
                   style={{ maxHeight: "6rem" }}
                 />
                 <button
                   onClick={handleSend}
                   disabled={!composer.trim() || sending}
-                  className="w-10 h-10 bg-[#25D366] hover:bg-[#1fb954] disabled:opacity-40 text-white rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-950 text-white transition hover:bg-gray-800 disabled:opacity-40"
                 >
                   {sending
                     ? <Loader2 className="w-4 h-4 animate-spin" />
@@ -482,7 +375,7 @@ export default function ConversationsClient({
                 </button>
               </div>
               <p className="text-[10px] text-gray-400 mt-1.5 mr-1">
-                الرسائل المرسلة من هنا تظهر كـ &quot;وكيل&quot; في سجل المحادثة
+                الرسائل المرسلة من هنا كتتسجل كمتابعة يدوية من فريق المتجر.
               </p>
             </div>
           </>
