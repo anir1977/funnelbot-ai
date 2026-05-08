@@ -1,145 +1,141 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MessageSquareText, PackageCheck, Truck, Share2, BarChart3, LayoutTemplate } from "lucide-react";
+import { MessageCircle, Bot, ShoppingBag, Truck, BarChart3, Globe2, Zap, Shield } from "lucide-react";
 
 const features = [
   {
-    icon: MessageSquareText,
-    title: "رد فوري بالدارجة",
-    description:
-      "ثمن، مقاس، مخزون، توصيل — البوت يرد في ثوانٍ بأسلوب متجرك وبلغة زبنائك الحقيقية.",
-    color: "text-green-600",
-    bg: "bg-gradient-to-br from-green-50 to-emerald-50",
-    border: "border-green-100",
-    iconGradient: "from-green-400 to-emerald-500",
-    tag: "الأكثر استخداماً",
-    tagColor: "bg-green-100 text-green-700 border-green-200",
+    icon: Bot,
+    color: "#25D366",
+    bg: "#f0fdf4",
+    title: "ذكاء اصطناعي يفهم الدارجة",
+    desc: "البوت يفهم الدارجة المغربية والعربية الفصحى، يرد بشكل طبيعي كأنه إنسان — بدون أخطاء ولا ردود جاهزة مملة.",
+    badge: "GPT-4 Powered",
   },
   {
-    icon: PackageCheck,
-    title: "طلبات COD تلقائية",
-    description:
-      "يجمع الاسم والعنوان والهاتف ويسجّل الطلب بالدفع عند الاستلام مباشرة — أنت فقط تشحن.",
-    color: "text-blue-600",
-    bg: "bg-gradient-to-br from-blue-50 to-indigo-50",
-    border: "border-blue-100",
-    iconGradient: "from-blue-400 to-indigo-500",
-    tag: null,
-    tagColor: "",
+    icon: ShoppingBag,
+    color: "#3B82F6",
+    bg: "#eff6ff",
+    title: "تأكيد طلبات COD تلقائياً",
+    desc: "البوت يجمع اسم الزبون، عنوانه، ورقم هاتفه، ويؤكد الطلب مباشرة في واتساب — من دون ما تكون موجود.",
+    badge: "COD Ready",
+  },
+  {
+    icon: MessageCircle,
+    color: "#8B5CF6",
+    bg: "#f5f3ff",
+    title: "رد على كل الأسئلة فوراً",
+    desc: "من أسعار المنتجات لأوقات التوصيل — البوت يرد على كل أسئلة الزبناء خلال ثوان، حتى وأنت نايم.",
+    badge: "24/7",
   },
   {
     icon: Truck,
-    title: "أسعار التوصيل لكل مدينة",
-    description:
-      "يُخبر الزبون تلقائياً بثمن التوصيل ومدة الوصول — كازا، الرباط، مراكش، أكادير وأكثر.",
-    color: "text-purple-600",
-    bg: "bg-gradient-to-br from-purple-50 to-violet-50",
-    border: "border-purple-100",
-    iconGradient: "from-purple-400 to-violet-500",
-    tag: null,
-    tagColor: "",
-  },
-  {
-    icon: Share2,
-    title: "واتساب + إنستغرام + فيسبوك",
-    description:
-      "بوت واحد يغطي جميع قنواتك من لوحة تحكم واحدة — بدون ما تفتح 3 تطبيقات.",
-    color: "text-rose-600",
-    bg: "bg-gradient-to-br from-rose-50 to-pink-50",
-    border: "border-rose-100",
-    iconGradient: "from-rose-400 to-pink-500",
-    tag: "جديد",
-    tagColor: "bg-blue-50 text-blue-600 border-blue-200",
+    color: "#F59E0B",
+    bg: "#fffbeb",
+    title: "إدارة التوصيل والمدن",
+    desc: "حدد أسعار التوصيل لكل مدينة، والبوت يحسبها تلقائياً ويخبر الزبون بالمبلغ الإجمالي.",
+    badge: "جميع المدن",
   },
   {
     icon: BarChart3,
-    title: "تقارير مبيعات يومية",
-    description:
-      "طلبات اليوم، معدل التحويل، المنتجات الأكثر مبيعاً — كل شيء في تقارير واضحة بالدرهم.",
-    color: "text-orange-600",
-    bg: "bg-gradient-to-br from-orange-50 to-amber-50",
-    border: "border-orange-100",
-    iconGradient: "from-orange-400 to-amber-500",
-    tag: null,
-    tagColor: "",
+    color: "#EC4899",
+    bg: "#fdf2f8",
+    title: "تحليلات ومبيعات مباشرة",
+    desc: "تابع المبيعات، المحادثات، والطلبات في لحظتها. لوحة تحكم واضحة تعطيك صورة كاملة عن متجرك.",
+    badge: "Real-time",
   },
   {
-    icon: LayoutTemplate,
-    title: "قوالب جاهزة — ابدأ في 10 دقائق",
-    description:
-      "قوالب مخصصة للملابس، العطور، المكملات، الإلكترونيات والمزيد — ابدأ بدون خبرة تقنية.",
-    color: "text-teal-600",
-    bg: "bg-gradient-to-br from-teal-50 to-cyan-50",
-    border: "border-teal-100",
-    iconGradient: "from-teal-400 to-cyan-500",
-    tag: null,
-    tagColor: "",
+    icon: Globe2,
+    color: "#14B8A6",
+    bg: "#f0fdfa",
+    title: "عربي، دارجة، وفرنسية قريباً",
+    desc: "البوت يتواصل مع الزبناء بلغتهم — الدارجة المغربية أو العربية الفصحى. دعم الفرنسية قريباً.",
+    badge: "متعدد اللغات",
+  },
+  {
+    icon: Zap,
+    color: "#F97316",
+    bg: "#fff7ed",
+    title: "إعداد في 5 دقائق",
+    desc: "لا تحتاج خبرة تقنية. ادخل معلومات متجرك، أضف المنتجات، واربط رقم واتساب — وابدأ تبيع.",
+    badge: "No Code",
+  },
+  {
+    icon: Shield,
+    color: "#6366F1",
+    bg: "#eef2ff",
+    title: "أمان وخصوصية تامة",
+    desc: "بيانات متجرك وزبناؤك محمية بتشفير متقدم. نحن لا نشارك أي معلومات مع طرف ثالث.",
+    badge: "SSL / GDPR",
   },
 ];
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 24 },
-  show: (i: number) => ({
-    opacity: 1, y: 0,
-    transition: { duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] },
-  }),
+const sectionFade = {
+  hidden: { opacity: 0, y: 32 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
 };
 
 export default function Features() {
   return (
-    <section id="features" className="py-20 lg:py-28 bg-white">
+    <section id="features" className="py-20 lg:py-28 bg-[#FAFAFA]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        <div className="text-center mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="inline-flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm font-semibold px-4 py-2 rounded-full mb-4"
-          >
-            لماذا FunnelsLibrary؟
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 mb-4"
-          >
-            كل ما يحتاجه متجرك{" "}
-            <span className="text-[#25D366]">ليبيع أكثر</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
-            className="text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed"
-          >
-            من أول رسالة يرسلها الزبون حتى تأكيد التسليم — FunnelsLibrary يتكلف
-            بالمبيعات وأنت تركز على النمو.
-          </motion.p>
-        </div>
+        {/* Header */}
+        <motion.div
+          variants={sectionFade} initial="hidden" whileInView="show" viewport={{ once: true }}
+          className="text-center mb-14"
+        >
+          <span className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-1.5 text-xs font-bold text-gray-600 mb-5 shadow-sm">
+            <Zap className="w-3.5 h-3.5 text-[#25D366]" />
+            المميزات
+          </span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 mb-5 leading-tight tracking-tight">
+            كل ما تحتاجه لتنمية
+            <br />
+            <span className="text-[#25D366]">متجرك على واتساب</span>
+          </h2>
+          <p className="text-lg text-gray-500 max-w-xl mx-auto leading-relaxed">
+            FunnelsLibrary مو مجرد بوت — هو مساعد ذكي يبيع، يتابع، ويخدم الزبناء نيابة عنك.
+          </p>
+        </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {features.map((f, i) => {
             const Icon = f.icon;
             return (
               <motion.div
                 key={f.title}
-                variants={cardVariants} initial="hidden" whileInView="show" viewport={{ once: true }} custom={i}
-                className={`group relative ${f.bg} border ${f.border} rounded-2xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden`}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.06, duration: 0.5 }}
+                className="group relative bg-white rounded-2xl p-6 border border-gray-100 hover:border-gray-200 shadow-card hover:shadow-card-lg transition-all duration-300 hover:-translate-y-1 cursor-default"
               >
-                {/* Glass highlight */}
-                <div className="absolute inset-0 bg-white/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
-
-                <div className="relative z-10">
-                  {f.tag && (
-                    <span className={`inline-block text-[10px] font-bold px-2.5 py-1 rounded-full mb-3 border ${f.tagColor}`}>
-                      {f.tag}
-                    </span>
-                  )}
-
-                  <div className={`w-11 h-11 bg-gradient-to-br ${f.iconGradient} rounded-xl flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="w-5 h-5 text-white" />
-                  </div>
-
-                  <h3 className="text-base font-bold text-gray-900 mb-2">{f.title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{f.description}</p>
+                {/* Icon */}
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110"
+                  style={{ backgroundColor: f.bg }}
+                >
+                  <Icon className="w-5 h-5" style={{ color: f.color }} />
                 </div>
+
+                {/* Badge */}
+                <span
+                  className="absolute top-4 left-4 text-[10px] font-black px-2 py-0.5 rounded-full font-inter"
+                  style={{ backgroundColor: f.bg, color: f.color }}
+                >
+                  {f.badge}
+                </span>
+
+                <h3 className="text-[15px] font-bold text-gray-900 mb-2 leading-snug">{f.title}</h3>
+                <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
+
+                {/* Bottom accent */}
+                <div
+                  className="absolute bottom-0 left-4 right-4 h-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{ background: `linear-gradient(90deg, transparent, ${f.color}, transparent)` }}
+                />
               </motion.div>
             );
           })}

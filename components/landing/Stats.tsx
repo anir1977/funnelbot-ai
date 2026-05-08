@@ -3,72 +3,57 @@
 import { motion } from "framer-motion";
 
 const stats = [
-  {
-    value: "+1,200",
-    label: "متجر مغربي نشط",
-    sub: "من كازا لأكادير",
-    gradient: "from-[#25D366] to-emerald-400",
-    bg: "bg-gradient-to-br from-green-50 to-emerald-50",
-    border: "border-green-100",
-    dot: "bg-green-500",
-  },
-  {
-    value: "24/7",
-    label: "رد تلقائي بلا توقف",
-    sub: "حتى الساعة 3 صباحاً",
-    gradient: "from-blue-500 to-indigo-400",
-    bg: "bg-gradient-to-br from-blue-50 to-indigo-50",
-    border: "border-blue-100",
-    dot: "bg-blue-500",
-  },
-  {
-    value: "3x",
-    label: "زيادة الطلبات",
-    sub: "في أول شهر",
-    gradient: "from-purple-500 to-violet-400",
-    bg: "bg-gradient-to-br from-purple-50 to-violet-50",
-    border: "border-purple-100",
-    dot: "bg-purple-500",
-  },
-  {
-    value: "98%",
-    label: "رضا الزبناء",
-    sub: "معدل تقييم 4.9/5",
-    gradient: "from-amber-500 to-orange-400",
-    bg: "bg-gradient-to-br from-amber-50 to-orange-50",
-    border: "border-amber-100",
-    dot: "bg-amber-500",
-  },
+  { value: "+1,200",  label: "متجر مغربي نشط",         sub: "من كازا لأكادير لفاس"  },
+  { value: "+500K",   label: "رسالة مُعالجة شهرياً",   sub: "بدون تدخل بشري"       },
+  { value: "96%",     label: "معدل استجابة تلقائية",   sub: "البوت يرد خلال ثوان"  },
+  { value: "14 يوم",  label: "تجربة مجانية كاملة",     sub: "بدون بطاقة بنكية"    },
+];
+
+const logos = [
+  "عطور الريم", "مود كازا", "فيتنس ماروك",
+  "تيندرنس بيوتي", "إيلين فاشن", "ذا سبورت زون",
 ];
 
 export default function Stats() {
   return (
-    <section className="py-14 border-y border-gray-100 bg-white">
+    <section className="py-16 lg:py-20 bg-white border-y border-gray-100/70">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-4 mb-14">
           {stats.map((s, i) => (
             <motion.div
               key={s.label}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className={`relative ${s.bg} border ${s.border} rounded-2xl p-5 overflow-hidden group hover:-translate-y-0.5 transition-transform duration-300`}
+              transition={{ delay: i * 0.08, duration: 0.5 }}
+              className="text-center"
             >
-              {/* Subtle glow */}
-              <div className={`absolute -bottom-6 -right-6 w-20 h-20 ${s.dot} opacity-10 rounded-full blur-xl group-hover:opacity-20 transition-opacity`} />
-
-              <div className="flex items-center gap-2 mb-3">
-                <div className={`w-2 h-2 rounded-full ${s.dot}`} />
-                <span className="text-xs text-gray-500 font-medium">{s.sub}</span>
-              </div>
-
-              <p className={`text-3xl lg:text-4xl font-black bg-gradient-to-r ${s.gradient} bg-clip-text text-transparent mb-1`}>
-                {s.value}
-              </p>
-              <p className="text-sm text-gray-600 font-semibold">{s.label}</p>
+              <p className="text-3xl lg:text-[40px] font-black text-gray-900 font-inter leading-none mb-2">{s.value}</p>
+              <p className="text-sm font-semibold text-gray-800">{s.label}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{s.sub}</p>
             </motion.div>
           ))}
+        </div>
+
+        <div className="border-t border-gray-100 pt-10 text-center">
+          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-6">
+            يثق بنا أكثر من 1,200 متجر مغربي
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+            {logos.map((logo, i) => (
+              <motion.span
+                key={logo}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.07 }}
+                className="text-sm font-bold text-gray-300 hover:text-gray-500 transition-colors select-none"
+              >
+                {logo}
+              </motion.span>
+            ))}
+          </div>
         </div>
       </div>
     </section>

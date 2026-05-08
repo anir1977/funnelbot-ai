@@ -1,238 +1,148 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  LayoutDashboard, MessageCircle, Users, BarChart3,
-  Settings, Bell, ArrowUpRight, BookOpen, Package,
-  CheckCircle2, Clock, Truck,
-} from "lucide-react";
+import { BarChart3, MessageCircle, ShoppingBag, TrendingUp, Zap, ArrowUpRight } from "lucide-react";
 
-const sidebarItems = [
-  { icon: LayoutDashboard, label: "الرئيسية", active: true },
-  { icon: MessageCircle,   label: "المحادثات", badge: "8" },
-  { icon: Package,         label: "الطلبات",   badge: "12" },
-  { icon: Users,           label: "الزبناء" },
-  { icon: BarChart3,       label: "التقارير" },
-  { icon: Settings,        label: "الإعدادات" },
+const bars = [42, 58, 51, 74, 63, 88, 72, 95, 80, 107, 91, 124];
+const maxBar = Math.max(...bars);
+const months = ["ي","ف","م","أ","م","ي","ي","أ","س","أ","ن","د"];
+
+const kpis = [
+  { label: "المحادثات",   value: "1,247", icon: MessageCircle, color: "#3B82F6", change: "+18%" },
+  { label: "الطلبات",     value: "284",   icon: ShoppingBag,   color: "#25D366", change: "+34%" },
+  { label: "الإيرادات",  value: "84K",   icon: TrendingUp,    color: "#8B5CF6", change: "+29%" },
+  { label: "معدل الرد",  value: "96%",   icon: Zap,           color: "#F59E0B", change: "يومياً" },
 ];
-
-const metrics = [
-  { label: "طلبات اليوم",    value: "28",         change: "+12%", color: "text-green-600",  bg: "bg-green-50"  },
-  { label: "مبيعات الشهر",   value: "18,450 د",   change: "+34%", color: "text-blue-600",   bg: "bg-blue-50"   },
-  { label: "رسائل مُعالجة",  value: "1,247",      change: "+18%", color: "text-purple-600", bg: "bg-purple-50" },
-  { label: "معدل التحويل",   value: "32%",         change: "+5%",  color: "text-amber-600",  bg: "bg-amber-50"  },
-];
-
-const products = [
-  { emoji: "🧴", name: "سيروم فيتامين C",    price: "149 د", stock: 23, sold: 84 },
-  { emoji: "💄", name: "أحمر شفاه ماتي فاخر", price: "89 د",  stock: 45, sold: 61 },
-  { emoji: "🌸", name: "كريم ترطيب ليلي",    price: "120 د", stock: 18, sold: 49 },
-];
-
-const orders = [
-  { id: "#1247", name: "فاطمة ز.", city: "كازا",    amount: "149", status: "جديد",          statusColor: "bg-green-100 text-green-700" },
-  { id: "#1246", name: "سلمى م.", city: "الرباط",   amount: "89",  status: "قيد التوصيل",   statusColor: "bg-blue-100 text-blue-700"  },
-  { id: "#1245", name: "نور أ.",  city: "مراكش",    amount: "299", status: "تم التسليم",    statusColor: "bg-gray-100 text-gray-600"  },
-  { id: "#1244", name: "خديجة ب.", city: "أكادير",  amount: "149", status: "جديد",          statusColor: "bg-green-100 text-green-700"},
-];
-
-const barHeights = [30, 52, 38, 70, 48, 82, 65, 88, 60, 76, 92, 74];
-const monthLabels = ["ي", "ف", "م", "أ", "م", "ي", "ي", "أ", "س", "أ", "ن", "د"];
 
 export default function Dashboard() {
   return (
-    <section id="dashboard" className="py-20 lg:py-28 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 lg:py-28 bg-[#0A0D14] relative overflow-hidden">
+      {/* Grid bg */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-100"
+        style={{
+          backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Cpath d='M0 0h1v40H0zm40 0v1H0V0z'/%3E%3C/g%3E%3C/svg%3E\")",
+        }}
+      />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#25D366]/10 blur-[80px] pointer-events-none" />
 
-        <div className="text-center mb-14">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="inline-flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm font-semibold px-4 py-2 rounded-full mb-4"
-          >
-            <LayoutDashboard className="w-3.5 h-3.5" />
-            لوحة التحكم
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 mb-4"
-          >
-            متجرك بأكمله{" "}
-            <span className="text-[#25D366]">في شاشة واحدة</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
-            className="text-gray-500 text-lg max-w-xl mx-auto"
-          >
-            تابع طلباتك، منتجاتك، وزبنائك — كل شيء واضح وسهل في لوحة تحكم عربية بالكامل.
-          </motion.p>
-        </div>
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-14"
+        >
+          <span className="inline-flex items-center gap-2 bg-white/[0.05] border border-white/[0.08] rounded-full px-4 py-1.5 text-xs font-bold text-gray-400 mb-5">
+            <BarChart3 className="w-3.5 h-3.5 text-[#25D366]" />
+            لوحة التحكم
+          </span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 tracking-tight">
+            كل شيء في مكان واحد
+          </h2>
+          <p className="text-gray-400 text-lg max-w-xl mx-auto">
+            لوحة تحكم احترافية تعطيك رؤية كاملة على مبيعاتك، محادثاتك، وطلباتك — في لحظتها.
+          </p>
+        </motion.div>
+
+        {/* Dashboard mockup */}
+        <motion.div
+          initial={{ opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200"
-          style={{ maxHeight: 640 }}
+          className="relative"
         >
-          <div className="flex h-full" dir="rtl">
+          {/* Glow */}
+          <div className="absolute inset-0 bg-[#25D366]/10 blur-3xl rounded-3xl scale-95 pointer-events-none" />
 
-            {/* Sidebar */}
-            <div className="w-14 lg:w-52 bg-[#1a1f2e] flex flex-col shrink-0">
-              <div className="p-3 lg:p-4 border-b border-white/10">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-[#25D366] rounded-lg flex items-center justify-center shrink-0">
-                    <BookOpen className="w-4 h-4 text-white" />
-                  </div>
-                  <span className="text-white font-bold text-sm hidden lg:block">FunnelsLibrary</span>
-                </div>
+          <div className="relative bg-[#0E1117] rounded-2xl border border-white/[0.06] overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.7)]">
+            {/* Browser chrome */}
+            <div className="flex items-center gap-2 px-5 py-3.5 bg-[#161B27] border-b border-white/[0.05]">
+              <div className="flex gap-1.5">
+                <span className="w-3 h-3 rounded-full bg-red-500/70" />
+                <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
+                <span className="w-3 h-3 rounded-full bg-green-500/70" />
               </div>
-
-              <nav className="flex-1 p-2 space-y-0.5">
-                {sidebarItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <div
-                      key={item.label}
-                      className={`flex items-center gap-3 px-2 lg:px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${
-                        item.active ? "bg-[#25D366]/20 text-[#25D366]" : "text-gray-400 hover:bg-white/5 hover:text-gray-200"
-                      }`}
-                    >
-                      <Icon className="w-4 h-4 shrink-0" />
-                      <span className="text-xs font-medium hidden lg:block flex-1">{item.label}</span>
-                      {item.badge && (
-                        <span className="hidden lg:flex bg-[#25D366] text-white text-[9px] font-bold w-4 h-4 rounded-full items-center justify-center shrink-0">
-                          {item.badge}
-                        </span>
-                      )}
-                    </div>
-                  );
-                })}
-              </nav>
-
-              <div className="p-3 border-t border-white/10">
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white text-[10px] font-bold shrink-0">ل</div>
-                  <div className="hidden lg:block">
-                    <p className="text-white text-xs font-medium">لونا كوسميتيك</p>
-                    <p className="text-gray-400 text-[10px]">باقة Pro</p>
-                  </div>
-                </div>
+              <div className="flex-1 mx-4 bg-white/5 rounded-lg px-4 py-1.5 text-[11px] text-gray-500 font-inter text-center">
+                app.funnelslibrary.com/dashboard
               </div>
             </div>
 
-            {/* Main */}
-            <div className="flex-1 overflow-hidden bg-gray-50 flex flex-col">
-              {/* Top bar */}
-              <div className="bg-white border-b border-gray-100 px-4 lg:px-5 py-3 flex items-center justify-between shrink-0">
-                <div>
-                  <h2 className="font-bold text-gray-900 text-sm">الرئيسية</h2>
-                  <p className="text-gray-400 text-xs">مرحباً 👋 — اليوم الأربعاء 6 ماي</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="hidden sm:flex items-center gap-1.5 bg-green-50 border border-green-200 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-full">
-                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                    البوت نشط
+            {/* Content */}
+            <div className="p-6 space-y-5">
+              {/* KPIs */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {kpis.map(({ label, value, icon: Icon, color, change }) => (
+                  <div key={label} className="bg-white/[0.03] border border-white/[0.05] rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${color}15` }}>
+                        <Icon className="w-4 h-4" style={{ color }} />
+                      </div>
+                      <span className="flex items-center gap-0.5 text-[10px] font-bold text-green-400 font-inter">
+                        <ArrowUpRight className="w-3 h-3" />
+                        {change}
+                      </span>
+                    </div>
+                    <p className="text-2xl font-black text-white font-inter">{value}</p>
+                    <p className="text-xs text-gray-500 mt-1">{label}</p>
                   </div>
-                  <button className="relative w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center text-gray-500">
-                    <Bell className="w-4 h-4" />
-                    <span className="absolute -top-0.5 -left-0.5 w-2 h-2 bg-red-500 rounded-full" />
-                  </button>
-                </div>
+                ))}
               </div>
 
-              {/* Scrollable content */}
-              <div className="flex-1 overflow-auto p-3 lg:p-4 space-y-3">
-
-                {/* Metrics */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3">
-                  {metrics.map((m) => (
-                    <div key={m.label} className="bg-white rounded-2xl p-3 border border-gray-100 card-shadow">
-                      <p className="text-gray-400 text-[9px] lg:text-[10px] mb-1">{m.label}</p>
-                      <p className={`text-base lg:text-xl font-black ${m.color}`}>{m.value}</p>
-                      <div className="flex items-center gap-1 mt-0.5">
-                        <ArrowUpRight className="w-2.5 h-2.5 text-green-500" />
-                        <span className="text-[9px] text-green-600 font-semibold">{m.change}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-3">
-
-                  {/* Chart */}
-                  <div className="lg:col-span-3 bg-white rounded-2xl p-4 border border-gray-100 card-shadow">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="font-bold text-gray-800 text-xs">المبيعات الشهرية (درهم)</h3>
-                      <span className="text-[10px] text-green-600 font-semibold bg-green-50 px-2 py-0.5 rounded-full">+23% هذا الشهر</span>
-                    </div>
-                    <div className="flex items-end gap-1 h-20" dir="ltr">
-                      {barHeights.map((h, i) => (
-                        <motion.div
-                          key={i}
-                          className="flex-1 bg-gradient-to-t from-[#25D366] to-[#4ade80] rounded-t-sm"
-                          style={{ height: `${h}%` }}
-                          initial={{ scaleY: 0, originY: 1 }}
-                          whileInView={{ scaleY: 1 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: 0.4 + i * 0.04 }}
-                        />
-                      ))}
-                    </div>
-                    <div className="flex gap-1 mt-1" dir="ltr">
-                      {monthLabels.map((m, i) => (
-                        <div key={i} className="flex-1 text-center text-[8px] text-gray-300">{m}</div>
-                      ))}
-                    </div>
+              {/* Chart + Conversations */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {/* Chart */}
+                <div className="lg:col-span-2 bg-white/[0.03] border border-white/[0.05] rounded-xl p-5">
+                  <div className="flex items-center justify-between mb-5">
+                    <h4 className="text-sm font-bold text-white">الإيرادات الشهرية</h4>
+                    <span className="text-[11px] text-[#25D366] font-bold bg-[#25D366]/10 px-2 py-0.5 rounded font-inter">+29% هذا الشهر</span>
                   </div>
-
-                  {/* Product cards */}
-                  <div className="lg:col-span-2 bg-white rounded-2xl p-3 border border-gray-100 card-shadow">
-                    <h3 className="font-bold text-gray-800 text-xs mb-2">المنتجات الأكثر مبيعاً</h3>
-                    <div className="space-y-2">
-                      {products.map((p) => (
-                        <div key={p.name} className="flex items-center gap-2 bg-gray-50 rounded-xl p-2">
-                          <div className="w-9 h-9 bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl flex items-center justify-center text-lg shrink-0">
-                            {p.emoji}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[10px] font-bold text-gray-800 truncate">{p.name}</p>
-                            <p className="text-[9px] text-gray-400">{p.stock} متبقي · {p.sold} مباع</p>
-                          </div>
-                          <span className="text-[10px] font-black text-[#25D366] shrink-0">{p.price}</span>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="flex items-end gap-1.5 h-24 mb-2" dir="ltr">
+                    {bars.map((h, i) => (
+                      <div
+                        key={i}
+                        className="flex-1 rounded-t-sm transition-all"
+                        style={{
+                          height: `${(h / maxBar) * 100}%`,
+                          backgroundColor: i === bars.length - 1 ? "#25D366" : "rgba(37,211,102,0.15)",
+                        }}
+                      />
+                    ))}
                   </div>
-                </div>
-
-                {/* Recent orders */}
-                <div className="bg-white rounded-2xl p-3 border border-gray-100 card-shadow">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="font-bold text-gray-800 text-xs">آخر الطلبات</h3>
-                    <button className="text-[10px] text-[#25D366] font-semibold">عرض الكل</button>
-                  </div>
-                  <div className="space-y-1.5">
-                    {orders.map((o) => (
-                      <div key={o.id} className="flex items-center gap-2 py-1.5 border-b border-gray-50 last:border-0">
-                        <span className="text-[9px] text-gray-400 font-mono shrink-0">{o.id}</span>
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white text-[8px] font-bold shrink-0">
-                          {o.name[0]}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-[10px] font-semibold text-gray-800">{o.name}</p>
-                          <p className="text-[9px] text-gray-400">{o.city}</p>
-                        </div>
-                        <span className="text-[10px] font-bold text-gray-700 shrink-0">{o.amount} د</span>
-                        <span className={`text-[8px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${o.statusColor}`}>{o.status}</span>
-                        {o.status === "جديد" ? <CheckCircle2 className="w-3 h-3 text-green-400 shrink-0" /> :
-                         o.status === "قيد التوصيل" ? <Truck className="w-3 h-3 text-blue-400 shrink-0" /> :
-                         <Clock className="w-3 h-3 text-gray-300 shrink-0" />}
-                      </div>
+                  <div className="flex gap-1.5" dir="ltr">
+                    {months.map((m, i) => (
+                      <div key={i} className={`flex-1 text-center text-[9px] font-inter ${i === months.length - 1 ? "text-[#25D366] font-bold" : "text-gray-600"}`}>{m}</div>
                     ))}
                   </div>
                 </div>
 
+                {/* Conversations */}
+                <div className="bg-white/[0.03] border border-white/[0.05] rounded-xl overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.04]">
+                    <span className="text-xs font-bold text-white">المحادثات</span>
+                    <span className="text-[9px] bg-blue-500 text-white px-2 py-0.5 rounded-full font-bold">3 جديدة</span>
+                  </div>
+                  {[
+                    { n: "محمد ق.", m: "بغيت نأكد الطلب",     c: "from-emerald-400 to-teal-500",  t: "الآن"  },
+                    { n: "فاطمة ب.", m: "شحال التوصيل لكازا؟", c: "from-pink-400 to-rose-500",    t: "5 دق"  },
+                    { n: "سلمى م.", m: "واش COD متاح؟",        c: "from-blue-400 to-indigo-500",  t: "12 دق" },
+                    { n: "يوسف إ.", m: "عطيني المقاسات",       c: "from-amber-400 to-orange-500", t: "28 دق" },
+                  ].map((c) => (
+                    <div key={c.n} className="flex items-center gap-2.5 px-4 py-3 border-b border-white/[0.03] last:border-0">
+                      <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${c.c} flex items-center justify-center text-white text-[10px] font-bold shrink-0`}>
+                        {c.n[0]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[11px] font-semibold text-gray-300">{c.n}</p>
+                        <p className="text-[10px] text-gray-600 truncate">{c.m}</p>
+                      </div>
+                      <span className="text-[9px] text-gray-600">{c.t}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
