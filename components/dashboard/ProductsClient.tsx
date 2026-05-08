@@ -32,7 +32,7 @@ type FormData = {
 };
 
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
-const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+const MAX_BYTES = 5 * 1024 * 1024;
 
 const emptyForm: FormData = {
   name: "", description: "", price: "", stock: "0",
@@ -69,7 +69,6 @@ export default function ProductsClient({
   const [formError, setFormError]   = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Image upload state
   const fileInputRef                      = useRef<HTMLInputElement>(null);
   const [imageFile, setImageFile]         = useState<File | null>(null);
   const [imagePreview, setImagePreview]   = useState<string | null>(null);
@@ -79,6 +78,9 @@ export default function ProductsClient({
   const filtered = products.filter(p =>
     p.name.includes(search) || (p.category ?? "").includes(search)
   );
+  const activeCount = products.filter((p) => p.active).length;
+  const outOfStockCount = products.filter((p) => p.stock === 0).length;
+  const categoriesCount = new Set(products.map((p) => p.category).filter(Boolean)).size;
 
   const field = (key: keyof FormData) => ({
     value: form[key],
@@ -103,7 +105,6 @@ export default function ProductsClient({
     setUploadProgress(0);
   };
 
-  // ── Image selection & validation ─────────────────────────────
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -131,14 +132,12 @@ export default function ProductsClient({
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  // ── Upload to Supabase Storage ────────────────────────────────
   const uploadImage = async (supabase: ReturnType<typeof createClient>): Promise<string | null> => {
     if (!imageFile) return null;
 
     setUploading(true);
     setUploadProgress(0);
 
-    // Animate progress bar: 0 → 85% while waiting for the upload
     const timer = setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 85) { clearInterval(timer); return 85; }
@@ -159,7 +158,6 @@ export default function ProductsClient({
       console.error("[products] image upload error:", uploadError);
       setUploading(false);
       setUploadProgress(0);
-      // Return null instead of throwing — insert will proceed without image
       return null;
     }
 
@@ -173,7 +171,6 @@ export default function ProductsClient({
     return publicUrl;
   };
 
-  // ── Save product ──────────────────────────────────────────────
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
@@ -181,17 +178,12 @@ export default function ProductsClient({
 
     const supabase = createClient();
 
-    console.log("[products] handleSave — storeId:", storeId);
-
     let imageUrl: string | null = null;
     let imageUploadFailed = false;
 
     if (imageFile) {
       imageUrl = await uploadImage(supabase);
-      if (imageUrl === null) {
-        imageUploadFailed = true;
-        console.warn("[products] image upload failed, proceeding without image");
-      }
+      if (imageUrl === null) imageUploadFailed = true;
     }
 
     const payload = {
@@ -207,39 +199,31 @@ export default function ProductsClient({
       active:      true,
     };
 
-    console.log("[products] inserting payload:", payload);
-
     const { data, error } = await supabase
       .from("products")
       .insert(payload)
       .select("id, name, description, price, stock, category, sizes, colors, image_url, active, created_at")
       .single();
 
-    console.log("[products] insert response — data:", data, "error:", error);
-
     setSaving(false);
 
     if (error) {
-      console.error("[products] insert error (full):", JSON.stringify(error, null, 2));
+      console.error("[products] insert error:", error);
       setFormError(`خطأ في الحفظ: ${error.message}${error.details ? ` — ${error.details}` : ""}${error.hint ? ` (${error.hint})` : ""}`);
       return;
     }
 
     if (!data) {
-      console.error("[products] insert returned no data — possible RLS policy blocking SELECT");
-      setFormError("تم الحفظ لكن تعذّر تحميل المنتج. تحقق من صلاحيات RLS أو أعد تحميل الصفحة.");
+      setFormError("تم الحفظ لكن تعذّر تحميل المنتج. أعد تحميل الصفحة.");
       return;
     }
 
     setProducts(prev => [data, ...prev]);
     closeModal();
 
-    if (imageUploadFailed) {
-      console.warn("[products] product saved without image due to upload failure");
-    }
+    if (imageUploadFailed) console.warn("[products] product saved without image due to upload failure");
   };
 
-  // ── Delete ────────────────────────────────────────────────────
   const handleDelete = async (id: string) => {
     if (!confirm("هل أنت متأكد من حذف هذا المنتج؟")) return;
     setDeletingId(id);
@@ -258,23 +242,35 @@ export default function ProductsClient({
 
   return (
     <div className="space-y-5">
-
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-lg font-black text-gray-900">المنتجات</h2>
-          <p className="text-sm text-gray-500">{products.length} منتج مسجّل</p>
+      <header className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="text-xl font-extrabold text-gray-950">المنتجات</h2>
+            <p className="mt-2 text-sm text-gray-500">كتالوج المنتجات اللي كيعتمد عليه البوت فالردود وتأكيد الطلبات.</p>
+          </div>
+          <button
+            onClick={openModal}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-gray-950 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-gray-800"
+          >
+            <Plus className="h-4 w-4" />
+            إضافة منتج
+          </button>
         </div>
-        <button
-          onClick={openModal}
-          className="flex items-center gap-2 bg-[#25D366] hover:bg-[#1eb85a] text-white font-bold text-sm px-4 py-2.5 rounded-xl shadow-md shadow-green-200 hover:-translate-y-0.5 transition-all duration-200 w-fit"
-        >
-          <Plus className="w-4 h-4" />
-          إضافة منتج
-        </button>
-      </div>
 
-      {/* Search + filter */}
+        <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          {[
+            ["منتجات نشطة", activeCount],
+            ["نفد المخزون", outOfStockCount],
+            ["فئات", categoriesCount],
+          ].map(([label, value]) => (
+            <div key={label} className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-3">
+              <p className="text-xs font-semibold text-gray-500">{label}</p>
+              <p className="mt-2 text-xl font-extrabold text-gray-950">{value}</p>
+            </div>
+          ))}
+        </div>
+      </header>
+
       <div className="flex gap-3">
         <div className="flex-1 relative">
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -286,13 +282,12 @@ export default function ProductsClient({
             className="w-full bg-white border border-gray-200 rounded-xl pr-9 pl-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] shadow-sm transition-all"
           />
         </div>
-        <button className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-600 font-medium hover:bg-gray-50 shadow-sm transition-colors shrink-0">
+        <button className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm text-gray-600 font-medium hover:bg-gray-50 shadow-sm transition-colors shrink-0">
           <Filter className="w-4 h-4" />
           <span className="hidden sm:inline">تصفية</span>
         </button>
       </div>
 
-      {/* Products grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map(p => {
           const { label, cls } = productStatus(p);
@@ -300,7 +295,7 @@ export default function ProductsClient({
           return (
             <div
               key={p.id}
-              className={`bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden group ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
+              className={`overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md group ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
             >
               <div className="h-36 bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
                 {p.image_url ? (
@@ -356,19 +351,18 @@ export default function ProductsClient({
                   </div>
                 )}
 
-                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-50">
-                  <button className="flex-1 text-xs font-semibold text-gray-600 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 py-2 rounded-xl transition-colors">تعديل</button>
-                  <button className="flex-1 text-xs font-semibold text-[#25D366] hover:text-white hover:bg-[#25D366] border border-[#25D366]/30 py-2 rounded-xl transition-all">نشر للبوت</button>
+                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+                  <button className="flex-1 rounded-lg bg-gray-50 py-2 text-xs font-semibold text-gray-700 transition hover:bg-gray-100">تعديل</button>
+                  <button className="flex-1 rounded-lg border border-gray-200 py-2 text-xs font-semibold text-gray-700 transition hover:bg-gray-50">جاهز للبوت</button>
                 </div>
               </div>
             </div>
           );
         })}
 
-        {/* Add card */}
         <button
           onClick={openModal}
-          className="bg-white rounded-2xl border-2 border-dashed border-gray-200 hover:border-[#25D366]/50 hover:bg-green-50/30 flex flex-col items-center justify-center gap-3 p-8 text-gray-400 hover:text-[#25D366] transition-all duration-200 min-h-[280px]"
+          className="flex min-h-[280px] flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-gray-200 bg-white p-8 text-gray-400 transition hover:border-gray-400 hover:bg-gray-50 hover:text-gray-700"
         >
           <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center">
             <Plus className="w-6 h-6" />
@@ -380,22 +374,19 @@ export default function ProductsClient({
         </button>
       </div>
 
-      {/* Empty state */}
       {products.length === 0 && (
         <div className="text-center py-16">
           <Tag className="w-10 h-10 text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500 font-semibold mb-1">لا توجد منتجات بعد</p>
-          <p className="text-gray-400 text-sm">أضف أول منتج وسيبدأ البوت في بيعه تلقائياً</p>
+          <p className="text-gray-400 text-sm">أضف أول منتج باش البوت يقدر يجاوب عليه بثقة</p>
         </div>
       )}
 
-      {/* ── Create Product Modal ── */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeModal} />
 
           <div className="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            {/* Modal header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white rounded-t-3xl z-10">
               <div>
                 <h3 className="font-black text-gray-900">إضافة منتج جديد</h3>
@@ -414,17 +405,14 @@ export default function ProductsClient({
                 </div>
               )}
 
-              {/* ── Image upload zone ── */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5">صورة المنتج</label>
 
                 {imagePreview ? (
-                  /* Preview */
                   <div className="relative rounded-2xl overflow-hidden border border-gray-200 bg-gray-50">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={imagePreview} alt="معاينة" className="w-full h-44 object-cover" />
 
-                    {/* Upload progress overlay */}
                     {uploading && (
                       <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center gap-3">
                         <Loader2 className="w-8 h-8 text-white animate-spin" />
@@ -438,7 +426,6 @@ export default function ProductsClient({
                       </div>
                     )}
 
-                    {/* Done overlay */}
                     {!uploading && uploadProgress === 100 && (
                       <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                         <div className="bg-[#25D366] rounded-full p-2">
@@ -447,7 +434,6 @@ export default function ProductsClient({
                       </div>
                     )}
 
-                    {/* Remove button */}
                     {!uploading && uploadProgress < 100 && (
                       <button
                         type="button"
@@ -458,7 +444,6 @@ export default function ProductsClient({
                       </button>
                     )}
 
-                    {/* File info */}
                     {!uploading && (
                       <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent px-3 py-2">
                         <p className="text-white text-[10px] truncate">{imageFile?.name}</p>
@@ -467,7 +452,6 @@ export default function ProductsClient({
                     )}
                   </div>
                 ) : (
-                  /* Drop zone */
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
@@ -481,7 +465,6 @@ export default function ProductsClient({
                   </button>
                 )}
 
-                {/* Hidden file input */}
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -490,7 +473,6 @@ export default function ProductsClient({
                   onChange={handleImageChange}
                 />
 
-                {/* Change image link after selection */}
                 {imagePreview && !uploading && uploadProgress < 100 && (
                   <button
                     type="button"
@@ -502,13 +484,11 @@ export default function ProductsClient({
                 )}
               </div>
 
-              {/* Name */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5">اسم المنتج <span className="text-red-500">*</span></label>
                 <input type="text" placeholder="بلو دي شانيل 100ml" className={inputCls} required {...field("name")} />
               </div>
 
-              {/* Description */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5">الوصف</label>
                 <textarea
@@ -520,7 +500,6 @@ export default function ProductsClient({
                 />
               </div>
 
-              {/* Price + Stock */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1.5">السعر (درهم) <span className="text-red-500">*</span></label>
@@ -532,26 +511,22 @@ export default function ProductsClient({
                 </div>
               </div>
 
-              {/* Category */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5">الفئة</label>
                 <input type="text" placeholder="مثال: عطور، ملابس، مكملات" className={inputCls} {...field("category")} />
               </div>
 
-              {/* Sizes */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5">المقاسات</label>
                 <input type="text" placeholder="S, M, L, XL  (مفصولة بفواصل)" className={inputCls} {...field("sizes")} />
                 <p className="text-[10px] text-gray-400 mt-1">اتركه فارغاً إذا لم يكن للمنتج مقاسات</p>
               </div>
 
-              {/* Colors */}
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1.5">الألوان</label>
                 <input type="text" placeholder="أحمر, أسود, أبيض  (مفصولة بفواصل)" className={inputCls} {...field("colors")} />
               </div>
 
-              {/* Actions */}
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
