@@ -1,10 +1,40 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-type Store = { id: string; name: string; bot_tone: string; welcome_message: string | null };
-type Product = { id: string; name: string; description: string | null; price: number | string; stock: number; category: string | null };
-type DeliveryZone = { city: string; price: number | string; delivery_time: string; cod_enabled: boolean };
-type Faq = { id: string; question: string; answer: string; hit_count?: number | null };
-type Message = { role: "user" | "bot" | "agent"; body: string; created_at: string };
+type Store = {
+  id: string;
+  name: string;
+  bot_tone: string;
+  welcome_message: string | null;
+};
+
+type Product = {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number | string;
+  stock: number;
+  category: string | null;
+};
+
+type DeliveryZone = {
+  city: string;
+  price: number | string;
+  delivery_time: string;
+  cod_enabled: boolean;
+};
+
+type Faq = {
+  id: string;
+  question: string;
+  answer: string;
+  hit_count?: number | null;
+};
+
+type Message = {
+  role: "user" | "bot" | "agent";
+  body: string;
+  created_at: string;
+};
 
 type ReplyContext = {
   store: Store;
@@ -20,46 +50,124 @@ function money(value: number | string | null | undefined) {
   return `${new Intl.NumberFormat("fr-MA", { maximumFractionDigits: 0 }).format(Number(value ?? 0))} درهم`;
 }
 
+function normalizeText(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[أإآ]/g, "ا")
+    .replace(/ة/g, "ه")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function includesAny(text: string, words: string[]) {
-  const normalized = text.toLowerCase();
-  return words.some((word) => normalized.includes(word.toLowerCase()));
+  const normalized = normalizeText(text);
+  return words.some((word) => normalized.includes(normalizeText(word)));
+}
+
+function tokens(text: string) {
+  return normalizeText(text)
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .split(/\s+/)
+    .filter((token) => token.length > 1);
 }
 
 function findProduct(text: string, products: Product[]) {
-  const normalized = text.toLowerCase();
-  return products.find((product) => normalized.includes(product.name.toLowerCase())) ?? products[0] ?? null;
+  const normalized = normalizeText(text);
+  const textTokens = new Set(tokens(text));
+
+  const scored = products
+    .map((product) => {
+      const productName = normalizeText(product.name);
+      const productTokens = tokens(product.name);
+      const score = normalized.includes(productName)
+        ? 100
+        : productTokens.reduce((sum, token) => sum + (textTokens.has(token) ? 1 : 0), 0);
+      return { product, score };
+    })
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  return scored[0]?.product ?? products[0] ?? null;
 }
 
 function findCity(text: string, zones: DeliveryZone[]) {
-  const normalized = text.toLowerCase();
-  return zones.find((zone) => normalized.includes(zone.city.toLowerCase())) ?? null;
+  const normalized = normalizeText(text);
+  const aliases: Record<string, string[]> = {
+    "الدار البيضاء": ["الدار البيضاء", "دار البيضاء", "كازا", "كازابلانكا", "casablanca", "casa"],
+    "الرباط": ["الرباط", "rabat"],
+    "مراكش": ["مراكش", "marrakech", "marrakesh"],
+    "فاس": ["فاس", "fes", "fez"],
+    "طنجة": ["طنجة", "tanger", "tangier"],
+    "أكادير": ["اكادير", "agadir"],
+    "سلا": ["سلا", "sale", "salé"],
+  };
+
+  return zones.find((zone) => {
+    const names = [zone.city, ...(aliases[zone.city] ?? aliases[normalizeText(zone.city)] ?? [])];
+    return names.some((name) => normalized.includes(normalizeText(name)));
+  }) ?? null;
+}
+
+function cleanField(value: string) {
+  return value
+    .replace(/\s+/g, " ")
+    .replace(/^(هو|هي|ديالي|:|-)+\s*/i, "")
+    .replace(/[،,.;]+$/g, "")
+    .trim();
+}
+
+function extractBetween(text: string, starts: string[], stops: string[]) {
+  const startPattern = starts.map((item) => item.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+  const stopPattern = stops.map((item) => item.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+  const regex = new RegExp(`(?:${startPattern})\\s*[:：-]?\\s*(.+?)(?=\\s+(?:${stopPattern})\\s*[:：-]?|$)`, "i");
+  const match = text.match(regex);
+  return match?.[1] ? cleanField(match[1]) : "";
 }
 
 function extractName(text: string) {
-  const match = text.match(/(?:سميتي|اسمي|الاسم|name)\s*[:：-]?\s*([^\n،,]+)/i);
-  return match?.[1]?.trim() ?? "";
+  return extractBetween(text, ["سميتي", "اسمي", "الاسم", "name", "nom"], ["المدينة", "العنوان", "الهاتف", "التلفون", "رقم", "المنتج", "produit", "adresse", "ville", "phone"]);
 }
 
 function extractAddress(text: string) {
-  const match = text.match(/(?:العنوان|adresse|address)\s*[:：-]?\s*([^\n]+)/i);
-  return match?.[1]?.trim() ?? "";
+  return extractBetween(text, ["العنوان بالتفصيل", "العنوان", "adresse", "address"], ["الهاتف", "التلفون", "رقم", "المنتج", "produit", "الكمية", "quantity"]);
+}
+
+function extractPhone(text: string, fallback: string) {
+  const explicit = extractBetween(text, ["الهاتف", "التلفون", "رقم الهاتف", "phone", "tel"], ["المنتج", "العنوان", "المدينة", "الكمية", "quantity"]);
+  const source = explicit || text;
+  const match = source.match(/(?:\+?212|0)?[ \-.]?[5-7](?:[ \-.]?\d){8}/);
+  if (!match) return fallback;
+  const digits = match[0].replace(/\D/g, "");
+  if (digits.startsWith("212")) return digits;
+  if (digits.startsWith("0")) return `212${digits.slice(1)}`;
+  return `212${digits}`;
+}
+
+function extractQuantity(text: string) {
+  const match = text.match(/(?:الكمية|quantity|qte)\s*[:：-]?\s*(\d+)/i);
+  return Math.max(1, Number(match?.[1] ?? 1) || 1);
 }
 
 function orderIntent(text: string) {
-  return includesAny(text, ["بغيت", "نطلب", "نخد", "نشري", "commande", "acheter", "buy", "confirm", "كنأكد", "أكد"]);
+  return includesAny(text, ["بغيت", "نطلب", "نخد", "نشري", "commande", "acheter", "buy", "confirm", "كنأكد", "أكد", "نعم", "الاسم", "العنوان", "الهاتف"]);
 }
 
 function faqReply(text: string, faqs: Faq[]) {
-  const normalized = text.toLowerCase();
-  return faqs.find((faq) => faq.question.toLowerCase().split(/\s+/).filter((word) => word.length > 2).some((word) => normalized.includes(word)));
+  const normalized = normalizeText(text);
+  return faqs.find((faq) => {
+    const questionWords = tokens(faq.question).filter((word) => word.length > 2);
+    return questionWords.some((word) => normalized.includes(word));
+  });
 }
 
 async function createOrderIfReady(supabase: SupabaseClient, ctx: ReplyContext, product: Product, zone: DeliveryZone | null) {
-  const fullText = `${ctx.messages.map((message) => message.body).join("\n")}\n${ctx.latestText}`;
+  const fullText = ctx.messages.map((message) => message.body).join("\n") + "\n" + ctx.latestText;
   const name = extractName(fullText);
   const address = extractAddress(fullText);
   const city = findCity(fullText, ctx.deliveryZones);
   const confirmed = includesAny(ctx.latestText, ["نعم", "oui", "confirm", "كنأكد", "موافق", "ok"]);
+  const phone = extractPhone(fullText, ctx.customerPhone);
+  const quantity = extractQuantity(fullText);
 
   if (!name) return { created: false, missing: "name" as const };
   if (!city) return { created: false, missing: "city" as const };
@@ -67,17 +175,28 @@ async function createOrderIfReady(supabase: SupabaseClient, ctx: ReplyContext, p
   if (!confirmed) return { created: false, missing: "confirmation" as const };
 
   const delivery = zone ?? city;
-  const { data: existing } = await supabase.from("orders").select("id").eq("store_id", ctx.store.id).eq("customer_phone", ctx.customerPhone).eq("status", "new").limit(1);
+  const { data: existing } = await supabase
+    .from("orders")
+    .select("id")
+    .eq("store_id", ctx.store.id)
+    .eq("customer_phone", phone)
+    .eq("status", "new")
+    .limit(1);
+
   if (existing?.length) return { created: false, missing: null };
 
   const { error } = await supabase.from("orders").insert({
     store_id: ctx.store.id,
     product_id: product.id,
     customer_name: name,
-    customer_phone: ctx.customerPhone,
+    customer_phone: phone,
     customer_city: delivery.city,
-    product_snapshot: { name: product.name, price: Number(product.price), address },
-    quantity: 1,
+    product_snapshot: {
+      name: product.name,
+      price: Number(product.price),
+      address,
+    },
+    quantity,
     unit_price: Number(product.price),
     delivery_fee: Number(delivery.price),
     status: "new",
@@ -97,12 +216,33 @@ async function geminiReply(ctx: ReplyContext, fallback: string) {
   const delivery = ctx.deliveryZones.map((zone) => `${zone.city}: ${money(zone.price)}, ${zone.delivery_time}, COD ${zone.cod_enabled ? "yes" : "no"}`).join("\n");
   const history = ctx.messages.slice(-8).map((message) => `${message.role}: ${message.body}`).join("\n");
 
-  const prompt = `You are FunnelsLibrary, a WhatsApp sales assistant for a Moroccan ecommerce store.\nStore: ${ctx.store.name}\nTone: ${ctx.store.bot_tone}\nInstructions:\n${ctx.store.welcome_message || "Reply in Moroccan Darija by default. Be helpful, concise, and collect missing order details."}\n\nProducts:\n${products || "No products configured."}\n\nDelivery:\n${delivery || "No delivery zones configured."}\n\nConversation:\n${history}\ncustomer: ${ctx.latestText}\n\nReply in Moroccan Darija unless the customer writes French. Do not invent prices or delivery cities.`;
+  const prompt = `
+You are FunnelsLibrary, a WhatsApp sales assistant for a Moroccan ecommerce store.
+Store: ${ctx.store.name}
+Tone: ${ctx.store.bot_tone}
+Instructions:
+${ctx.store.welcome_message || "Reply in Moroccan Darija by default. Be helpful, concise, and collect missing order details."}
+
+Products:
+${products || "No products configured."}
+
+Delivery:
+${delivery || "No delivery zones configured."}
+
+Conversation:
+${history}
+customer: ${ctx.latestText}
+
+Reply in Moroccan Darija unless the customer writes French. Do not invent prices or delivery cities.
+`;
 
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { temperature: 0.35, maxOutputTokens: 260 } }),
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.35, maxOutputTokens: 260 },
+    }),
   });
 
   if (!response.ok) return fallback;
@@ -115,6 +255,7 @@ export async function buildBotReply(supabase: SupabaseClient, ctx: ReplyContext)
   const product = findProduct(text, ctx.products);
   const city = findCity(text, ctx.deliveryZones);
   const faq = faqReply(text, ctx.faqs);
+
   let fallback = "";
 
   if (orderIntent(text) && product) {
@@ -130,7 +271,8 @@ export async function buildBotReply(supabase: SupabaseClient, ctx: ReplyContext)
       fallback = "باقي خاصني العنوان بالتفصيل باش نكمل الطلب.";
     } else if (order.missing === "confirmation") {
       const delivery = city ?? ctx.deliveryZones[0];
-      const total = Number(product.price) + Number(delivery?.price ?? 0);
+      const quantity = extractQuantity(ctx.messages.map((message) => message.body).join("\n") + "\n" + ctx.latestText);
+      const total = Number(product.price) * quantity + Number(delivery?.price ?? 0);
       fallback = `واخا. هادي تفاصيل الطلب:\n\n${product.name}\nثمن المنتج: ${money(product.price)}\nالتوصيل: ${delivery ? `${delivery.city} - ${money(delivery.price)}` : "حسب المدينة"}\nالمجموع: ${money(total)}\n\nجاوبني ب "نعم" باش نأكد الطلب COD.`;
     } else {
       fallback = "كاين طلب مفتوح عندنا باسمك. غادي يتراجع من لوحة التحكم.";
