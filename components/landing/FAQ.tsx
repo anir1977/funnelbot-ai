@@ -2,41 +2,54 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus, HelpCircle } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 import Link from "next/link";
 
-const faqs = [
+type FAQItem = {
+  question: string;
+  answer: string;
+};
+
+const faqs: FAQItem[] = [
   {
-    q: "واش FunnelsLibrary يشتغل مع واتساب العادي أو بزنس؟",
-    a: "FunnelsLibrary كيشتغل مع واتساب بيزنس. الإعداد سهل — كتسكان رمز QR من هاتفك وتبدأ تلقائياً في ثوان. ما تحتاجش رقم واتساب جديد.",
+    question: "واش FunnelsLibrary يشتغل مع واتساب العادي أو بيزنس؟",
+    answer:
+      "FunnelsLibrary كيشتغل مع واتساب بيزنس API — وهو الإصدار الرسمي المخصص للمتاجر. كنعاونوك على الإعداد من البداية بدون تعقيد، وعادةً كيولو في أقل من 15 دقيقة.",
   },
   {
-    q: "كيفاش البوت كيفهم الدارجة المغربية؟",
-    a: "البوت مبني على تقنية GPT-4 مع تدريب خاص على الدارجة المغربية وأنماط التجارة الإلكترونية في المغرب. كيفهم الاختصارات، المصطلحات، وأسلوب الزبناء المغاربة.",
+    question: "كيفاش البوت كيفهم الدارجة المغربية؟",
+    answer:
+      "بوتنا مدرّب على الدارجة المغربية بشكل خاص — بمختلف اللهجات الجهوية والخلط بين العربية والفرنسية. كيفهم السياق وكيرد بطريعة طبيعية كأنك كتخاطب بنادم حقيقي.",
   },
   {
-    q: "واش ممكن يتعرف البوت على منتجاتي بشكل صحيح؟",
-    a: "نعم. أنت تضيف منتجاتك، أسعارها، وتفاصيلها من لوحة التحكم. البوت يستعمل هاد المعلومات للرد على الزبناء بدقة. كتقدر تحدث الكتالوج في أي وقت.",
+    question: "واش ممكن يتعرف البوت على منتجاتي بشكل صحيح؟",
+    answer:
+      "إيه، كتضيف كاتالوغ منتجاتك مباشرة من لوحة التحكم — أسماء، أسعار، مقاسات، ألوان، والصور. البوت كيتعلم منهم ويقدر يجاوب على أسئلة الزبائن بدقة.",
   },
   {
-    q: "واش البوت كيقدر يأكد الطلبات COD تلقائياً؟",
-    a: "نعم، هاد واحدة من أهم ميزاته. البوت كيسأل الزبون على الاسم، العنوان، ورقم الهاتف، كيحسب التوصيل حسب المدينة، وكيأكد الطلب — كل شيء تلقائياً بدون ما تكون موجود.",
+    question: "واش البوت كيقدر يأكد الطلبات COD تلقائياً؟",
+    answer:
+      "هذا من أقوى مزايانا. البوت كيجمع معلومات الزبون — الاسم، العنوان، المنتج، المقاس — ويأكد الطلب تلقائياً في لوحة التحكم ديالك. يعني ولا طلب ضايع.",
   },
   {
-    q: "واش ممكن أتابع المحادثات يدوياً إذا احتجت؟",
-    a: "طبعاً. من لوحة التحكم كتقدر تشوف كل المحادثات، وإذا الزبون خصه مساعدة خاصة كتقدر توريه للرد اليدوي وتدخل في المحادثة مباشرة.",
+    question: "واش ممكن أتابع المحادثات يدوياً إذا احتجت؟",
+    answer:
+      "طبعاً. عندك إمكانية التدخل في أي محادثة في أي وقت من لوحة التحكم. كتشوف كل المحادثات في الوقت الحقيقي، وكتقدر تستعمل وضع \"يدوي\" لمتابعة زبون معين بنفسك.",
   },
   {
-    q: "كيفاش كتجرب مجاناً؟",
-    a: "كتضغط على 'جرّب مجاناً'، تسجل حساب بإيميلك، وتبدأ الإعداد. ما كنحتاجوش بطاقة بنكية أو أي معلومات مالية. 14 يوم كاملة مجاناً بكل ميزات باقة Pro.",
+    question: "كيفاش كتجرب مجاناً؟",
+    answer:
+      "سجل من الموقع بدون بيانات بنكية، وغادي تحصل على 14 يوم كاملة مع كل مزايا الباقة Pro. إذا بغيتي تكمل، تختار الباقة المناسبة. إذا لا، ما كاين غرامة.",
   },
   {
-    q: "واش في دعم بالعربية أو الدارجة؟",
-    a: "نعم! فريق الدعم ديالنا كيرد بالدارجة المغربية والعربية الفصحى على واتساب — لأن إحنا أيضاً مغاربة ونفهم احتياجاتك.",
+    question: "واش في دعم بالعربية أو الدارجة؟",
+    answer:
+      "إيه بالتأكيد. فريق الدعم ديالنا كيتواصل بالدارجة المغربية والعربية والفرنسية. كتقدر تراسلنا على واتساب مباشرة أو من داخل لوحة التحكم.",
   },
   {
-    q: "واش ممكن نلغي في أي وقت؟",
-    a: "نعم، بدون أي التزام. كتقدر تلغي اشتراكك في أي وقت من لوحة الإعدادات. ما كاينش عقود ولا رسوم إلغاء.",
+    question: "واش ممكن نلغي في أي وقت؟",
+    answer:
+      "إيه، بدون شروط وبدون عقود. كتلغي من لوحة التحكم بضغطة واحدة. ما كاين ولا رسوم إضافية. بياناتك كتبقى محفوظة 30 يوم بعد الإلغاء.",
   },
 ];
 
@@ -44,81 +57,113 @@ export default function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-20 lg:py-28 bg-[#FAFAFA]">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-
+    <section
+      id="faq"
+      className="py-24 lg:py-32 bg-[#121414]"
+      dir="rtl"
+    >
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-14"
+          transition={{ duration: 0.6 }}
+          className="text-center mb-12"
         >
-          <span className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-1.5 text-xs font-bold text-gray-600 mb-5 shadow-sm">
-            <HelpCircle className="w-3.5 h-3.5 text-[#25D366]" />
+          <span className="inline-block text-[#10B981] text-[13px] font-semibold tracking-wide uppercase mb-4">
             الأسئلة الشائعة
           </span>
-          <h2 className="text-3xl sm:text-4xl font-black text-gray-900 mb-4 tracking-tight">
+          <h2
+            className="text-4xl lg:text-5xl font-black text-[#EDEDEA] mb-4"
+            style={{ letterSpacing: "-0.04em" }}
+          >
             عندك سؤال؟
-            <br />
-            <span className="text-[#25D366]">جاوبناك هنا</span>
           </h2>
+          <p className="text-[#9B9B97] text-[15px] leading-relaxed">
+            راجع الأسئلة الأكثر شيوعاً. ما لقيتيش جوابك؟ راسلنا مباشرة.
+          </p>
         </motion.div>
 
-        <div className="space-y-3">
-          {faqs.map((faq, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
-              className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden ${
-                open === i ? "border-[#25D366]/30 shadow-[0_0_0_1px_rgba(37,211,102,0.1),0_4px_20px_rgba(37,211,102,0.06)]" : "border-gray-100 shadow-card"
-              }`}
-            >
-              <button
-                onClick={() => setOpen(open === i ? null : i)}
-                className="w-full flex items-center justify-between gap-4 px-6 py-5 text-right"
-              >
-                <span className={`font-semibold text-[15px] leading-snug text-right transition-colors ${open === i ? "text-[#25D366]" : "text-gray-900"}`}>
-                  {faq.q}
-                </span>
-                <div className={`shrink-0 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${open === i ? "bg-[#25D366] text-white rotate-0" : "bg-gray-100 text-gray-500"}`}>
-                  {open === i ? <Minus className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
-                </div>
-              </button>
-
-              <AnimatePresence initial={false}>
-                {open === i && (
-                  <motion.div
-                    key="answer"
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: "easeOut" }}
-                    className="overflow-hidden"
-                  >
-                    <p className="px-6 pb-5 text-[14px] text-gray-500 leading-relaxed border-t border-gray-50 pt-4">
-                      {faq.a}
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.p
+        {/* FAQ items */}
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="text-center text-sm text-gray-400 mt-10"
+          transition={{ duration: 0.5, delay: 0.1 }}
         >
-          عندك سؤال آخر؟{" "}
-          <Link href="/contact" className="text-[#25D366] font-semibold hover:underline">
-            راسلنا مباشرة
-          </Link>
-        </motion.p>
+          {faqs.map((faq, i) => {
+            const isOpen = open === i;
+            return (
+              <div
+                key={i}
+                className="border-b border-white/[0.06] py-5"
+              >
+                <button
+                  className="flex items-center justify-between w-full text-right gap-4 group"
+                  onClick={() => setOpen(isOpen ? null : i)}
+                >
+                  <span
+                    className={`text-[15px] font-semibold leading-snug transition-colors duration-200 ${
+                      isOpen ? "text-[#10B981]" : "text-[#EDEDEA]"
+                    }`}
+                  >
+                    {faq.question}
+                  </span>
+                  <span className="shrink-0">
+                    {isOpen ? (
+                      <Minus
+                        className="w-5 h-5 transition-colors duration-200"
+                        style={{ color: "#10B981" }}
+                      />
+                    ) : (
+                      <Plus
+                        className="w-5 h-5 transition-colors duration-200"
+                        style={{ color: "#9B9B97" }}
+                      />
+                    )}
+                  </span>
+                </button>
+
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key="answer"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <p className="text-[14px] text-[#9B9B97] leading-relaxed pt-3 pb-1">
+                        {faq.answer}
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
+        </motion.div>
+
+        {/* Contact CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-center mt-10"
+        >
+          <p className="text-[14px] text-[#9B9B97]">
+            عندك سؤال آخر؟{" "}
+            <Link
+              href="/contact"
+              className="text-[#10B981] font-semibold hover:underline transition-all"
+            >
+              راسلنا على واتساب
+            </Link>
+          </p>
+        </motion.div>
       </div>
     </section>
   );

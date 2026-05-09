@@ -3,233 +3,343 @@
 import { motion } from "framer-motion";
 import { BarChart3, MessageCircle, ShoppingBag, TrendingUp, Zap, ArrowUpRight } from "lucide-react";
 
-const bars = [44, 62, 53, 78, 67, 91, 75, 102, 84, 118, 96, 131];
-const maxBar = Math.max(...bars);
-const months = ["ي", "ف", "م", "أ", "م", "ي", "ي", "أ", "س", "أ", "ن", "د"];
-
 const kpis = [
-  { label: "المحادثات",  value: "1,847", icon: MessageCircle, color: "#3B82F6", change: "+22%",  up: true },
-  { label: "الطلبات",   value: "423",   icon: ShoppingBag,   color: "#25D366", change: "+38%",  up: true },
-  { label: "الإيرادات", value: "127K",  icon: TrendingUp,    color: "#8B5CF6", change: "+31%",  up: true },
-  { label: "معدل الرد", value: "96%",   icon: Zap,           color: "#F59E0B", change: "يومياً", up: true },
+  {
+    label: "محادثات",
+    value: "1,847",
+    icon: MessageCircle,
+    color: "#3B82F6",
+    change: "+22%",
+    showArrow: true,
+  },
+  {
+    label: "الطلبات",
+    value: "423",
+    icon: ShoppingBag,
+    color: "#10B981",
+    change: "+38%",
+    showArrow: true,
+  },
+  {
+    label: "الإيرادات",
+    value: "127K",
+    icon: TrendingUp,
+    color: "#8B5CF6",
+    change: "+31%",
+    showArrow: true,
+  },
+  {
+    label: "معدل الرد",
+    value: "96%",
+    icon: Zap,
+    color: "#F59E0B",
+    change: "يومياً",
+    showArrow: false,
+  },
 ];
 
+const bars = [44, 62, 53, 78, 67, 91, 75, 102, 84, 118, 96, 131];
+const months = ["ي", "ف", "م", "أ", "م", "ي", "ي", "أ", "س", "أ", "ن", "د"];
+const maxBar = 131;
+
 const conversations = [
-  { name: "محمد الكرومي",  msg: "بغيت نأكد طلب — بلوزة حمراء L",  grad: "from-emerald-400 to-teal-500",   t: "الآن",  dot: "#25D366", new: true  },
-  { name: "فاطمة بن علي", msg: "شحال التوصيل لمراكش؟",              grad: "from-pink-400 to-rose-500",      t: "2 دق",  dot: "#3B82F6", new: true  },
-  { name: "سلمى المنصوري",msg: "واش COD متاح في أكادير؟",           grad: "from-blue-400 to-indigo-500",    t: "8 دق",  dot: "#25D366", new: false },
-  { name: "يوسف الإدريسي", msg: "عطيني المقاسات المتوفرة",           grad: "from-amber-400 to-orange-500",   t: "21 دق", dot: "#6B7280", new: false },
+  {
+    name: "محمد الكرومي",
+    msg: "بغيت نأكد طلب — بلوزة حمراء L",
+    grad: "from-emerald-400 to-teal-500",
+    t: "الآن",
+    isNew: true,
+  },
+  {
+    name: "فاطمة بن علي",
+    msg: "شحال التوصيل لمراكش؟",
+    grad: "from-pink-400 to-rose-500",
+    t: "2 دق",
+    isNew: true,
+  },
+  {
+    name: "سلمى المنصوري",
+    msg: "واش COD متاح في أكادير؟",
+    grad: "from-blue-400 to-indigo-500",
+    t: "8 دق",
+    isNew: false,
+  },
+  {
+    name: "يوسف الإدريسي",
+    msg: "عطيني المقاسات المتوفرة",
+    grad: "from-amber-400 to-orange-500",
+    t: "21 دق",
+    isNew: false,
+  },
 ];
 
 export default function Dashboard() {
   return (
-    <section className="py-20 lg:py-28 bg-[#0A0D14] relative overflow-hidden">
-      {/* Grid bg */}
+    <section className="py-24 lg:py-32 bg-[#0E1010] relative overflow-hidden">
+      {/* Dot grid */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M0 0h1v40H0zm40 0v1H0V0z'/%3E%3C/g%3E%3C/svg%3E\")",
+            "radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
         }}
       />
-      {/* Glow orb */}
+      {/* Top radial glow */}
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[360px] pointer-events-none"
-        style={{ background: "radial-gradient(ellipse at top, rgba(37,211,102,0.09) 0%, transparent 70%)" }}
+        className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"
+        style={{
+          width: 700,
+          height: 400,
+          background:
+            "radial-gradient(ellipse, rgba(16,185,129,0.09) 0%, transparent 70%)",
+        }}
       />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
           className="text-center mb-14"
         >
-          <div className="inline-flex items-center gap-2 bg-white/[0.05] border border-white/[0.08] rounded-full px-4 py-1.5 text-xs font-bold text-gray-400 mb-5">
-            <BarChart3 className="w-3.5 h-3.5 text-[#25D366]" />
+          <span className="inline-flex items-center gap-2 text-[#10B981] text-[13px] font-semibold tracking-wide uppercase mb-4">
+            <BarChart3 className="w-4 h-4" />
             لوحة التحكم
-            <span className="flex items-center gap-1.5 bg-[#25D366]/15 border border-[#25D366]/25 text-[#25D366] text-[9px] font-black px-2 py-0.5 rounded-full mr-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse" />
-              LIVE
-            </span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-4 tracking-tight" style={{ letterSpacing: "-0.025em" }}>
-            كل شيء في مكان واحد
+          </span>
+          <h2
+            className="text-4xl lg:text-5xl font-black text-[#EDEDEA] mb-4"
+            style={{ letterSpacing: "-0.035em" }}
+          >
+            رؤية كاملة، تحكم كامل
           </h2>
-          <p className="text-white/38 text-[16px] max-w-xl mx-auto leading-relaxed">
-            لوحة تحكم احترافية تعطيك رؤية كاملة على مبيعاتك، محادثاتك، وطلباتك — في لحظتها.
+          <p className="text-[#9B9B97] text-[15px] lg:text-base max-w-xl mx-auto leading-relaxed">
+            كل ما يخص متجرك في مكان واحد — طلبات، محادثات، مبيعات، في لحظتها.
           </p>
         </motion.div>
 
-        {/* Dashboard mockup */}
+        {/* MacBook Mockup */}
         <motion.div
-          initial={{ opacity: 0, y: 36 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-          className="relative"
+          transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="relative mx-auto max-w-5xl"
         >
-          {/* Ambient glow */}
-          <div
-            className="absolute inset-0 -z-10 rounded-3xl scale-[0.92] blur-3xl"
-            style={{ background: "radial-gradient(ellipse, rgba(37,211,102,0.12) 0%, transparent 70%)" }}
-          />
+          {/* Screen frame */}
+          <div className="rounded-t-2xl bg-[#2C2C2E] p-3 pb-0 shadow-2xl">
+            {/* Camera dot */}
+            <div className="w-1.5 h-1.5 bg-[#3A3A3C] rounded-full mx-auto mb-2" />
 
-          <div
-            className="relative bg-[#0E1117] rounded-2xl overflow-hidden"
-            style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.06), 0 32px 80px rgba(0,0,0,0.7)" }}
-          >
-            {/* Browser chrome */}
-            <div className="flex items-center gap-3 px-5 py-3.5 bg-[#161B27] border-b border-white/[0.05]">
-              <div className="flex gap-1.5">
-                <span className="w-3 h-3 rounded-full bg-[#FF5F57]" />
-                <span className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
-                <span className="w-3 h-3 rounded-full bg-[#28CA41]" />
-              </div>
-              <div className="flex-1 mx-3 bg-white/[0.04] rounded-md px-4 py-1.5 text-[11px] text-gray-500 font-inter text-center border border-white/[0.04]">
-                app.funnelslibrary.com/dashboard
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#25D366] animate-pulse" />
-                <span className="text-[10px] text-[#25D366] font-inter font-medium">Live</span>
-              </div>
-            </div>
-
-            {/* Dashboard content */}
-            <div className="p-5 space-y-4">
-
-              {/* KPIs */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                {kpis.map(({ label, value, icon: Icon, color, change }, idx) => (
-                  <motion.div
-                    key={label}
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.07, duration: 0.5 }}
-                    className="bg-white/[0.03] border border-white/[0.05] rounded-xl p-4 hover:bg-white/[0.05] transition-colors duration-200"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: `${color}18`, border: `1px solid ${color}22` }}
-                      >
-                        <Icon className="w-4 h-4" style={{ color }} />
-                      </div>
-                      <span className="flex items-center gap-0.5 text-[10px] font-bold text-emerald-400 font-inter">
-                        <ArrowUpRight className="w-3 h-3" />
-                        {change}
-                      </span>
-                    </div>
-                    <p className="text-[24px] font-black text-white font-inter leading-none">{value}</p>
-                    <p className="text-[11px] text-white/35 mt-1.5">{label}</p>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Chart + Conversations */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-
-                {/* Bar Chart */}
-                <div className="lg:col-span-2 bg-white/[0.03] border border-white/[0.05] rounded-xl p-5">
-                  <div className="flex items-center justify-between mb-5">
-                    <div>
-                      <h4 className="text-[13px] font-bold text-white">الإيرادات الشهرية</h4>
-                      <p className="text-[10px] text-white/30 mt-0.5 font-inter">2025 · بالدرهم المغربي</p>
-                    </div>
-                    <span className="text-[11px] text-[#25D366] font-bold bg-[#25D366]/10 border border-[#25D366]/20 px-2.5 py-1 rounded-lg font-inter">
-                      +31% هذا الشهر
-                    </span>
-                  </div>
-                  <div className="flex items-end gap-1.5 h-24 mb-2" dir="ltr">
-                    {bars.map((h, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ scaleY: 0 }}
-                        whileInView={{ scaleY: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: i * 0.04 + 0.2, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                        style={{
-                          originY: 1,
-                          height: `${(h / maxBar) * 100}%`,
-                          backgroundColor:
-                            i === bars.length - 1
-                              ? "#25D366"
-                              : i === bars.length - 2
-                              ? "rgba(37,211,102,0.35)"
-                              : "rgba(37,211,102,0.15)",
-                          borderRadius: "3px 3px 2px 2px",
-                        }}
-                        className="flex-1 cursor-pointer hover:opacity-80 transition-opacity"
-                      />
-                    ))}
-                  </div>
-                  <div className="flex gap-1.5" dir="ltr">
-                    {months.map((m, i) => (
-                      <div
-                        key={i}
-                        className={`flex-1 text-center text-[9px] font-inter ${
-                          i === months.length - 1
-                            ? "text-[#25D366] font-bold"
-                            : i === months.length - 2
-                            ? "text-white/40"
-                            : "text-white/20"
-                        }`}
-                      >
-                        {m}
-                      </div>
-                    ))}
+            {/* Inner screen area */}
+            <div className="rounded-t-xl overflow-hidden">
+              {/* Browser chrome */}
+              <div className="bg-[#1A1A1C] flex items-center gap-3 px-4 py-3 border-b border-white/[0.05]">
+                {/* Traffic lights */}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <div className="w-3 h-3 rounded-full bg-[#FF5F57]" />
+                  <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
+                  <div className="w-3 h-3 rounded-full bg-[#28CA41]" />
+                </div>
+                {/* URL bar */}
+                <div className="flex-1 flex justify-center">
+                  <div className="bg-white/[0.06] rounded-md px-4 py-1.5 font-inter text-[11px] text-[#9B9B97] w-64 text-center">
+                    app.funnelslibrary.com/dashboard
                   </div>
                 </div>
+                {/* LIVE badge */}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10B981] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#10B981]" />
+                  </span>
+                  <span className="font-inter text-[10px] text-[#10B981] font-semibold">
+                    LIVE
+                  </span>
+                </div>
+              </div>
 
-                {/* Conversations */}
-                <div className="bg-white/[0.03] border border-white/[0.05] rounded-xl overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.04]">
-                    <span className="text-[12px] font-bold text-white">المحادثات</span>
-                    <motion.span
-                      animate={{ opacity: [1, 0.6, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                      className="text-[9px] bg-blue-500 text-white px-2 py-0.5 rounded-full font-bold"
-                    >
-                      2 جديدة
-                    </motion.span>
-                  </div>
-                  <div className="divide-y divide-white/[0.03]">
-                    {conversations.map((c) => (
+              {/* Dashboard content */}
+              <div className="bg-[#0E1117] p-4 space-y-3">
+                {/* KPI row */}
+                <div className="grid grid-cols-4 gap-3">
+                  {kpis.map((kpi, i) => {
+                    const Icon = kpi.icon;
+                    return (
                       <div
-                        key={c.name}
-                        className="flex items-center gap-2.5 px-3.5 py-2.5 hover:bg-white/[0.03] transition-colors duration-150 cursor-pointer"
+                        key={i}
+                        className="bg-[#181A1B] border border-white/[0.05] rounded-xl p-4"
                       >
-                        <div className="relative shrink-0">
-                          <div
-                            className={`w-7 h-7 rounded-full bg-gradient-to-br ${c.grad} flex items-center justify-center text-white text-[10px] font-bold`}
-                          >
-                            {c.name[0]}
-                          </div>
-                          <span
-                            className="absolute -bottom-px -right-px w-2 h-2 rounded-full border-[1.5px] border-[#0E1117]"
-                            style={{ backgroundColor: c.dot }}
-                          />
+                        {/* Icon */}
+                        <div
+                          className="w-8 h-8 rounded-lg flex items-center justify-center mb-3"
+                          style={{ background: `${kpi.color}1A` }}
+                        >
+                          <Icon className="w-4 h-4" style={{ color: kpi.color }} />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <p className="text-[11px] font-semibold text-gray-200 truncate">{c.name}</p>
-                            {c.new && (
-                              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
-                            )}
-                          </div>
-                          <p className="text-[10px] text-white/30 truncate mt-0.5">{c.msg}</p>
+                        {/* Value */}
+                        <div
+                          className="font-inter font-black text-[22px] text-[#EDEDEA] leading-none mb-1"
+                          style={{ letterSpacing: "-0.03em" }}
+                        >
+                          {kpi.value}
                         </div>
-                        <span className="text-[9px] text-white/25 shrink-0 font-inter">{c.t}</span>
+                        {/* Label */}
+                        <div className="text-[11px] text-[#9B9B97] mb-2">{kpi.label}</div>
+                        {/* Change badge */}
+                        <div
+                          className="inline-flex items-center gap-0.5 text-[10px] font-semibold font-inter px-1.5 py-0.5 rounded-md"
+                          style={{ background: "#10B9811A", color: "#10B981" }}
+                        >
+                          {kpi.showArrow && <ArrowUpRight className="w-2.5 h-2.5" />}
+                          {kpi.change}
+                        </div>
                       </div>
-                    ))}
+                    );
+                  })}
+                </div>
+
+                {/* Chart + Conversations */}
+                <div className="grid grid-cols-3 gap-3">
+                  {/* Chart — col-span-2 */}
+                  <div className="col-span-2 bg-[#181A1B] border border-white/[0.05] rounded-xl p-4">
+                    {/* Chart header */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="text-[13px] font-semibold text-[#EDEDEA]">
+                        الإيرادات الشهرية
+                      </div>
+                      <div
+                        className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
+                        style={{ background: "#10B9811A", color: "#10B981" }}
+                      >
+                        +31% هذا الشهر
+                      </div>
+                    </div>
+                    {/* Bars */}
+                    <div className="h-20 flex items-end gap-1">
+                      {bars.map((val, i) => {
+                        const isLast = i === bars.length - 1;
+                        const isSecondLast = i === bars.length - 2;
+                        const barColor = isLast
+                          ? "#10B981"
+                          : isSecondLast
+                          ? "rgba(16,185,129,0.35)"
+                          : "rgba(16,185,129,0.15)";
+                        const pct = (val / maxBar) * 100;
+                        return (
+                          <motion.div
+                            key={i}
+                            className="flex-1 rounded-sm"
+                            style={{
+                              height: `${pct}%`,
+                              background: barColor,
+                              transformOrigin: "bottom",
+                            }}
+                            initial={{ scaleY: 0 }}
+                            whileInView={{ scaleY: 1 }}
+                            viewport={{ once: true }}
+                            transition={{
+                              duration: 0.5,
+                              delay: i * 0.04,
+                              ease: "easeOut",
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                    {/* Month labels */}
+                    <div className="flex gap-1 mt-1.5">
+                      {months.map((m, i) => {
+                        const isLast = i === months.length - 1;
+                        return (
+                          <div
+                            key={i}
+                            className="flex-1 text-center font-inter"
+                            style={{
+                              fontSize: 9,
+                              color: isLast ? "#10B981" : "#9B9B97",
+                              fontWeight: isLast ? 700 : 400,
+                            }}
+                          >
+                            {m}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Conversations — col-span-1 */}
+                  <div className="col-span-1 bg-[#181A1B] border border-white/[0.05] rounded-xl overflow-hidden">
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-3 py-2.5 border-b border-white/[0.05]">
+                      <div className="text-[12px] font-semibold text-[#EDEDEA]">
+                        المحادثات
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="relative flex h-1.5 w-1.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-400" />
+                        </span>
+                        <span
+                          className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                          style={{
+                            background: "rgba(59,130,246,0.15)",
+                            color: "#3B82F6",
+                          }}
+                        >
+                          2 جديدة
+                        </span>
+                      </div>
+                    </div>
+                    {/* Items */}
+                    <div className="divide-y divide-white/[0.04]">
+                      {conversations.map((c, i) => (
+                        <div key={i} className="flex items-center gap-2.5 px-3 py-2">
+                          {/* Avatar */}
+                          <div
+                            className={`w-7 h-7 rounded-full bg-gradient-to-br ${c.grad} flex items-center justify-center shrink-0`}
+                          >
+                            <span className="text-white text-[11px] font-bold font-inter">
+                              {c.name[0]}
+                            </span>
+                          </div>
+                          {/* Text */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-1">
+                              <span className="text-[11px] font-semibold text-[#EDEDEA] truncate">
+                                {c.name}
+                              </span>
+                              <span className="text-[9px] text-[#525252] font-inter shrink-0">
+                                {c.t}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-[#9B9B97] truncate">{c.msg}</div>
+                          </div>
+                          {/* New dot */}
+                          {c.isNew && (
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
+          {/* Base */}
+          <div className="h-5 bg-gradient-to-b from-[#303030] to-[#282828] rounded-b-2xl relative">
+            {/* Notch */}
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1.5 bg-[#242424] rounded-t-sm" />
+          </div>
+          {/* Stand */}
+          <div
+            className="h-2 bg-[#242424] mx-auto rounded-b-lg"
+            style={{ maxWidth: "40%" }}
+          />
         </motion.div>
       </div>
     </section>
