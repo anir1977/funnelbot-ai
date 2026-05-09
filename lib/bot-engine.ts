@@ -71,7 +71,7 @@ function tokens(text: string) {
     .filter((token) => token.length > 1);
 }
 
-function findProduct(text: string, products: Product[]) {
+function findProduct(text: string, products: Product[], allowFallback = false) {
   const normalized = normalizeText(text);
   const textTokens = new Set(tokens(text));
 
@@ -87,7 +87,7 @@ function findProduct(text: string, products: Product[]) {
     .filter((item) => item.score > 0)
     .sort((a, b) => b.score - a.score);
 
-  return scored[0]?.product ?? products[0] ?? null;
+  return scored[0]?.product ?? (allowFallback ? products[0] ?? null : null);
 }
 
 function findCity(text: string, zones: DeliveryZone[]) {
@@ -149,7 +149,34 @@ function extractQuantity(text: string) {
 }
 
 function orderIntent(text: string) {
-  return includesAny(text, ["بغيت", "نطلب", "نخد", "نشري", "commande", "acheter", "buy", "confirm", "كنأكد", "أكد", "نعم", "المعلومات صحيحة", "الاسم", "smiya", "العنوان", "address", "الهاتف", "telephone"]);
+  return includesAny(text, [
+    "بغيت",
+    "باغي",
+    "نطلب",
+    "نطلبو",
+    "طلب",
+    "نخد",
+    "ناخذ",
+    "نشري",
+    "ntalbo",
+    "talbo",
+    "n talbo",
+    "bghit",
+    "commande",
+    "acheter",
+    "buy",
+    "confirm",
+    "كنأكد",
+    "أكد",
+    "نعم",
+    "المعلومات صحيحة",
+    "الاسم",
+    "smiya",
+    "العنوان",
+    "address",
+    "الهاتف",
+    "telephone",
+  ]);
 }
 
 function faqReply(text: string, faqs: Faq[]) {
@@ -252,8 +279,11 @@ Reply in Moroccan Darija unless the customer writes French. Do not invent prices
 
 export async function buildBotReply(supabase: SupabaseClient, ctx: ReplyContext) {
   const text = ctx.latestText;
-  const product = findProduct(text, ctx.products);
-  const city = findCity(text, ctx.deliveryZones);
+  const conversationText = `${ctx.messages.map((message) => message.body).join("\n")}\n${text}`;
+  const latestProduct = findProduct(text, ctx.products);
+  const product = findProduct(conversationText, ctx.products, ctx.products.length === 1);
+  const latestCity = findCity(text, ctx.deliveryZones);
+  const city = findCity(conversationText, ctx.deliveryZones);
   const faq = faqReply(text, ctx.faqs);
 
   let fallback = "";
@@ -261,9 +291,9 @@ export async function buildBotReply(supabase: SupabaseClient, ctx: ReplyContext)
 
   if (orderIntent(text) && product) {
     lockReply = true;
-    const order = await createOrderIfReady(supabase, ctx, product, city);
+    const order = await createOrderIfReady(supabase, ctx, product, latestCity ?? city);
     if (order.created) {
-      const delivery = city ?? ctx.deliveryZones[0];
+      const delivery = latestCity ?? city ?? ctx.deliveryZones[0];
       fallback = `تم تسجيل طلبك بنجاح ✅\n\nالمنتج: ${product.name}\nالثمن: ${money(product.price)}\nالتوصيل: ${delivery ? money(delivery.price) : "حسب المدينة"}\nالدفع عند الاستلام: نعم\n\nغادي يتواصل معك الفريق لتأكيد الشحن.`;
     } else if (order.missing === "name") {
       fallback = `أكيد، نقدر نوجد لك طلب ${product.name} ✅\nعطيني من فضلك الاسم الكامل ديالك.`;
@@ -272,17 +302,21 @@ export async function buildBotReply(supabase: SupabaseClient, ctx: ReplyContext)
     } else if (order.missing === "address") {
       fallback = "باقي خاصني العنوان بالتفصيل باش نكمل الطلب.";
     } else if (order.missing === "confirmation") {
-      const delivery = city ?? ctx.deliveryZones[0];
-      const quantity = extractQuantity(ctx.messages.map((message) => message.body).join("\n") + "\n" + ctx.latestText);
+      const delivery = latestCity ?? city ?? ctx.deliveryZones[0];
+      const quantity = extractQuantity(conversationText);
       const total = Number(product.price) * quantity + Number(delivery?.price ?? 0);
       fallback = `واخا. هادي تفاصيل الطلب:\n\n${product.name}\nثمن المنتج: ${money(product.price)}\nالتوصيل: ${delivery ? `${delivery.city} - ${money(delivery.price)}` : "حسب المدينة"}\nالمجموع: ${money(total)}\n\nإلى كانت المعلومات صحيحة جاوبني ب "نعم" باش نأكد الطلب COD.`;
     } else {
       fallback = "كاين طلب مفتوح عندنا باسمك. غادي يتراجع من لوحة التحكم.";
     }
-  } else if (product && includesAny(text, ["ثمن", "شحال", "price", "prix", "متوفر"])) {
-    fallback = `${product.name} متوفر بثمن ${money(product.price)} ✅\n${product.description ? `${product.description}\n` : ""}بغيتي نأكد لك طلب بالدفع عند الاستلام؟`;
-  } else if (city && includesAny(text, ["توصيل", "livraison", "delivery", "مدينة"])) {
-    fallback = `التوصيل ل${city.city}: ${money(city.price)}، المدة ${city.delivery_time}.${city.cod_enabled ? "\nالدفع عند الاستلام متوفر ✅" : "\nCOD غير مفعل فهاد المدينة حالياً."}`;
+  } else if ((latestProduct ?? product) && includesAny(text, ["ثمن", "شحال", "price", "prix", "متوفر"])) {
+    const productForPrice = latestProduct ?? product;
+    fallback = `${productForPrice.name} متوفر بثمن ${money(productForPrice.price)} ✅\n${productForPrice.description ? `${productForPrice.description}\n` : ""}بغيتي نأكد لك طلب بالدفع عند الاستلام؟`;
+  } else if ((latestCity ?? city) && includesAny(text, ["توصيل", "livraison", "delivery", "مدينة"])) {
+    const cityForDelivery = latestCity ?? city;
+    if (cityForDelivery) {
+      fallback = `التوصيل ل${cityForDelivery.city}: ${money(cityForDelivery.price)}، المدة ${cityForDelivery.delivery_time}.${cityForDelivery.cod_enabled ? "\nالدفع عند الاستلام متوفر ✅" : "\nCOD غير مفعل فهاد المدينة حالياً."}`;
+    }
   } else if (faq) {
     fallback = faq.answer;
     await supabase.from("faqs").update({ hit_count: Number(faq.hit_count ?? 0) + 1 }).eq("id", faq.id);
