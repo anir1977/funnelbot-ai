@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
   if (userMessageError) throw userMessageError;
 
   const [{ data: products }, { data: deliveryZones }, { data: faqs }, { data: messages }] = await Promise.all([
-    supabase.from("products").select("id, name, description, price, stock, category, sizes, colors, image_url").eq("store_id", store.id).eq("active", true).order("created_at", { ascending: false }),
+    supabase.from("products").select("id, name, description, price, stock, category").eq("store_id", store.id).eq("active", true).order("created_at", { ascending: false }),
     supabase.from("delivery_zones").select("city, price, delivery_time, cod_enabled").eq("store_id", store.id).eq("active", true),
     supabase.from("faqs").select("id, question, answer, hit_count").eq("store_id", store.id).eq("active", true),
     supabase.from("messages").select("role, body, created_at").eq("conversation_id", conversation.id).order("created_at", { ascending: false }).limit(12),
