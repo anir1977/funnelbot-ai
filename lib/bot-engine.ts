@@ -14,6 +14,9 @@ type Product = {
   price: number | string;
   stock: number;
   category: string | null;
+  sizes?: string[] | null;
+  colors?: string[] | null;
+  image_url?: string | null;
 };
 
 type DeliveryZone = {
@@ -52,6 +55,8 @@ function money(value: number | string | null | undefined) {
 
 function normalizeText(text: string) {
   return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/[أإآ]/g, "ا")
     .replace(/ة/g, "ه")
@@ -125,15 +130,23 @@ function extractBetween(text: string, starts: string[], stops: string[]) {
 }
 
 function extractName(text: string) {
-  return extractBetween(text, ["سميتي", "اسمي", "الاسم", "smiya", "smiyti", "name", "nom"], ["المدينة", "المدينه", "العنوان", "الهاتف", "التلفون", "telephone", "tel", "رقم", "المنتج", "produit", "adresse", "address", "ville", "city", "phone"]);
+  return extractBetween(
+    text,
+    ["سميتي", "اسمي", "الاسم", "smiya", "smiyti", "name", "nom"],
+    ["المدينة", "المدينه", "العنوان", "الهاتف", "التلفون", "telephone", "téléphone", "tel", "رقم", "المنتج", "produit", "adresse", "adress", "address", "ville", "city", "phone", "hay", "rue"],
+  );
 }
 
 function extractAddress(text: string) {
-  return extractBetween(text, ["العنوان بالتفصيل", "العنوان", "adresse", "address"], ["الهاتف", "التلفون", "telephone", "tel", "رقم", "المنتج", "produit", "الكمية", "quantity"]);
+  return extractBetween(
+    text,
+    ["العنوان بالتفصيل", "العنوان", "adresse", "adress", "address", "hay", "quartier", "derb", "rue"],
+    ["الهاتف", "التلفون", "telephone", "téléphone", "tel", "رقم", "المنتج", "produit", "smiyat", "سميه", "الكمية", "quantity"],
+  );
 }
 
 function extractPhone(text: string, fallback: string) {
-  const explicit = extractBetween(text, ["الهاتف", "التلفون", "رقم الهاتف", "phone", "tel", "telephone"], ["المنتج", "العنوان", "المدينة", "الكمية", "quantity"]);
+  const explicit = extractBetween(text, ["الهاتف", "التلفون", "رقم الهاتف", "phone", "tel", "telephone", "téléphone"], ["المنتج", "العنوان", "المدينة", "الكمية", "quantity"]);
   const source = explicit || text;
   const match = source.match(/(?:\+?212|0)?[ \-.]?[5-7](?:[ \-.]?\d){8}/);
   if (!match) return fallback;
@@ -144,39 +157,46 @@ function extractPhone(text: string, fallback: string) {
 }
 
 function extractQuantity(text: string) {
-  const match = text.match(/(?:الكمية|quantity|qte)\s*[:：-]?\s*(\d+)/i);
+  const match = text.match(/(?:الكمية|quantity|qte|عدد|واحده|واحد|piece|pcs)\s*[:：-]?\s*(\d+)/i);
   return Math.max(1, Number(match?.[1] ?? 1) || 1);
 }
 
-function orderIntent(text: string) {
+function purchaseIntent(text: string) {
   return includesAny(text, [
-    "بغيت",
-    "باغي",
-    "نطلب",
-    "نطلبو",
-    "طلب",
-    "نخد",
-    "ناخذ",
-    "نشري",
-    "ntalbo",
-    "talbo",
-    "n talbo",
-    "bghit",
-    "commande",
-    "acheter",
-    "buy",
-    "confirm",
-    "كنأكد",
-    "أكد",
-    "نعم",
-    "المعلومات صحيحة",
-    "الاسم",
-    "smiya",
-    "العنوان",
-    "address",
-    "الهاتف",
-    "telephone",
+    "بغيت", "باغي", "نطلب", "نطلبو", "طلب", "نخد", "ناخذ", "نشري",
+    "ntalbo", "talbo", "n talbo", "bghit", "commande", "acheter", "buy",
   ]);
+}
+
+function hasOrderDetails(text: string) {
+  return includesAny(text, ["smiya", "smiyti", "الاسم", "name", "nom", "ville", "city", "المدينة", "adress", "adresse", "address", "العنوان", "hay", "telephone", "téléphone", "tel", "phone", "رقم"]);
+}
+
+function confirmationIntent(text: string) {
+  return includesAny(text, ["نعم", "oui", "confirm", "كنأكد", "موافق", "ok", "تمام", "صحيح", "المعلومات صحيحة"]);
+}
+
+function productInfoIntent(text: string) {
+  return includesAny(text, [
+    "صوره", "صورة", "صور", "sora", "swar", "photo", "image", "pic",
+    "taille", "tailles", "size", "sizes", "مقاس", "مقاسات", "قياس",
+    "الوان", "لون", "colors", "couleur", "details", "تفاصيل", "واش كاين", "متوفر",
+  ]);
+}
+
+function productReply(product: Product) {
+  const details = [
+    product.description?.trim(),
+    product.sizes?.length ? `المقاسات المتوفرة: ${product.sizes.join("، ")}` : null,
+    product.colors?.length ? `الألوان المتوفرة: ${product.colors.join("، ")}` : null,
+    product.image_url ? `الصورة: ${product.image_url}` : null,
+  ].filter(Boolean);
+
+  return [
+    `${product.name} متوفر بثمن ${money(product.price)} ✅`,
+    details.length ? details.join("\n") : "مازال ما مدخليناش تفاصيل إضافية لهذا المنتج.",
+    "إلى عجبك، نقدر نوجد لك الطلب بالدفع عند الاستلام.",
+  ].join("\n");
 }
 
 function faqReply(text: string, faqs: Faq[]) {
@@ -192,7 +212,7 @@ async function createOrderIfReady(supabase: SupabaseClient, ctx: ReplyContext, p
   const name = extractName(fullText);
   const address = extractAddress(fullText);
   const city = findCity(fullText, ctx.deliveryZones);
-  const confirmed = includesAny(ctx.latestText, ["نعم", "oui", "confirm", "كنأكد", "موافق", "ok"]);
+  const confirmed = confirmationIntent(ctx.latestText);
   const phone = extractPhone(fullText, ctx.customerPhone);
   const quantity = extractQuantity(fullText);
 
@@ -239,7 +259,13 @@ async function geminiReply(ctx: ReplyContext, fallback: string) {
   if (!apiKey) return fallback;
 
   const model = process.env.GEMINI_MODEL || "gemini-1.5-flash";
-  const products = ctx.products.map((product) => `${product.name}: ${money(product.price)} (${product.stock} stock)`).join("\n");
+  const products = ctx.products.map((product) => [
+    `${product.name}: ${money(product.price)} (${product.stock} stock)`,
+    product.description ? `description: ${product.description}` : null,
+    product.sizes?.length ? `sizes: ${product.sizes.join(", ")}` : null,
+    product.colors?.length ? `colors: ${product.colors.join(", ")}` : null,
+    product.image_url ? `image: ${product.image_url}` : null,
+  ].filter(Boolean).join(" | ")).join("\n");
   const delivery = ctx.deliveryZones.map((zone) => `${zone.city}: ${money(zone.price)}, ${zone.delivery_time}, COD ${zone.cod_enabled ? "yes" : "no"}`).join("\n");
   const history = ctx.messages.slice(-8).map((message) => `${message.role}: ${message.body}`).join("\n");
 
@@ -261,6 +287,11 @@ ${history}
 customer: ${ctx.latestText}
 
 Reply in Moroccan Darija unless the customer writes French. Do not invent prices or delivery cities.
+Important:
+- Continue the current conversation context. If the customer already mentioned a product, do not restart with a generic greeting.
+- If they ask for photos, sizes, colors, availability, or details, answer from product data.
+- If they want to order, collect only the missing fields: full name, city, detailed address, phone, product, quantity, then ask for a clear yes confirmation.
+- Never say "كيف نقدر نساعدك" when the conversation already has a known product or order context.
 `;
 
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
@@ -268,7 +299,7 @@ Reply in Moroccan Darija unless the customer writes French. Do not invent prices
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.35, maxOutputTokens: 260 },
+      generationConfig: { temperature: 0.25, maxOutputTokens: 260 },
     }),
   });
 
@@ -288,8 +319,12 @@ export async function buildBotReply(supabase: SupabaseClient, ctx: ReplyContext)
 
   let fallback = "";
   let lockReply = false;
+  const inOrderContext = purchaseIntent(text) || hasOrderDetails(text) || confirmationIntent(text);
 
-  if (orderIntent(text) && product) {
+  if (productInfoIntent(text) && product && !hasOrderDetails(text)) {
+    fallback = productReply(product);
+    lockReply = true;
+  } else if (inOrderContext && product) {
     lockReply = true;
     const order = await createOrderIfReady(supabase, ctx, product, latestCity ?? city);
     if (order.created) {
@@ -311,7 +346,7 @@ export async function buildBotReply(supabase: SupabaseClient, ctx: ReplyContext)
     }
   } else if ((latestProduct ?? product) && includesAny(text, ["ثمن", "شحال", "price", "prix", "متوفر"])) {
     const productForPrice = latestProduct ?? product;
-    fallback = `${productForPrice.name} متوفر بثمن ${money(productForPrice.price)} ✅\n${productForPrice.description ? `${productForPrice.description}\n` : ""}بغيتي نأكد لك طلب بالدفع عند الاستلام؟`;
+    fallback = productReply(productForPrice);
   } else if ((latestCity ?? city) && includesAny(text, ["توصيل", "livraison", "delivery", "مدينة"])) {
     const cityForDelivery = latestCity ?? city;
     if (cityForDelivery) {
