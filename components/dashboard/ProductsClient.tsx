@@ -14,8 +14,8 @@ type Product = {
   price: number;
   stock: number;
   category: string | null;
-  sizes: string[] | null;
-  colors: string[] | null;
+  sizes: string[] | string | null;
+  colors: string[] | string | null;
   image_url: string | null;
   active: boolean;
   created_at: string;
@@ -53,6 +53,21 @@ function productStatus(p: Product) {
 }
 
 const inputCls = "w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] transition-all";
+
+function listToItems(value: string[] | string | null) {
+  if (Array.isArray(value)) return value.filter(Boolean);
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
+function listToText(value: string[] | string | null) {
+  return listToItems(value).join(", ");
+}
 
 export default function ProductsClient({
   storeId,
@@ -109,8 +124,8 @@ export default function ProductsClient({
       price: String(product.price ?? ""),
       stock: String(product.stock ?? 0),
       category: product.category ?? "",
-      sizes: product.sizes?.join(", ") ?? "",
-      colors: product.colors?.join(", ") ?? "",
+      sizes: listToText(product.sizes),
+      colors: listToText(product.colors),
     });
     setFormError(null);
     setImageFile(null);
@@ -123,7 +138,12 @@ export default function ProductsClient({
   const handleEditClick = (event: React.MouseEvent<HTMLButtonElement>, product: Product) => {
     event.preventDefault();
     event.stopPropagation();
-    openEditModal(product);
+    try {
+      openEditModal(product);
+    } catch (error) {
+      console.error("[products] edit open error:", error);
+      alert("تعذر فتح تعديل المنتج. عاود حمّل الصفحة وجرب مرة أخرى.");
+    }
   };
 
   const closeModal = () => {
@@ -364,6 +384,8 @@ export default function ProductsClient({
         {filtered.map(p => {
           const { label, cls } = productStatus(p);
           const isDeleting     = deletingId === p.id;
+          const sizes          = listToItems(p.sizes);
+          const colors         = listToItems(p.colors);
           return (
             <div
               key={p.id}
@@ -412,14 +434,14 @@ export default function ProductsClient({
                   }
                 </div>
 
-                {p.sizes && p.sizes.length > 0 && (
+                {sizes.length > 0 && (
                   <div className="flex flex-wrap gap-1 mb-2">
-                    {p.sizes.map(s => <span key={s} className="text-[10px] bg-gray-100 text-gray-600 font-semibold px-2 py-0.5 rounded-lg">{s}</span>)}
+                    {sizes.map(s => <span key={s} className="text-[10px] bg-gray-100 text-gray-600 font-semibold px-2 py-0.5 rounded-lg">{s}</span>)}
                   </div>
                 )}
-                {p.colors && p.colors.length > 0 && (
+                {colors.length > 0 && (
                   <div className="flex flex-wrap gap-1">
-                    {p.colors.map(c => <span key={c} className="text-[10px] bg-gray-50 border border-gray-200 text-gray-500 px-2 py-0.5 rounded-lg">{c}</span>)}
+                    {colors.map(c => <span key={c} className="text-[10px] bg-gray-50 border border-gray-200 text-gray-500 px-2 py-0.5 rounded-lg">{c}</span>)}
                   </div>
                 )}
 
