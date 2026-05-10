@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, X, ArrowLeft, Zap, Star, Building2 } from "lucide-react";
+import { Check, ArrowLeft, Zap, Star, Building2 } from "lucide-react";
 import Link from "next/link";
 
 type Plan = {
@@ -28,7 +28,7 @@ const plans: Plan[] = [
     color: "#64748B",
     popular: false,
     icon: Zap,
-    trial: "جرّب 14 يوم مجاناً — بدون بيانات بنكية.",
+    trial: "14 يوم مجاناً — بدون بيانات بنكية.",
     cta: "ابدأ مجاناً",
     features: [
       { text: "500 محادثة/شهر", included: true },
@@ -50,7 +50,7 @@ const plans: Plan[] = [
     color: "#10B981",
     popular: true,
     icon: Star,
-    trial: "جرّب 14 يوم مجاناً — بدون بيانات بنكية.",
+    trial: "14 يوم مجاناً — بدون بيانات بنكية.",
     cta: "ابدأ مجاناً",
     features: [
       { text: "2,000 محادثة/شهر", included: true },
@@ -72,7 +72,7 @@ const plans: Plan[] = [
     color: "#8B5CF6",
     popular: false,
     icon: Building2,
-    trial: "جرّب 14 يوم مجاناً — بدون بيانات بنكية.",
+    trial: "14 يوم مجاناً — بدون بيانات بنكية.",
     cta: "ابدأ مجاناً",
     features: [
       { text: "محادثات غير محدودة", included: true },
@@ -89,127 +89,172 @@ const plans: Plan[] = [
 
 export default function Pricing() {
   return (
-    <section
-      id="pricing"
-      className="py-24 lg:py-32 bg-[#121414]"
-      dir="rtl"
-    >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="pricing" className="py-28 lg:py-36 bg-[#121414] relative overflow-hidden" dir="rtl">
+      {/* Subtle top separator */}
+      <div className="absolute top-0 inset-x-0 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.06) 70%, transparent)" }} />
+
+      {/* Center ambient glow */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          width: 700,
+          height: 500,
+          left: "50%",
+          top: "30%",
+          background: "radial-gradient(ellipse, rgba(16,185,129,0.06) 0%, transparent 70%)",
+          filter: "blur(60px)",
+          transform: "translate(-50%, -50%)",
+        }}
+      />
+
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-14"
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center mb-16"
         >
-          <span className="inline-flex items-center gap-2 text-[#10B981] text-[13px] font-semibold tracking-wide uppercase mb-4">
+          <p className="text-[11px] uppercase tracking-[0.2em] text-[#10B981] font-semibold font-inter mb-5">
             الأسعار
-          </span>
+          </p>
           <h2
-            className="text-4xl lg:text-5xl font-black text-[#EDEDEA] mb-4"
-            style={{ letterSpacing: "-0.035em" }}
+            className="font-black text-[#EDEDEA] mb-5"
+            style={{ fontSize: "clamp(32px, 5vw, 56px)", letterSpacing: "-0.038em", lineHeight: 1.06 }}
           >
             خطط شفافة بدون مفاجآت
           </h2>
-          <p className="text-[#9B9B97] text-[15px] max-w-md mx-auto leading-relaxed">
+          <p className="text-[#9B9B97] text-[16px] max-w-md mx-auto leading-relaxed">
             ابدأ مجاناً 14 يوم — بدون بيانات بنكية. ألغِ في أي وقت.
           </p>
         </motion.div>
 
         {/* Plans grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-5 items-center">
           {plans.map((plan, i) => {
             const Icon = plan.icon;
+            const isPro = plan.popular;
+
             return (
+              /* Entrance animation wrapper */
               <motion.div
                 key={plan.id}
                 initial={{ opacity: 0, y: 32 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className={`relative bg-[#181A1B] rounded-2xl overflow-hidden ${
-                  plan.popular
-                    ? "scale-[1.03] lg:scale-[1.04]"
-                    : "border border-white/[0.06] hover:-translate-y-1 hover:border-white/[0.12] transition-all duration-300"
-                }`}
-                style={
-                  plan.popular
+                transition={{ duration: 0.55, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              >
+              {/* Hover interaction wrapper */}
+              <motion.div
+                whileHover={
+                  isPro
                     ? {
+                        y: -6,
                         boxShadow:
-                          "0 0 0 1.5px #10B981, 0 8px 40px rgba(16,185,129,0.2), 0 24px 60px rgba(0,0,0,0.3)",
+                          "0 0 0 1.5px #10B981, 0 12px 50px rgba(16,185,129,0.32), 0 30px 80px rgba(0,0,0,0.5), 0 0 80px rgba(16,185,129,0.1)",
                       }
-                    : {}
+                    : {
+                        y: -4,
+                        boxShadow: `0 0 0 1px rgba(255,255,255,0.14), 0 20px 60px rgba(0,0,0,0.5), 0 0 40px ${plan.color}0A`,
+                      }
+                }
+                transition={{ duration: 0.22, ease: "easeOut" }}
+                className="relative rounded-2xl overflow-hidden h-full"
+                style={
+                  isPro
+                    ? {
+                        background: "#181A1B",
+                        transform: "scale(1.04)",
+                        boxShadow: "0 0 0 1.5px #10B981, 0 8px 40px rgba(16,185,129,0.22), 0 24px 60px rgba(0,0,0,0.4)",
+                      }
+                    : {
+                        background: "#181A1B",
+                        border: "1px solid rgba(255,255,255,0.07)",
+                      }
                 }
               >
-                {/* Pro top accent line */}
-                {plan.popular && (
+                {/* Pro — emerald accent line at top */}
+                {isPro && (
                   <>
-                    <div className="h-0.5 w-full bg-gradient-to-r from-emerald-600 via-[#10B981] to-emerald-600" />
-                    <div className="flex justify-center">
-                      <div className="bg-[#10B981] text-white text-[11px] font-black px-4 py-1 rounded-b-xl">
-                        الأكثر شعبية
+                    <div
+                      className="h-[2px] w-full"
+                      style={{ background: "linear-gradient(to right, rgba(16,185,129,0.4), #10B981, rgba(16,185,129,0.4))" }}
+                    />
+                    {/* Popular badge */}
+                    <div className="flex justify-center -mt-px">
+                      <div
+                        className="text-white text-[10px] font-black px-4 py-[4px] rounded-b-lg font-inter"
+                        style={{ background: "#10B981", letterSpacing: "0.04em" }}
+                      >
+                        MOST POPULAR
                       </div>
                     </div>
                   </>
                 )}
 
-                <div className="p-6 lg:p-7">
+                {/* Pro — subtle background glow overlay */}
+                {isPro && (
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background: "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(16,185,129,0.06) 0%, transparent 100%)",
+                    }}
+                  />
+                )}
+
+                <div className={`p-6 lg:p-7 ${isPro ? "pt-5" : ""} relative`}>
                   {/* Plan icon + name */}
-                  <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center gap-3 mb-4">
                     <div
                       className="w-9 h-9 rounded-xl flex items-center justify-center"
-                      style={{ background: `${plan.color}18` }}
+                      style={{
+                        background: `${plan.color}14`,
+                        border: `1px solid ${plan.color}25`,
+                      }}
                     >
                       <Icon className="w-4 h-4" style={{ color: plan.color }} />
                     </div>
-                    <span className="font-inter font-black text-[#EDEDEA] text-[17px]">
+                    <span className="font-inter font-black text-[#EDEDEA] text-[17px] tracking-tight">
                       {plan.name}
                     </span>
                   </div>
-                  {/* Description */}
-                  <p className="text-[11px] text-[#9B9B97] mb-5 leading-relaxed">
-                    {plan.desc}
-                  </p>
+
+                  <p className="text-[12.5px] text-[#9B9B97] mb-6 leading-relaxed">{plan.desc}</p>
 
                   {/* Price */}
-                  <div className="mb-1">
+                  <div className="mb-1 flex items-baseline gap-1">
                     <span
-                      className="font-inter font-black text-[#EDEDEA]"
-                      style={{
-                        fontSize: 54,
-                        letterSpacing: "-0.04em",
-                        lineHeight: 1,
-                      }}
+                      className="font-inter font-black text-[#EDEDEA] leading-none"
+                      style={{ fontSize: 52, letterSpacing: "-0.04em" }}
                     >
                       {plan.price}
                     </span>
-                    <span className="text-[13px] text-[#9B9B97] mr-1">{plan.period}</span>
+                    <span className="text-[13px] text-[#525252] mb-1">{plan.period}</span>
                   </div>
-                  {/* Trial note */}
-                  <p className="text-[11px] text-[#525252] mb-5 mt-1.5">{plan.trial}</p>
+                  <p className="text-[11.5px] text-[#525252] mb-6 mt-1">{plan.trial}</p>
 
                   {/* CTA Button */}
-                  {plan.popular ? (
+                  {isPro ? (
                     <Link
                       href="/signup"
-                      className="group relative w-full flex items-center justify-center gap-2 bg-[#10B981] hover:bg-emerald-400 text-white font-black text-[14px] px-6 py-3 rounded-xl transition-all duration-200 overflow-hidden mb-6"
+                      className="group relative w-full flex items-center justify-center gap-2 text-white font-black text-[14px] px-6 py-3.5 rounded-xl overflow-hidden mb-7 transition-all duration-200"
                       style={{
-                        boxShadow: "0 4px 20px rgba(16,185,129,0.35)",
+                        background: "#10B981",
+                        boxShadow: "0 4px 20px rgba(16,185,129,0.32), 0 1px 0 rgba(255,255,255,0.1) inset",
                       }}
                     >
-                      {/* Shimmer */}
-                      <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                      <span>{plan.cta}</span>
-                      <ArrowLeft className="w-4 h-4" />
+                      <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-550 bg-gradient-to-r from-transparent via-white/[0.12] to-transparent pointer-events-none" />
+                      <span className="relative z-10">{plan.cta}</span>
+                      <ArrowLeft className="w-4 h-4 relative z-10 transition-transform duration-200 group-hover:-translate-x-0.5" />
                     </Link>
                   ) : (
                     <Link
                       href="/signup"
-                      className="w-full flex items-center justify-center gap-2 bg-white/[0.06] hover:bg-white/[0.1] text-[#EDEDEA] font-black text-[14px] px-6 py-3 rounded-xl border border-white/[0.1] transition-all duration-200 mb-6"
+                      className="group w-full flex items-center justify-center gap-2 text-[#9B9B97] hover:text-[#EDEDEA] font-bold text-[14px] px-6 py-3.5 rounded-xl border border-white/[0.09] hover:border-white/[0.18] hover:bg-white/[0.04] transition-all duration-200 mb-7"
                     >
                       <span>{plan.cta}</span>
-                      <ArrowLeft className="w-4 h-4" />
+                      <ArrowLeft className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
                     </Link>
                   )}
 
@@ -217,43 +262,32 @@ export default function Pricing() {
                   <div className="border-t border-white/[0.06] mb-5" />
 
                   {/* Features */}
-                  <ul className="space-y-2.5">
+                  <ul className="space-y-3">
                     {plan.features.map((feat, j) => (
                       <li key={j} className="flex items-center gap-3">
                         {feat.included ? (
                           <div
-                            className="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
+                            className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0"
                             style={{
-                              background: `${plan.color}18`,
-                              border: `1px solid ${plan.color}35`,
+                              background: `${plan.color}14`,
+                              border: `1px solid ${plan.color}28`,
                             }}
                           >
-                            <Check
-                              className="w-2.5 h-2.5"
-                              style={{ color: plan.color }}
-                              strokeWidth={2.5}
-                            />
+                            <Check className="w-[9px] h-[9px]" style={{ color: plan.color }} strokeWidth={3} />
                           </div>
                         ) : (
                           <div
-                            className="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
-                            style={{
-                              background: "rgba(255,255,255,0.04)",
-                              border: "1px solid rgba(255,255,255,0.08)",
-                            }}
+                            className="w-[18px] h-[18px] rounded-full flex items-center justify-center shrink-0"
+                            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
                           >
-                            <X
-                              className="w-2.5 h-2.5 text-white/20"
-                              strokeWidth={2.5}
-                            />
+                            <div className="w-2 h-px bg-white/20 rounded-full" />
                           </div>
                         )}
                         <span
-                          className={`text-[13px] leading-snug ${
-                            feat.included
-                              ? "text-[#EDEDEA]"
-                              : "text-[#525252] line-through"
-                          }`}
+                          className="text-[13px] leading-snug"
+                          style={{
+                            color: feat.included ? "#EDEDEA" : "rgba(255,255,255,0.22)",
+                          }}
                         >
                           {feat.text}
                         </span>
@@ -261,6 +295,7 @@ export default function Pricing() {
                     ))}
                   </ul>
                 </div>
+              </motion.div>
               </motion.div>
             );
           })}
@@ -272,7 +307,7 @@ export default function Pricing() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-center text-[13px] text-[#525252] mt-10"
+          className="text-center text-[13px] text-[#525252] mt-12"
         >
           جميع الباقات تتضمن: دعم واتساب، إعداد مجاني، وتحديثات مستمرة. لا عقود — ألغِ في أي وقت.
         </motion.p>

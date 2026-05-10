@@ -2,15 +2,10 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-type FAQItem = {
-  question: string;
-  answer: string;
-};
-
-const faqs: FAQItem[] = [
+const faqs = [
   {
     question: "واش FunnelsLibrary يشتغل مع واتساب العادي أو بيزنس؟",
     answer:
@@ -57,31 +52,33 @@ export default function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section
-      id="faq"
-      className="py-24 lg:py-32 bg-[#121414]"
-      dir="rtl"
-    >
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="faq" className="py-28 lg:py-36 bg-[#121414] relative overflow-hidden" dir="rtl">
+      {/* Separator */}
+      <div className="absolute top-0 inset-x-0 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.06) 70%, transparent)" }} />
+
+      <div className="relative max-w-[640px] mx-auto px-4 sm:px-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center mb-16"
         >
-          <span className="inline-block text-[#10B981] text-[13px] font-semibold tracking-wide uppercase mb-4">
+          <p className="text-[11px] uppercase tracking-[0.2em] text-[#10B981] font-semibold font-inter mb-5">
             الأسئلة الشائعة
-          </span>
+          </p>
           <h2
-            className="text-4xl lg:text-5xl font-black text-[#EDEDEA] mb-4"
-            style={{ letterSpacing: "-0.04em" }}
+            className="font-black text-[#EDEDEA] mb-5"
+            style={{ fontSize: "clamp(32px, 5vw, 52px)", letterSpacing: "-0.038em", lineHeight: 1.06 }}
           >
             عندك سؤال؟
           </h2>
-          <p className="text-[#9B9B97] text-[15px] leading-relaxed">
-            راجع الأسئلة الأكثر شيوعاً. ما لقيتيش جوابك؟ راسلنا مباشرة.
+          <p className="text-[#9B9B97] text-[15.5px] leading-relaxed">
+            راجع الأسئلة الأكثر شيوعاً. ما لقيتيش جوابك؟{" "}
+            <Link href="/contact" className="text-[#10B981] hover:text-emerald-400 transition-colors">
+              راسلنا مباشرة
+            </Link>
           </p>
         </motion.div>
 
@@ -95,74 +92,99 @@ export default function FAQ() {
           {faqs.map((faq, i) => {
             const isOpen = open === i;
             return (
-              <div
+              <motion.div
                 key={i}
-                className="border-b border-white/[0.06] py-5"
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.45, delay: i * 0.055, ease: [0.22, 1, 0.36, 1] }}
+                className="relative"
               >
-                <button
-                  className="flex items-center justify-between w-full text-right gap-4 group"
-                  onClick={() => setOpen(isOpen ? null : i)}
-                >
-                  <span
-                    className={`text-[15px] font-semibold leading-snug transition-colors duration-200 ${
-                      isOpen ? "text-[#10B981]" : "text-[#EDEDEA]"
-                    }`}
-                  >
-                    {faq.question}
-                  </span>
-                  <span className="shrink-0">
-                    {isOpen ? (
-                      <Minus
-                        className="w-5 h-5 transition-colors duration-200"
-                        style={{ color: "#10B981" }}
-                      />
-                    ) : (
-                      <Plus
-                        className="w-5 h-5 transition-colors duration-200"
-                        style={{ color: "#9B9B97" }}
-                      />
-                    )}
-                  </span>
-                </button>
-
-                <AnimatePresence initial={false}>
+                {/* Accent border for open item — appears on the right (start side in RTL) */}
+                <AnimatePresence>
                   {isOpen && (
                     <motion.div
-                      key="answer"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
-                      className="overflow-hidden"
-                    >
-                      <p className="text-[14px] text-[#9B9B97] leading-relaxed pt-3 pb-1">
-                        {faq.answer}
-                      </p>
-                    </motion.div>
+                      initial={{ scaleY: 0, opacity: 0 }}
+                      animate={{ scaleY: 1, opacity: 1 }}
+                      exit={{ scaleY: 0, opacity: 0 }}
+                      transition={{ duration: 0.22 }}
+                      className="absolute right-0 top-0 bottom-0 w-[2px] rounded-full origin-top"
+                      style={{ background: "#10B981" }}
+                    />
                   )}
                 </AnimatePresence>
-              </div>
+
+                <div
+                  className="border-b transition-colors duration-200"
+                  style={{ borderColor: isOpen ? "rgba(16,185,129,0.12)" : "rgba(255,255,255,0.055)" }}
+                >
+                  <button
+                    className="flex items-center justify-between w-full text-right gap-5 py-6 pr-4 group"
+                    onClick={() => setOpen(isOpen ? null : i)}
+                  >
+                    <span
+                      className="text-[15.5px] font-semibold leading-snug transition-colors duration-250"
+                      style={{ color: isOpen ? "#EDEDEA" : "#BDBDB9" }}
+                    >
+                      {faq.question}
+                    </span>
+
+                    <span
+                      className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-250"
+                      style={{
+                        background: isOpen ? "rgba(16,185,129,0.12)" : "rgba(255,255,255,0.04)",
+                        border: isOpen ? "1px solid rgba(16,185,129,0.22)" : "1px solid rgba(255,255,255,0.08)",
+                      }}
+                    >
+                      {isOpen ? (
+                        <Minus className="w-3 h-3 text-[#10B981]" />
+                      ) : (
+                        <Plus className="w-3 h-3 text-[#525252] group-hover:text-[#9B9B97] transition-colors" />
+                      )}
+                    </span>
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        key="answer"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <p className="text-[14.5px] text-[#9B9B97] leading-[1.75] pr-4 pb-6 pt-0.5 max-w-[560px]">
+                          {faq.answer}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
             );
           })}
         </motion.div>
 
-        {/* Contact CTA */}
+        {/* Bottom CTA */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center mt-10"
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className="mt-14 flex flex-col items-center text-center gap-4"
         >
-          <p className="text-[14px] text-[#9B9B97]">
-            عندك سؤال آخر؟{" "}
-            <Link
-              href="/contact"
-              className="text-[#10B981] font-semibold hover:underline transition-all"
-            >
-              راسلنا على واتساب
-            </Link>
+          <p className="text-[14px] text-[#525252]">
+            سؤال آخر؟ كنجاوبوك مباشرة على واتساب
           </p>
+          <Link
+            href="/contact"
+            className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#10B981] hover:text-emerald-400 transition-colors duration-150 border border-[#10B981]/20 hover:border-[#10B981]/35 rounded-xl px-5 py-2.5"
+            style={{ background: "rgba(16,185,129,0.06)" }}
+          >
+            راسلنا الآن
+            <ArrowLeft className="w-3.5 h-3.5" />
+          </Link>
         </motion.div>
       </div>
     </section>
