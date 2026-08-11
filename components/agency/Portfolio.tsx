@@ -100,7 +100,7 @@ const projects: Project[] = [
   {
     title: "Pâtisserie Chahrazad",
     city: "Meknès",
-    cat: "Restaurant",
+    cat: "Pâtisserie",
     desc: "Vitrine de pâtisserie marocaine avec commandes pour événements.",
     photo: "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=800&q=80&fit=crop",
     tags: ["Commandes", "Événements", "Galerie"],
@@ -118,15 +118,70 @@ const projects: Project[] = [
   {
     title: "Barber House",
     city: "Tanger",
-    cat: "Beauté",
+    cat: "Barbier",
     desc: "Salon de barbier avec réservation de créneaux et tarifs affichés.",
-    photo: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=800&q=80&fit=crop",
+    photo: "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?w=800&q=80&fit=crop",
     tags: ["Réservation", "Tarifs", "Galerie"],
     accent: "#0F172A",
   },
+  {
+    title: "Atlas Évasion",
+    city: "Marrakech",
+    cat: "Voyage",
+    desc: "Agence de voyage : circuits désert, excursions et réservation en ligne.",
+    photo: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800&q=80&fit=crop",
+    tags: ["Circuits", "Réservation", "Multilingue"],
+    accent: "#0D9488",
+  },
+  {
+    title: "Dar Salam Événements",
+    city: "Marrakech",
+    cat: "Événementiel",
+    desc: "Salle des fêtes : présentation des espaces, formules et demande de date.",
+    photo: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800&q=80&fit=crop",
+    tags: ["Espaces", "Formules", "Réservation"],
+    accent: "#A21CAF",
+  },
+  {
+    title: "Auto-École Najah",
+    city: "Casablanca",
+    cat: "Auto-école",
+    desc: "Auto-école : forfaits, code en ligne et inscription directe.",
+    photo: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80&fit=crop",
+    tags: ["Forfaits", "Code en ligne", "Inscription"],
+    accent: "#0F766E",
+  },
+  {
+    title: "Institut Horizon",
+    city: "Rabat",
+    cat: "Formation",
+    desc: "Centre de formation : catalogue de cours, tarifs et inscription.",
+    photo: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&q=80&fit=crop",
+    tags: ["Catalogue", "Tarifs", "Inscription"],
+    accent: "#4F46E5",
+  },
+  {
+    title: "Atelier Bennani Architectes",
+    city: "Tanger",
+    cat: "Architecture",
+    desc: "Cabinet d'architecture : portfolio de réalisations et prise de contact.",
+    photo: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80&fit=crop",
+    tags: ["Réalisations", "Missions", "Contact"],
+    accent: "#334155",
+  },
+  {
+    title: "Pharmacie Al Amal",
+    city: "Casablanca",
+    cat: "Pharmacie",
+    desc: "Pharmacie de quartier : services, horaires de garde et livraison.",
+    photo: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800&q=80&fit=crop",
+    tags: ["Services", "Garde", "Livraison"],
+    accent: "#059669",
+  },
 ];
 
-const cats = ["Tous", "Restaurant", "Café", "Beauté", "Immobilier", "Boutique", "Santé", "Automobile", "Sport", "Hôtellerie", "Services"];
+/** Derived from the projects themselves so the filter can never drift out of sync. */
+const cats = ["Tous", ...Array.from(new Set(projects.map((p) => p.cat)))];
 
 function ProjectCard({ p, i }: { p: Project; i: number }) {
   const slug = demoSlugForCategory(p.cat);

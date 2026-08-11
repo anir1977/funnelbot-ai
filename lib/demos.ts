@@ -665,6 +665,502 @@ export const demos: Demo[] = [
       phone: "+212 5 22 00 00 00",
     },
   },
+
+  /* ─────────────  Pâtisserie & traiteur  ───────────── */
+  {
+    slug: "patisserie",
+    category: "Pâtisserie",
+    brand: "Pâtisserie Chahrazad",
+    city: "Meknès",
+    tagline: "Pâtisserie marocaine & traiteur",
+    accent: "#EA580C",
+    layout: "center",
+    nav: ["Nos gâteaux", "Traiteur", "Commandes", "Contact"],
+    photos: [
+      "1486427944299-d1955d23e34d",
+      "1517248135467-4c7edcad34c4",
+      "1546069901-ba9599a7e63c",
+      "1554118811-1e0d58224f24",
+      "1555939594-58d7cb561ad1",
+    ],
+    hero: {
+      title: "Les douceurs qui accompagnent vos fêtes",
+      sub: "Pâtisserie marocaine traditionnelle et service traiteur pour mariages, fiançailles et baptêmes. Commandes sur mesure.",
+      cta1: "Commander",
+      cta2: "Voir nos gâteaux",
+    },
+    facts: [
+      { label: "Ouvert", value: "Tous les jours, 8h – 21h" },
+      { label: "Commandes", value: "48h à l'avance minimum" },
+      { label: "Livraison", value: "Meknès et Fès" },
+    ],
+    offering: {
+      label: "Notre carte",
+      title: "Gâteaux & plateaux",
+      sub: "Tout est préparé à la commande, avec des amandes et du miel achetés localement.",
+      items: [
+        { name: "Plateau de cornes de gazelle", desc: "Pâte fine, amande et fleur d'oranger. Environ 40 pièces.", price: "180 MAD / kg", img: 0 },
+        { name: "Assortiment de fêtes", desc: "Six variétés : chebakia, briouates au miel, ghriba et plus.", price: "220 MAD / kg", img: 2 },
+        { name: "Gâteau de mariage", desc: "Sur mesure, décor et parfums choisis avec vous.", price: "à partir de 900 MAD", img: 4 },
+        { name: "Plateau salé traiteur", desc: "Briouates, mini pastillas et feuilletés. 50 pièces.", price: "450 MAD", img: 1 },
+        { name: "Service traiteur complet", desc: "Buffet pour événements, service et vaisselle inclus.", price: "Sur devis", img: 3 },
+        { name: "Coffret cadeau", desc: "Assortiment présenté dans un coffret artisanal.", price: "280 MAD", img: 2 },
+      ],
+    },
+    about: {
+      title: "La recette de Lalla Chahrazad, depuis 1994",
+      text: "Notre pâtisserie est née dans la cuisine familiale de Lalla Chahrazad, qui préparait les gâteaux des mariages du quartier. Trente ans plus tard, nous travaillons toujours avec les mêmes recettes et la même exigence : amandes émondées à la main et miel de la région.",
+      points: [
+        "Amandes émondées à la main, jamais de poudre industrielle",
+        "Commandes sur mesure pour mariages et grandes occasions",
+        "Livraison possible à Meknès et Fès",
+      ],
+    },
+    reviews: [
+      { name: "Latifa B.", text: "Les gâteaux de mon mariage venaient d'ici. Tous les invités ont demandé l'adresse." },
+      { name: "Rachida M.", text: "Les cornes de gazelle sont exactement comme celles de ma grand-mère. Rien à voir avec le commerce." },
+      { name: "Hicham A.", text: "Service traiteur impeccable pour les fiançailles de ma sœur. Ponctuels et généreux." },
+    ],
+    contact: {
+      address: "18 Avenue Hassan II, Hamria, Meknès",
+      hours: "Tous les jours · 8h00 – 21h00",
+      phone: "+212 5 35 00 00 00",
+    },
+  },
+
+  /* ─────────────  Agence de voyage  ───────────── */
+  {
+    slug: "voyage",
+    category: "Voyage",
+    brand: "Atlas Évasion",
+    city: "Marrakech",
+    tagline: "Agence de voyage & excursions",
+    accent: "#0D9488",
+    layout: "split",
+    nav: ["Circuits", "Excursions", "Sur mesure", "Réserver"],
+    photos: [
+      "1571003123894-1f0594d2b5d9",
+      "1445019980597-93fa8acb246c",
+      "1566073771259-6a8506099945",
+      "1611892440504-42a792e24d32",
+      "1582719508461-905c673771fd",
+    ],
+    hero: {
+      title: "Le Maroc comme vous ne l'avez jamais vu",
+      sub: "Circuits dans le désert, excursions dans l'Atlas et séjours sur mesure. Guides locaux francophones et véhicules climatisés.",
+      cta1: "Réserver un circuit",
+      cta2: "Voir les excursions",
+    },
+    facts: [
+      { label: "Agréé", value: "Licence tourisme officielle" },
+      { label: "Guides", value: "Francophones et anglophones" },
+      { label: "Réservation", value: "Confirmation sous 24h" },
+    ],
+    offering: {
+      label: "Nos formules",
+      title: "Circuits & excursions",
+      sub: "Départs garantis toute l'année, en petits groupes ou en privatif.",
+      items: [
+        { name: "Désert de Merzouga · 3 jours", desc: "Nuit sous tente berbère, dromadaires et lever de soleil sur les dunes.", price: "1 800 MAD / pers.", img: 0 },
+        { name: "Vallée de l'Ourika · 1 jour", desc: "Cascades, villages berbères et déjeuner en bord de rivière.", price: "350 MAD / pers.", img: 2 },
+        { name: "Essaouira · 1 jour", desc: "Médina classée, port de pêche et plage. Départ 8h.", price: "400 MAD / pers.", img: 1 },
+        { name: "Grand tour du Sud · 7 jours", desc: "Aït Ben Haddou, Dadès, Merzouga et Todra. Hébergement inclus.", price: "5 900 MAD / pers.", img: 3 },
+        { name: "Transfert aéroport", desc: "Véhicule privé climatisé, accueil avec pancarte.", price: "250 MAD", img: 4 },
+        { name: "Circuit sur mesure", desc: "Nous construisons votre itinéraire selon vos dates et envies.", price: "Sur devis", img: 2 },
+      ],
+    },
+    about: {
+      title: "Des guides d'ici, pas des scripts touristiques",
+      text: "Atlas Évasion est une agence marrakchie fondée par des guides du Sud. Nous connaissons les familles qui nous accueillent, les routes qui valent le détour et les heures où les sites sont calmes. Nos groupes ne dépassent jamais huit personnes.",
+      points: [
+        "Groupes limités à huit personnes maximum",
+        "Guides originaires des régions visitées",
+        "Véhicules récents et climatisés, chauffeurs expérimentés",
+      ],
+    },
+    reviews: [
+      { name: "Julien P.", text: "Trois jours dans le désert inoubliables. Notre guide connaissait chaque village par son nom." },
+      { name: "Amal R.", text: "Organisation parfaite du transfert et du circuit. Aucun stress du début à la fin." },
+      { name: "Marta G.", text: "Ils ont adapté tout l'itinéraire à nos dates. Très à l'écoute et prix honnête." },
+    ],
+    contact: {
+      address: "27 Avenue Mohammed V, Guéliz, Marrakech",
+      hours: "Lundi – Samedi · 8h30 – 19h00",
+      phone: "+212 5 24 00 00 00",
+    },
+  },
+
+  /* ─────────────  Auto-école  ───────────── */
+  {
+    slug: "auto-ecole",
+    category: "Auto-école",
+    brand: "Auto-École Najah",
+    city: "Casablanca",
+    tagline: "Auto-école agréée",
+    accent: "#0F766E",
+    layout: "split",
+    nav: ["Formules", "Code en ligne", "Inscription", "Contact"],
+    photos: [
+      "1492144534655-ae79c964c9d7",
+      "1494976388531-d1058494cdd8",
+      "1552519507-da3b142c6e3d",
+      "1583121274602-3e2820c69888",
+      "1486262715619-67b85e0b08d3",
+    ],
+    hero: {
+      title: "Votre permis, du premier cours à la réussite",
+      sub: "Auto-école agréée avec un taux de réussite de 87 %. Cours de code en salle et en ligne, moniteurs patients et véhicules récents.",
+      cta1: "M'inscrire",
+      cta2: "Voir les formules",
+    },
+    facts: [
+      { label: "Taux de réussite", value: "87 % à la première tentative" },
+      { label: "Horaires", value: "Lun – Sam, 8h – 20h" },
+      { label: "Paiement", value: "Échelonné sans frais" },
+    ],
+    offering: {
+      label: "Nos formules",
+      title: "Permis & forfaits",
+      sub: "Des forfaits clairs, sans frais cachés. Le paiement peut être échelonné sur trois mois.",
+      items: [
+        { name: "Permis B — forfait complet", desc: "Code, 20 heures de conduite et présentation aux examens.", price: "3 200 MAD", img: 0 },
+        { name: "Code de la route seul", desc: "Cours en salle illimités et accès à la plateforme en ligne.", price: "800 MAD", img: 1 },
+        { name: "Heures de conduite supplémentaires", desc: "À l'unité, avec le moniteur de votre choix.", price: "120 MAD / heure", img: 2 },
+        { name: "Conduite accompagnée", desc: "Formation initiale puis suivi avec un accompagnateur.", price: "2 800 MAD", img: 3 },
+        { name: "Permis poids lourd (C)", desc: "Formation complète, véhicule et examens inclus.", price: "6 500 MAD", img: 4 },
+        { name: "Stage de récupération", desc: "Remise à niveau pour conducteurs après suspension.", price: "1 200 MAD", img: 1 },
+      ],
+    },
+    about: {
+      title: "Vingt-cinq ans à former des conducteurs prudents",
+      text: "Auto-École Najah forme des conducteurs à Casablanca depuis 1999. Nos moniteurs sont salariés, pas payés à l'heure, ce qui leur permet de prendre le temps nécessaire avec chaque élève. Nos voitures sont renouvelées tous les quatre ans.",
+      points: [
+        "Moniteurs salariés, jamais pressés par le compteur",
+        "Plateforme de code accessible depuis votre téléphone",
+        "Paiement échelonné sur trois mois, sans frais supplémentaires",
+      ],
+    },
+    reviews: [
+      { name: "Zineb H.", text: "J'étais terrifiée à l'idée de conduire. Mon moniteur a été d'une patience incroyable. Permis du premier coup." },
+      { name: "Marouane S.", text: "Le code en ligne m'a permis de réviser au travail. Très pratique et bien fait." },
+      { name: "Imad B.", text: "Prix annoncé, prix payé. Pas de mauvaise surprise comme dans d'autres auto-écoles." },
+    ],
+    contact: {
+      address: "134 Boulevard Mohammed Zerktouni, Casablanca",
+      hours: "Lundi – Samedi · 8h00 – 20h00",
+      phone: "+212 5 22 00 00 00",
+    },
+  },
+
+  /* ─────────────  Événementiel  ───────────── */
+  {
+    slug: "evenementiel",
+    category: "Événementiel",
+    brand: "Dar Salam Événements",
+    city: "Marrakech",
+    tagline: "Salle des fêtes & organisation",
+    accent: "#A21CAF",
+    layout: "center",
+    nav: ["Nos espaces", "Formules", "Galerie", "Réserver"],
+    photos: [
+      "1611892440504-42a792e24d32",
+      "1517248135467-4c7edcad34c4",
+      "1566073771259-6a8506099945",
+      "1414235077428-338989a2e8c0",
+      "1590490360182-c33d57733427",
+    ],
+    hero: {
+      title: "Le cadre qui rendra votre jour inoubliable",
+      sub: "Salle de réception de 400 places, jardin andalou et service complet : décoration, traiteur, sonorisation et coordination.",
+      cta1: "Réserver une date",
+      cta2: "Voir nos formules",
+    },
+    facts: [
+      { label: "Capacité", value: "Jusqu'à 400 invités" },
+      { label: "Parking", value: "150 places gratuites" },
+      { label: "Réservation", value: "Visite sur rendez-vous" },
+    ],
+    offering: {
+      label: "Nos prestations",
+      title: "Espaces & formules",
+      sub: "De la location simple à la prise en charge complète de votre événement.",
+      items: [
+        { name: "Grande salle · 400 places", desc: "Salle climatisée, scène, éclairage scénique et sonorisation.", price: "à partir de 25 000 MAD", img: 0 },
+        { name: "Salon Andalou · 120 places", desc: "Espace intimiste avec patio, idéal fiançailles et baptêmes.", price: "à partir de 12 000 MAD", img: 2 },
+        { name: "Jardin extérieur", desc: "Réception en plein air, tentes caïdales et éclairage d'ambiance.", price: "à partir de 18 000 MAD", img: 4 },
+        { name: "Formule mariage complète", desc: "Salle, traiteur, décoration, DJ et coordination le jour J.", price: "Sur devis", img: 1 },
+        { name: "Service traiteur", desc: "Menus marocains ou internationaux, service à table ou buffet.", price: "à partir de 250 MAD / pers.", img: 3 },
+        { name: "Décoration sur mesure", desc: "Scénographie, fleurs et mise en lumière selon votre thème.", price: "Sur devis", img: 0 },
+      ],
+    },
+    about: {
+      title: "Un seul interlocuteur, du premier appel au dernier invité",
+      text: "Dar Salam accueille mariages, fiançailles et événements d'entreprise depuis 2011. Nous mettons à votre disposition une coordinatrice dédiée qui gère prestataires, timing et imprévus, pour que vous puissiez simplement profiter de votre journée.",
+      points: [
+        "Une coordinatrice dédiée présente le jour de l'événement",
+        "Prestataires partenaires testés et sélectionnés par nos soins",
+        "Visite des espaces possible sept jours sur sept, sur rendez-vous",
+      ],
+    },
+    reviews: [
+      { name: "Ghita & Younes", text: "Notre mariage s'est déroulé sans un seul accroc. La coordinatrice a tout géré, on n'a eu à penser à rien." },
+      { name: "Nadia F.", text: "Le jardin de nuit est magnifique. Nos invités en parlent encore des mois après." },
+      { name: "Karim T.", text: "Nous y avons organisé notre séminaire annuel. Logistique impeccable et équipe très réactive." },
+    ],
+    contact: {
+      address: "Route de l'Ourika km 6, Marrakech",
+      hours: "Tous les jours · 9h00 – 20h00, sur rendez-vous",
+      phone: "+212 5 24 00 00 00",
+    },
+  },
+
+  /* ─────────────  Formation  ───────────── */
+  {
+    slug: "formation",
+    category: "Formation",
+    brand: "Institut Horizon",
+    city: "Rabat",
+    tagline: "Centre de formation & langues",
+    accent: "#4F46E5",
+    layout: "split",
+    nav: ["Formations", "Langues", "Tarifs", "Inscription"],
+    photos: [
+      "1521737604893-d14cc237f11d",
+      "1454165804606-c3d57bc86b40",
+      "1589829545856-d10d557cf95f",
+      "1507003211169-0a1dd7228f2d",
+      "1600880292203-757bb62b4baf",
+    ],
+    hero: {
+      title: "Formez-vous à ce qui compte vraiment",
+      sub: "Langues, bureautique et formations professionnelles certifiantes. Petits groupes, formateurs expérimentés, cours du soir disponibles.",
+      cta1: "M'inscrire",
+      cta2: "Voir les formations",
+    },
+    facts: [
+      { label: "Groupes", value: "12 participants maximum" },
+      { label: "Cours du soir", value: "18h – 21h en semaine" },
+      { label: "Certification", value: "Attestation remise" },
+    ],
+    offering: {
+      label: "Notre catalogue",
+      title: "Formations proposées",
+      sub: "Sessions permanentes, avec des entrées possibles chaque mois.",
+      items: [
+        { name: "Français — tous niveaux", desc: "Du débutant au perfectionnement. 3 mois, 2 séances par semaine.", price: "1 800 MAD", img: 0 },
+        { name: "Anglais professionnel", desc: "Vocabulaire métier, réunions et rédaction d'e-mails.", price: "2 200 MAD", img: 2 },
+        { name: "Bureautique — Pack Office", desc: "Word, Excel et PowerPoint. Niveau débutant à avancé.", price: "1 500 MAD", img: 1 },
+        { name: "Comptabilité générale", desc: "Bases comptables et tenue de livres pour PME. 4 mois.", price: "3 400 MAD", img: 3 },
+        { name: "Marketing digital", desc: "Réseaux sociaux, publicité en ligne et création de contenu.", price: "2 800 MAD", img: 4 },
+        { name: "Formation en entreprise", desc: "Programmes sur mesure dispensés dans vos locaux.", price: "Sur devis", img: 0 },
+      ],
+    },
+    about: {
+      title: "Des cours pensés pour ceux qui travaillent",
+      text: "Institut Horizon forme adultes et étudiants à Rabat depuis 2014. Nos sessions du soir et du week-end permettent de se former sans quitter son emploi. Les groupes sont volontairement réduits pour que chacun puisse pratiquer réellement.",
+      points: [
+        "Groupes limités à douze participants pour pratiquer vraiment",
+        "Cours du soir et du samedi pour les actifs",
+        "Test de niveau gratuit avant toute inscription",
+      ],
+    },
+    reviews: [
+      { name: "Soukaina E.", text: "J'ai repris l'anglais après dix ans. En six mois je gère mes réunions sans problème." },
+      { name: "Adil M.", text: "Les cours du soir m'ont permis de me former sans toucher à mes horaires de travail." },
+      { name: "Btissam L.", text: "Formation Excel très concrète, avec des exercices tirés de vrais cas d'entreprise." },
+    ],
+    contact: {
+      address: "42 Avenue de France, Agdal, Rabat",
+      hours: "Lundi – Samedi · 9h00 – 21h00",
+      phone: "+212 5 37 00 00 00",
+    },
+  },
+
+  /* ─────────────  Architecture & BTP  ───────────── */
+  {
+    slug: "architecture",
+    category: "Architecture",
+    brand: "Atelier Bennani Architectes",
+    city: "Tanger",
+    tagline: "Architecture & maîtrise d'œuvre",
+    accent: "#334155",
+    layout: "center",
+    nav: ["Réalisations", "Nos services", "L'atelier", "Contact"],
+    photos: [
+      "1580587771525-78b9dba3b914",
+      "1600585154340-be6161a56a0c",
+      "1600607687939-ce8a6c25118c",
+      "1568605114967-8130f3a36994",
+      "1600596542815-ffad4c1539a9",
+    ],
+    hero: {
+      title: "Concevoir des lieux faits pour durer",
+      sub: "Architecture résidentielle et tertiaire à Tanger et dans le Nord. De l'esquisse au suivi de chantier, avec un interlocuteur unique.",
+      cta1: "Discuter de mon projet",
+      cta2: "Voir nos réalisations",
+    },
+    facts: [
+      { label: "Fondé en", value: "2009 à Tanger" },
+      { label: "Réalisations", value: "Plus de 60 projets livrés" },
+      { label: "Premier rendez-vous", value: "Gratuit et sans engagement" },
+    ],
+    offering: {
+      label: "Nos missions",
+      title: "Services & réalisations",
+      sub: "Missions complètes ou ponctuelles, selon l'avancement de votre projet.",
+      items: [
+        { name: "Villa contemporaine · Cap Spartel", desc: "380 m² · conception et suivi complet · livrée en 2023.", price: "Réalisation", img: 0 },
+        { name: "Immeuble de bureaux · Malabata", desc: "1 200 m² · six niveaux · certification énergétique.", price: "Réalisation", img: 3 },
+        { name: "Réhabilitation médina", desc: "Maison traditionnelle restaurée dans le respect du bâti.", price: "Réalisation", img: 4 },
+        { name: "Conception architecturale", desc: "Esquisse, avant-projet et dossier de permis de construire.", price: "Sur devis", img: 1 },
+        { name: "Suivi de chantier", desc: "Coordination des entreprises et contrôle de l'exécution.", price: "Sur devis", img: 2 },
+        { name: "Aménagement intérieur", desc: "Plans, choix des matériaux et mobilier sur mesure.", price: "Sur devis", img: 2 },
+      ],
+    },
+    about: {
+      title: "Une architecture qui répond au climat et au lieu",
+      text: "L'atelier a été fondé par Karim Bennani en 2009. Nous concevons en tenant compte de l'orientation, des vents du détroit et des matériaux disponibles localement — pour des bâtiments confortables sans dépendre entièrement de la climatisation.",
+      points: [
+        "Conception bioclimatique adaptée au climat du Nord",
+        "Matériaux et artisans locaux privilégiés",
+        "Un architecte associé suit votre projet du début à la livraison",
+      ],
+    },
+    reviews: [
+      { name: "Fouad A.", text: "Ils ont su transformer un terrain compliqué en une maison lumineuse. Le suivi de chantier a tout changé." },
+      { name: "Sanaa B.", text: "Écoute réelle de nos besoins, pas un projet imposé. Budget respecté à quelques pour cent près." },
+      { name: "Groupe immobilier régional", text: "Trois immeubles livrés avec eux. Sérieux, ponctuels et rigoureux sur la qualité d'exécution." },
+    ],
+    contact: {
+      address: "9 Rue Ibn Batouta, Quartier Iberia, Tanger",
+      hours: "Lundi – Vendredi · 9h00 – 18h00",
+      phone: "+212 5 39 00 00 00",
+    },
+  },
+
+  /* ─────────────  Pharmacie  ───────────── */
+  {
+    slug: "pharmacie",
+    category: "Pharmacie",
+    brand: "Pharmacie Al Amal",
+    city: "Casablanca",
+    tagline: "Pharmacie & parapharmacie",
+    accent: "#059669",
+    layout: "split",
+    nav: ["Nos services", "Parapharmacie", "Garde", "Contact"],
+    photos: [
+      "1631217868264-e5b90bb7e133",
+      "1512678080530-7760d81faba6",
+      "1576091160399-112ba8d25d1d",
+      "1519494026892-80bbd2d6fd0d",
+      "1588776814546-1ffcf47267a5",
+    ],
+    hero: {
+      title: "Votre santé, conseillée et accompagnée",
+      sub: "Pharmacie de quartier ouverte sept jours sur sept, avec un large rayon parapharmacie et un pharmacien toujours disponible pour vous conseiller.",
+      cta1: "Nous contacter",
+      cta2: "Voir nos services",
+    },
+    facts: [
+      { label: "Ouvert", value: "7j/7, 8h – 22h" },
+      { label: "Garde", value: "Nuits selon le planning officiel" },
+      { label: "Livraison", value: "À domicile dans le quartier" },
+    ],
+    offering: {
+      label: "Nos services",
+      title: "Ce que nous proposons",
+      sub: "Au-delà de la délivrance d'ordonnances, un accompagnement au quotidien.",
+      items: [
+        { name: "Délivrance d'ordonnances", desc: "Toutes mutuelles acceptées, tiers payant CNSS et CNOPS.", price: "—", img: 0 },
+        { name: "Conseil pharmaceutique", desc: "Un pharmacien disponible pour répondre à vos questions.", price: "Gratuit", img: 2 },
+        { name: "Prise de tension", desc: "Contrôle gratuit sur place, sans rendez-vous.", price: "Gratuit", img: 1 },
+        { name: "Test de glycémie", desc: "Résultat immédiat et conseils de suivi personnalisés.", price: "30 MAD", img: 4 },
+        { name: "Parapharmacie & dermocosmétique", desc: "Marques dermatologiques, soins bébé et compléments.", price: "En rayon", img: 3 },
+        { name: "Livraison à domicile", desc: "Pour les personnes âgées et à mobilité réduite du quartier.", price: "Gratuit", img: 0 },
+      ],
+    },
+    about: {
+      title: "Une pharmacie où l'on vous connaît",
+      text: "La Pharmacie Al Amal sert le quartier depuis 1998. Notre équipe de trois pharmaciens prend le temps d'expliquer chaque traitement, de vérifier les interactions et d'assurer le suivi des patients chroniques du quartier.",
+      points: [
+        "Trois pharmaciens diplômés présents en alternance",
+        "Suivi personnalisé des patients chroniques",
+        "Livraison gratuite pour les personnes à mobilité réduite",
+      ],
+    },
+    reviews: [
+      { name: "Aïcha D.", text: "On m'explique toujours clairement mes traitements. Ils vérifient même les interactions avec mes autres médicaments." },
+      { name: "Mustapha R.", text: "Ils livrent les médicaments de ma mère chaque mois. Un service qui compte beaucoup pour nous." },
+      { name: "Salima K.", text: "Ouvert tard et le dimanche, avec toujours quelqu'un de compétent pour conseiller." },
+    ],
+    contact: {
+      address: "78 Rue Ibnou Mounir, Maârif, Casablanca",
+      hours: "Tous les jours · 8h00 – 22h00",
+      phone: "+212 5 22 00 00 00",
+    },
+  },
+
+  /* ─────────────  Barbier  ───────────── */
+  {
+    slug: "barbier",
+    category: "Barbier",
+    brand: "Barber House",
+    city: "Tanger",
+    tagline: "Salon de barbier",
+    accent: "#0F172A",
+    layout: "center",
+    nav: ["Prestations", "Tarifs", "Galerie", "Réserver"],
+    photos: [
+      "1519014816548-bf5fe059798b",
+      "1522337360788-8b13dee7a37e",
+      "1487412720507-e7ab37603c6f",
+      "1560066984-138dadb4c035",
+      "1570172619644-dfd03ed5d881",
+    ],
+    hero: {
+      title: "La coupe nette, le rasage classique",
+      sub: "Barbier traditionnel à Tanger. Coupe à la tondeuse et aux ciseaux, rasage au coupe-chou et serviette chaude. Sans rendez-vous ou en réservation.",
+      cta1: "Réserver un créneau",
+      cta2: "Voir les tarifs",
+    },
+    facts: [
+      { label: "Ouvert", value: "Mar – Dim, 10h – 21h" },
+      { label: "Sans rendez-vous", value: "Accepté selon affluence" },
+      { label: "Paiement", value: "Espèces et carte" },
+    ],
+    offering: {
+      label: "Nos prestations",
+      title: "Coupes & rasages",
+      sub: "Chaque passage inclut le shampoing, la serviette chaude et le coiffage.",
+      items: [
+        { name: "Coupe homme", desc: "Tondeuse et ciseaux, dégradé au choix, shampoing inclus.", price: "70 MAD", img: 1 },
+        { name: "Coupe + barbe", desc: "La formule complète, avec contour à la tondeuse.", price: "110 MAD", img: 2 },
+        { name: "Rasage traditionnel", desc: "Coupe-chou, serviette chaude et baume apaisant.", price: "60 MAD", img: 0 },
+        { name: "Taille de barbe", desc: "Mise en forme, contours nets et huile nourrissante.", price: "50 MAD", img: 3 },
+        { name: "Coupe enfant", desc: "Moins de douze ans, dans le calme et sans précipitation.", price: "45 MAD", img: 4 },
+        { name: "Forfait marié", desc: "Coupe, rasage et soin du visage la veille du grand jour.", price: "250 MAD", img: 1 },
+      ],
+    },
+    about: {
+      title: "Le métier de barbier, fait sérieusement",
+      text: "Barber House a ouvert en 2018 avec l'idée de remettre le rasage traditionnel au goût du jour. Nos barbiers sont formés aux techniques classiques : coupe-chou, serviette chaude et finitions aux ciseaux. On prend le temps qu'il faut, jamais moins.",
+      points: [
+        "Rasage au coupe-chou et serviette chaude, comme autrefois",
+        "Lames neuves et matériel stérilisé pour chaque client",
+        "Trente minutes minimum par client, sans expédier",
+      ],
+    },
+    reviews: [
+      { name: "Anas B.", text: "Meilleur dégradé de Tanger. Ils écoutent vraiment ce qu'on demande avant de commencer." },
+      { name: "Walid E.", text: "Le rasage au coupe-chou vaut à lui seul le déplacement. Ambiance top." },
+      { name: "Reda M.", text: "J'y emmène mon fils depuis deux ans. Patients avec les enfants, c'est rare." },
+    ],
+    contact: {
+      address: "14 Rue de Fès, Centre-ville, Tanger",
+      hours: "Mardi – Dimanche · 10h00 – 21h00",
+      phone: "+212 5 39 00 00 00",
+    },
+  },
 ];
 
 export const getDemo = (slug: string) => demos.find((d) => d.slug === slug);
