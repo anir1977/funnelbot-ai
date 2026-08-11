@@ -2,117 +2,190 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, HelpCircle } from "lucide-react";
+import { Plus, Minus, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 const faqs = [
   {
-    q: "واش البوت كيفهم الدارجة المغربية؟",
-    a: "نعم! FunnelsLibrary مدرَّب خصيصاً على الدارجة المغربية واللغة العربية. البوت يفهم أسئلة مثل 'شحال الثمن؟' و'واش التوصيل لكازا؟' ويرد بشكل طبيعي يناسب زبنائك.",
+    question: "واش FunnelsLibrary يشتغل مع واتساب العادي أو بيزنس؟",
+    answer:
+      "FunnelsLibrary كيشتغل مع واتساب بيزنس API — وهو الإصدار الرسمي المخصص للمتاجر. كنعاونوك على الإعداد من البداية بدون تعقيد، وعادةً كيولو في أقل من 15 دقيقة.",
   },
   {
-    q: "كيفاش يتوصل البوت مع رقم واتساب متجري؟",
-    a: "تربط حسابك عبر WhatsApp Business API في خطوات بسيطة — بدون برمجة. بعد الربط، البوت يبدأ يرد تلقائياً على رسائل زبنائك في أقل من 5 دقائق.",
+    question: "كيفاش البوت كيفهم الدارجة المغربية؟",
+    answer:
+      "بوتنا مدرّب على الدارجة المغربية بشكل خاص — بمختلف اللهجات الجهوية والخلط بين العربية والفرنسية. كيفهم السياق وكيرد بطريعة طبيعية كأنك كتخاطب بنادم حقيقي.",
   },
   {
-    q: "واش البوت يقدر يأخذ معلومات الطلب (الاسم، العنوان، الهاتف)؟",
-    a: "نعم. البوت يجمع اسم الزبون، عنوانه الكامل، ورقم هاتفه، ثم يرسل لك الطلب مباشرة. أنت فقط تشحن — والبوت يتكلف بالباقي.",
+    question: "واش ممكن يتعرف البوت على منتجاتي بشكل صحيح؟",
+    answer:
+      "إيه، كتضيف كاتالوغ منتجاتك مباشرة من لوحة التحكم — أسماء، أسعار، مقاسات، ألوان، والصور. البوت كيتعلم منهم ويقدر يجاوب على أسئلة الزبائن بدقة.",
   },
   {
-    q: "شحال تاخد الخدمة باش تبدا تخدم؟",
-    a: "أغلب أصحاب المتاجر يشغّلون بوتهم في نفس اليوم. الإعداد بسيط: تربط الرقم، تضيف منتجاتك وأسعارك، وتختار قالب متجرك — وتبدا.",
+    question: "واش البوت كيقدر يأكد الطلبات COD تلقائياً؟",
+    answer:
+      "هذا من أقوى مزايانا. البوت كيجمع معلومات الزبون — الاسم، العنوان، المنتج، المقاس — ويأكد الطلب تلقائياً في لوحة التحكم ديالك. يعني ولا طلب ضايع.",
   },
   {
-    q: "واش في تجربة مجانية؟",
-    a: "نعم! 14 يوم تجربة مجانية كاملة بدون بيانات بنكية. ستجرب جميع مزايا الباقة الاحترافية وترى النتائج بنفسك قبل أي التزام.",
+    question: "واش ممكن أتابع المحادثات يدوياً إذا احتجت؟",
+    answer:
+      "طبعاً. عندك إمكانية التدخل في أي محادثة في أي وقت من لوحة التحكم. كتشوف كل المحادثات في الوقت الحقيقي، وكتقدر تستعمل وضع \"يدوي\" لمتابعة زبون معين بنفسك.",
   },
   {
-    q: "واش يمكنني نستخدم البوت على إنستغرام وفيسبوك؟",
-    a: "نعم في باقة Pro وBusiness. البوت يغطي واتساب، DM إنستغرام، وفيسبوك ماسنجر من لوحة تحكم واحدة — مثالي إذا كنت تبيع عبر عدة قنوات.",
+    question: "كيفاش كتجرب مجاناً؟",
+    answer:
+      "سجل من الموقع بدون بيانات بنكية، وغادي تحصل على 14 يوم كاملة مع كل مزايا الباقة Pro. إذا بغيتي تكمل، تختار الباقة المناسبة. إذا لا، ما كاين غرامة.",
   },
   {
-    q: "ماذا يحدث إذا أراد الزبون التحدث مع إنسان حقيقي؟",
-    a: "البوت يحول المحادثة إليك تلقائياً عند الطلب، أو عند الحالات المعقدة. أنت تتحكم دائماً في متى تتدخل وتتى تترك البوت يتولى الأمر.",
+    question: "واش في دعم بالعربية أو الدارجة؟",
+    answer:
+      "إيه بالتأكيد. فريق الدعم ديالنا كيتواصل بالدارجة المغربية والعربية والفرنسية. كتقدر تراسلنا على واتساب مباشرة أو من داخل لوحة التحكم.",
   },
   {
-    q: "واش يمكنني نلغي الاشتراك في أي وقت؟",
-    a: "نعم، إلغاء الاشتراك حر وبدون رسوم إضافية. لا يوجد عقود ولا التزامات. إذا لم تكن راضياً، نسترد لك رسوم الشهر الأول بدون أسئلة.",
+    question: "واش ممكن نلغي في أي وقت؟",
+    answer:
+      "إيه، بدون شروط وبدون عقود. كتلغي من لوحة التحكم بضغطة واحدة. ما كاين ولا رسوم إضافية. بياناتك كتبقى محفوظة 30 يوم بعد الإلغاء.",
   },
 ];
 
-function FAQItem({ q, a, i }: { q: string; a: string; i: number }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-      transition={{ delay: i * 0.07, duration: 0.45 }}
-      className="border border-gray-200 rounded-2xl overflow-hidden bg-white"
-    >
-      <button
-        onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center justify-between gap-4 px-6 py-5 text-right hover:bg-gray-50 transition-colors"
-        aria-expanded={open}
-      >
-        <span className="font-bold text-gray-900 text-sm sm:text-base flex-1">{q}</span>
-        <motion.div
-          animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.2 }}
-          className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-colors ${open ? "bg-[#25D366] text-white" : "bg-gray-100 text-gray-500"}`}
-        >
-          <ChevronDown className="w-4 h-4" />
-        </motion.div>
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            key="content"
-            initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="overflow-hidden"
-          >
-            <div className="px-6 pb-5 text-gray-500 text-sm leading-relaxed border-t border-gray-100 pt-4">
-              {a}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
 export default function FAQ() {
+  const [open, setOpen] = useState<number | null>(0);
+
   return (
-    <section id="faq" className="py-20 lg:py-28 bg-gray-50">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="faq" className="py-28 lg:py-36 bg-[#121414] relative overflow-hidden" dir="rtl">
+      {/* Separator */}
+      <div className="absolute top-0 inset-x-0 h-px" style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.06) 70%, transparent)" }} />
 
-        <div className="text-center mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-            className="inline-flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 text-sm font-semibold px-4 py-2 rounded-full mb-4"
-          >
-            <HelpCircle className="w-3.5 h-3.5" />
+      <div className="relative max-w-[640px] mx-auto px-4 sm:px-6">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center mb-16"
+        >
+          <p className="text-[11px] uppercase tracking-[0.2em] text-[#10B981] font-semibold font-inter mb-5">
             الأسئلة الشائعة
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 mb-4"
+          </p>
+          <h2
+            className="font-black text-[#EDEDEA] mb-5"
+            style={{ fontSize: "clamp(32px, 5vw, 52px)", letterSpacing: "-0.038em", lineHeight: 1.06 }}
           >
-            عندك{" "}
-            <span className="text-[#25D366]">سؤال؟</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
-            className="text-gray-500 text-lg"
-          >
-            إجابات على أكثر الأسئلة التي يسألها أصحاب المتاجر. لم تجد ما تبحث عنه؟{" "}
-            <Link href="/contact" className="text-[#25D366] font-semibold hover:underline">راسلنا مباشرة</Link>
-          </motion.p>
-        </div>
+            عندك سؤال؟
+          </h2>
+          <p className="text-[#9B9B97] text-[15.5px] leading-relaxed">
+            راجع الأسئلة الأكثر شيوعاً. ما لقيتيش جوابك؟{" "}
+            <Link href="/contact" className="text-[#10B981] hover:text-emerald-400 transition-colors">
+              راسلنا مباشرة
+            </Link>
+          </p>
+        </motion.div>
 
-        <div className="space-y-3">
-          {faqs.map((item, i) => (
-            <FAQItem key={item.q} q={item.q} a={item.a} i={i} />
-          ))}
-        </div>
+        {/* FAQ items */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          {faqs.map((faq, i) => {
+            const isOpen = open === i;
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.45, delay: i * 0.055, ease: [0.22, 1, 0.36, 1] }}
+                className="relative"
+              >
+                {/* Accent border for open item — appears on the right (start side in RTL) */}
+                <AnimatePresence>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ scaleY: 0, opacity: 0 }}
+                      animate={{ scaleY: 1, opacity: 1 }}
+                      exit={{ scaleY: 0, opacity: 0 }}
+                      transition={{ duration: 0.22 }}
+                      className="absolute right-0 top-0 bottom-0 w-[2px] rounded-full origin-top"
+                      style={{ background: "#10B981" }}
+                    />
+                  )}
+                </AnimatePresence>
+
+                <div
+                  className="border-b transition-colors duration-200"
+                  style={{ borderColor: isOpen ? "rgba(16,185,129,0.12)" : "rgba(255,255,255,0.055)" }}
+                >
+                  <button
+                    className="flex items-center justify-between w-full text-right gap-5 py-6 pr-4 group"
+                    onClick={() => setOpen(isOpen ? null : i)}
+                  >
+                    <span
+                      className="text-[15.5px] font-semibold leading-snug transition-colors duration-250"
+                      style={{ color: isOpen ? "#EDEDEA" : "#BDBDB9" }}
+                    >
+                      {faq.question}
+                    </span>
+
+                    <span
+                      className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-250"
+                      style={{
+                        background: isOpen ? "rgba(16,185,129,0.12)" : "rgba(255,255,255,0.04)",
+                        border: isOpen ? "1px solid rgba(16,185,129,0.22)" : "1px solid rgba(255,255,255,0.08)",
+                      }}
+                    >
+                      {isOpen ? (
+                        <Minus className="w-3 h-3 text-[#10B981]" />
+                      ) : (
+                        <Plus className="w-3 h-3 text-[#525252] group-hover:text-[#9B9B97] transition-colors" />
+                      )}
+                    </span>
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        key="answer"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <p className="text-[14.5px] text-[#9B9B97] leading-[1.75] pr-4 pb-6 pt-0.5 max-w-[560px]">
+                          {faq.answer}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        {/* Bottom CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className="mt-14 flex flex-col items-center text-center gap-4"
+        >
+          <p className="text-[14px] text-[#525252]">
+            سؤال آخر؟ كنجاوبوك مباشرة على واتساب
+          </p>
+          <Link
+            href="/contact"
+            className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#10B981] hover:text-emerald-400 transition-colors duration-150 border border-[#10B981]/20 hover:border-[#10B981]/35 rounded-xl px-5 py-2.5"
+            style={{ background: "rgba(16,185,129,0.06)" }}
+          >
+            راسلنا الآن
+            <ArrowLeft className="w-3.5 h-3.5" />
+          </Link>
+        </motion.div>
       </div>
     </section>
   );

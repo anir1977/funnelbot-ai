@@ -1,74 +1,91 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 const stats = [
-  {
-    value: "+1,200",
-    label: "متجر مغربي نشط",
-    sub: "من كازا لأكادير",
-    gradient: "from-[#25D366] to-emerald-400",
-    bg: "bg-gradient-to-br from-green-50 to-emerald-50",
-    border: "border-green-100",
-    dot: "bg-green-500",
-  },
-  {
-    value: "24/7",
-    label: "رد تلقائي بلا توقف",
-    sub: "حتى الساعة 3 صباحاً",
-    gradient: "from-blue-500 to-indigo-400",
-    bg: "bg-gradient-to-br from-blue-50 to-indigo-50",
-    border: "border-blue-100",
-    dot: "bg-blue-500",
-  },
-  {
-    value: "3x",
-    label: "زيادة الطلبات",
-    sub: "في أول شهر",
-    gradient: "from-purple-500 to-violet-400",
-    bg: "bg-gradient-to-br from-purple-50 to-violet-50",
-    border: "border-purple-100",
-    dot: "bg-purple-500",
-  },
-  {
-    value: "98%",
-    label: "رضا الزبناء",
-    sub: "معدل تقييم 4.9/5",
-    gradient: "from-amber-500 to-orange-400",
-    bg: "bg-gradient-to-br from-amber-50 to-orange-50",
-    border: "border-amber-100",
-    dot: "bg-amber-500",
-  },
+  { value: 1200,  suffix: "+",    label: "متجر مغربي نشط",        sub: "من كازا لأكادير لفاس"  },
+  { value: 500,   suffix: "K+",   label: "رسالة مُعالجة شهرياً",  sub: "بدون تدخل بشري"       },
+  { value: 96,    suffix: "%",    label: "معدل استجابة تلقائية",  sub: "البوت يرد خلال ثوان"  },
+  { value: 14,    suffix: " يوم", label: "تجربة مجانية كاملة",    sub: "بدون بطاقة بنكية"    },
 ];
+
+const logos = [
+  "عطور الريم", "مود كازا", "فيتنس ماروك",
+  "تيندرنس بيوتي", "إيلين فاشن", "ذا سبورت زون",
+  "بيوتي هاوس", "فلورا ماروك", "سمارت ستايل",
+];
+
+function CountUp({ to, suffix }: { to: number; suffix: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const count = useMotionValue(0);
+
+  useEffect(() => {
+    const unsub = count.on("change", (v) => {
+      if (ref.current) ref.current.textContent = Math.round(v).toLocaleString("en-US") + suffix;
+    });
+    const ctrl = animate(count, to, { duration: 1.8, ease: "easeOut" });
+    return () => { ctrl.stop(); unsub(); };
+  }, [to, suffix, count]);
+
+  return <span ref={ref}>0{suffix}</span>;
+}
 
 export default function Stats() {
   return (
-    <section className="py-14 border-y border-gray-100 bg-white">
+    <section className="py-20 lg:py-24 bg-white border-y border-gray-100/80 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+
+        {/* Stats row */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-4 mb-16">
           {stats.map((s, i) => (
             <motion.div
               key={s.label}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className={`relative ${s.bg} border ${s.border} rounded-2xl p-5 overflow-hidden group hover:-translate-y-0.5 transition-transform duration-300`}
+              transition={{ delay: i * 0.1, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              className="text-center group"
             >
-              {/* Subtle glow */}
-              <div className={`absolute -bottom-6 -right-6 w-20 h-20 ${s.dot} opacity-10 rounded-full blur-xl group-hover:opacity-20 transition-opacity`} />
-
-              <div className="flex items-center gap-2 mb-3">
-                <div className={`w-2 h-2 rounded-full ${s.dot}`} />
-                <span className="text-xs text-gray-500 font-medium">{s.sub}</span>
-              </div>
-
-              <p className={`text-3xl lg:text-4xl font-black bg-gradient-to-r ${s.gradient} bg-clip-text text-transparent mb-1`}>
-                {s.value}
+              <p className="text-[36px] sm:text-[42px] lg:text-[48px] font-black text-gray-900 font-inter leading-none mb-2 tabular-nums">
+                <CountUp to={s.value} suffix={s.suffix} />
               </p>
-              <p className="text-sm text-gray-600 font-semibold">{s.label}</p>
+              <p className="text-[13px] font-bold text-gray-800 mb-1">{s.label}</p>
+              <p className="text-[12px] text-gray-400">{s.sub}</p>
             </motion.div>
           ))}
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-gray-100 pt-12">
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-[11px] font-bold text-gray-400 uppercase tracking-widest text-center mb-7"
+          >
+            يثق بنا أكثر من 1,200 متجر مغربي
+          </motion.p>
+
+          {/* Marquee */}
+          <div className="relative overflow-hidden">
+            <div className="absolute inset-y-0 right-0 w-20 z-10 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+            <div className="absolute inset-y-0 left-0 w-20 z-10 bg-gradient-to-r from-white to-transparent pointer-events-none" />
+            <motion.div
+              animate={{ x: ["0%", "-50%"] }}
+              transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+              className="flex gap-12 w-max"
+            >
+              {[...logos, ...logos].map((logo, i) => (
+                <span
+                  key={i}
+                  className="text-[13px] font-bold text-gray-300 whitespace-nowrap select-none"
+                >
+                  {logo}
+                </span>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>

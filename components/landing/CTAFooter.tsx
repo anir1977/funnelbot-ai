@@ -1,154 +1,259 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowLeft, BookOpen, Mail, Phone, Instagram, Facebook } from "lucide-react";
+import { ArrowLeft, Zap, Mail, Instagram, Facebook, Twitter, Shield, Globe2 } from "lucide-react";
 import Link from "next/link";
 
-const footerLinks = {
-  المنتج:  [
-    { label: "المميزات",        href: "/#features"   },
-    { label: "كيف يعمل",       href: "/#how-it-works"},
-    { label: "الأسعار",        href: "/#pricing"     },
-    { label: "التحديثات",      href: "#"             },
-  ],
-  الشركة:  [
-    { label: "من نحن",          href: "/about"    },
-    { label: "المدونة",         href: "#"         },
-    { label: "الشراكات",        href: "#"         },
-    { label: "اتصل بنا",        href: "/contact"  },
-  ],
-  الدعم:   [
-    { label: "مركز المساعدة",    href: "#"          },
-    { label: "دليل الإعداد",     href: "#"          },
-    { label: "سياسة الخصوصية",  href: "/privacy"   },
-    { label: "الشروط والأحكام",  href: "/terms"     },
-  ],
-};
+const footerLinks = [
+  {
+    heading: "المنتج",
+    links: [
+      { label: "المزايا", href: "#features" },
+      { label: "الأسعار", href: "#pricing" },
+      { label: "كيف يشتغل", href: "#how-it-works" },
+      { label: "لوحة التحكم", href: "#dashboard" },
+    ],
+  },
+  {
+    heading: "الشركة",
+    links: [
+      { label: "من نحن", href: "/about" },
+      { label: "المدونة", href: "/blog" },
+      { label: "الشركاء", href: "/partners" },
+      { label: "وظائف", href: "/careers" },
+    ],
+  },
+  {
+    heading: "الدعم",
+    links: [
+      { label: "مركز المساعدة", href: "/help" },
+      { label: "تواصل معنا", href: "/contact" },
+      { label: "واتساب", href: "/whatsapp" },
+      { label: "الحالة", href: "/status" },
+    ],
+  },
+];
+
+const socialLinks = [
+  { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
+  { icon: Facebook, href: "https://facebook.com", label: "Facebook" },
+  { icon: Twitter, href: "https://twitter.com", label: "Twitter" },
+  { icon: Mail, href: "mailto:hello@funnelslibrary.com", label: "Email" },
+];
+
+const trustItems = [
+  { icon: Shield, label: "بدون بيانات بنكية" },
+  { icon: Zap, label: "إعداد في 5 دقائق" },
+  { icon: Globe2, label: "دعم بالدارجة" },
+];
 
 export default function CTAFooter() {
   return (
     <>
       {/* CTA Section */}
-      <section className="py-20 lg:py-28 bg-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section
+        className="py-28 lg:py-36 bg-[#0E1010] relative overflow-hidden"
+        dir="rtl"
+      >
+        {/* Separator top */}
+        <div
+          className="absolute top-0 inset-x-0 h-px pointer-events-none"
+          style={{ background: "linear-gradient(to right, transparent, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.06) 70%, transparent)" }}
+        />
+
+        {/* Dot grid */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.55) 1px, transparent 1px)",
+            backgroundSize: "28px 28px",
+            opacity: 0.025,
+          }}
+        />
+
+        {/* Radial glow — two-layer depth */}
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+          style={{
+            width: 900,
+            height: 600,
+            background: "radial-gradient(ellipse, rgba(16,185,129,0.12) 0%, rgba(16,185,129,0.04) 35%, transparent 65%)",
+            filter: "blur(40px)",
+          }}
+        />
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+          style={{
+            width: 400,
+            height: 300,
+            background: "radial-gradient(ellipse, rgba(16,185,129,0.09) 0%, transparent 70%)",
+            filter: "blur(0px)",
+          }}
+        />
+
+        <div className="relative max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          {/* Label chip */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            className="relative bg-gradient-to-br from-[#075E54] via-[#128C7E] to-[#25D366] rounded-[2rem] p-10 lg:p-16 text-center overflow-hidden"
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-6"
           >
-            {/* Blobs */}
-            <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/10 rounded-full blur-2xl" />
-            <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-white/10 rounded-full blur-2xl" />
+            <span
+              className="inline-flex items-center gap-2 text-[11px] font-semibold tracking-[0.15em] uppercase font-inter px-3.5 py-1.5 rounded-full border"
+              style={{
+                color: "#10B981",
+                borderColor: "rgba(16,185,129,0.2)",
+                background: "rgba(16,185,129,0.06)",
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" />
+              ابدأ الآن — مجاناً
+            </span>
+          </motion.div>
 
-            {/* Dots */}
-            <div
-              className="absolute inset-0 opacity-10"
-              style={{ backgroundImage: "radial-gradient(white 1px, transparent 1px)", backgroundSize: "22px 22px" }}
-            />
+          {/* Heading */}
+          <motion.h2
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.65, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
+            className="font-black text-[#EDEDEA] mb-5"
+            style={{
+              fontSize: "clamp(36px, 6vw, 64px)",
+              letterSpacing: "-0.042em",
+              lineHeight: 1.04,
+            }}
+          >
+            بيع تلقائياً على واتساب
+          </motion.h2>
 
-            {/* Floating elements */}
-            {["top-8 right-16", "top-16 left-24", "bottom-10 right-28", "bottom-20 left-10"].map((pos, i) => (
-              <motion.div
-                key={i}
-                animate={{ y: [0, -8, 0], opacity: [0.4, 0.8, 0.4] }}
-                transition={{ duration: 3 + i, repeat: Infinity, delay: i * 0.6 }}
-                className={`absolute ${pos} w-3 h-3 bg-white/40 rounded-full`}
-              />
-            ))}
+          {/* Subhead */}
+          <motion.p
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+            className="text-[#6B6B67] text-[15px] lg:text-[16px] leading-relaxed mb-10"
+          >
+            انضم لأكثر من 1,200 متجر مغربي. 14 يوم مجاناً — بدون بيانات بنكية.
+          </motion.p>
 
-            <div className="relative z-10">
-              <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                  <BookOpen className="w-8 h-8 text-white" />
+          {/* Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.17, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-10"
+          >
+            {/* Primary CTA */}
+            <Link
+              href="/signup"
+              className="group relative flex items-center gap-2.5 text-white font-black text-[16px] px-10 py-4 rounded-xl overflow-hidden transition-all duration-200"
+              style={{
+                background: "#10B981",
+                boxShadow: "0 4px 28px rgba(16,185,129,0.4), 0 1px 0 rgba(255,255,255,0.1) inset",
+              }}
+            >
+              {/* shimmer */}
+              <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-550 bg-gradient-to-r from-transparent via-white/[0.12] to-transparent pointer-events-none" />
+              <span className="relative z-10">ابدأ مجاناً 14 يوم</span>
+              <ArrowLeft className="w-4.5 h-4.5 relative z-10 transition-transform duration-200 group-hover:-translate-x-0.5" />
+            </Link>
+
+            {/* Ghost CTA */}
+            <Link
+              href="/contact"
+              className="flex items-center gap-2 border border-white/[0.09] hover:border-white/[0.18] hover:bg-white/[0.04] text-[#6B6B67] hover:text-[#EDEDEA] font-semibold text-[15px] px-8 py-4 rounded-xl transition-all duration-200"
+            >
+              تواصل مع الفريق
+            </Link>
+          </motion.div>
+
+          {/* Trust items */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.28 }}
+            className="flex flex-wrap items-center justify-center gap-5"
+          >
+            {trustItems.map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <div key={i} className="flex items-center gap-2">
+                  <div
+                    className="w-5 h-5 rounded-full flex items-center justify-center"
+                    style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.18)" }}
+                  >
+                    <Icon className="w-2.5 h-2.5 text-[#10B981]" />
+                  </div>
+                  <span className="text-[12px] text-[#525252]">{item.label}</span>
                 </div>
-              </div>
-
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-5 leading-tight">
-                ابدأ اليوم وحوّل
-                <br />
-                <span className="text-green-200">واتساب متجرك إلى مساعد ذكي</span>
-              </h2>
-              <p className="text-green-100 text-lg mb-8 max-w-xl mx-auto leading-relaxed">
-                انضم إلى أكثر من 1,200 متجر مغربي يستخدمون FunnelsLibrary لزيادة مبيعاتهم
-                وتوفير وقتهم. 14 يوم مجاناً بدون بيانات بنكية.
-              </p>
-
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link
-                  href="/signup"
-                  className="group flex items-center gap-2 bg-white text-[#075E54] font-black px-8 py-4 rounded-2xl text-base hover:bg-green-50 transition-all duration-200 shadow-xl hover:-translate-y-0.5 w-full sm:w-auto justify-center"
-                >
-                  جرّب مجاناً 14 يوم
-                  <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                </Link>
-                <Link
-                  href="/contact"
-                  className="flex items-center gap-2 border-2 border-white/40 text-white font-semibold px-7 py-4 rounded-2xl text-base hover:bg-white/10 transition-all duration-200 w-full sm:w-auto justify-center"
-                >
-                  <Phone className="w-4 h-4" />
-                  تواصل معنا
-                </Link>
-              </div>
-
-              <div className="flex flex-wrap items-center justify-center gap-5 mt-8 text-green-100 text-sm">
-                <span>✓ بدون بيانات بنكية</span>
-                <span className="opacity-40">|</span>
-                <span>✓ إلغاء في أي وقت</span>
-                <span className="opacity-40">|</span>
-                <span>✓ دعم بالدارجة والعربية</span>
-              </div>
-            </div>
+              );
+            })}
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#1a1f2e] text-gray-400">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-8">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 mb-10">
-
-            {/* Brand */}
-            <div className="lg:col-span-2">
-              <Link href="/" className="flex items-center gap-2.5 mb-4">
-                <div className="w-10 h-10 bg-[#25D366] rounded-xl flex items-center justify-center">
-                  <BookOpen className="w-5 h-5 text-white" />
+      <footer
+        className="bg-[#0C0E0E] text-[#525252] border-t border-white/[0.04]"
+        dir="rtl"
+      >
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-8">
+            {/* Brand column — col-span-2 */}
+            <div className="lg:col-span-2 space-y-5">
+              {/* Logo */}
+              <Link href="/" className="inline-flex items-center gap-2.5 group">
+                <div className="w-7 h-7 rounded-lg bg-[#10B981]/10 border border-[#10B981]/15 flex items-center justify-center group-hover:bg-[#10B981]/15 transition-colors duration-200">
+                  <Zap className="w-3.5 h-3.5 text-[#10B981]" />
                 </div>
-                <span className="text-2xl font-black text-white">
-                  Funnels<span className="text-[#25D366]">Library</span>
+                <span className="font-inter font-black text-[17px] tracking-tight">
+                  <span className="text-[#9B9B97] group-hover:text-[#EDEDEA] transition-colors duration-200">Funnels</span>
+                  <span className="text-[#10B981]">Library</span>
                 </span>
               </Link>
-              <p className="text-sm leading-relaxed mb-5 max-w-xs">
-                منصة بوت واتساب ذكي مخصصة للمتاجر الإلكترونية في المغرب. ابيع أكثر، اشتغل أقل.
+
+              {/* Tagline */}
+              <p className="text-[13px] text-[#525252] leading-relaxed max-w-[220px]">
+                بوت واتساب الذكي للمتاجر المغربية.
               </p>
-              {/* Social */}
-              <div className="flex gap-3">
-                {[
-                  { Icon: Instagram, label: "إنستغرام" },
-                  { Icon: Facebook,  label: "فيسبوك"  },
-                  { Icon: Mail,      label: "البريد"  },
-                ].map(({ Icon, label }) => (
-                  <a
-                    key={label}
-                    href="#"
-                    aria-label={label}
-                    className="w-9 h-9 bg-white/10 hover:bg-[#25D366] rounded-lg flex items-center justify-center transition-colors group"
-                  >
-                    <Icon className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
-                  </a>
-                ))}
+
+              {/* Social icons */}
+              <div className="flex items-center gap-2">
+                {socialLinks.map((s, i) => {
+                  const Icon = s.icon;
+                  return (
+                    <Link
+                      key={i}
+                      href={s.href}
+                      aria-label={s.label}
+                      className="w-8 h-8 bg-white/[0.03] hover:bg-[#10B981]/10 border border-white/[0.06] hover:border-[#10B981]/20 rounded-lg flex items-center justify-center transition-all duration-200 text-[#525252] hover:text-[#10B981]"
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                    </Link>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Links */}
-            {Object.entries(footerLinks).map(([title, links]) => (
-              <div key={title}>
-                <h4 className="text-white font-bold text-sm mb-4">{title}</h4>
+            {/* Link columns */}
+            {footerLinks.map((col, i) => (
+              <div key={i} className="space-y-4">
+                <h4 className="text-[11px] font-semibold text-[#9B9B97] uppercase tracking-[0.12em] font-inter">
+                  {col.heading}
+                </h4>
                 <ul className="space-y-3">
-                  {links.map((link) => (
-                    <li key={link.label}>
-                      <Link href={link.href} className="text-sm hover:text-[#25D366] transition-colors">
+                  {col.links.map((link, j) => (
+                    <li key={j}>
+                      <Link
+                        href={link.href}
+                        className="text-[13px] text-[#525252] hover:text-[#EDEDEA] transition-colors duration-150"
+                      >
                         {link.label}
                       </Link>
                     </li>
@@ -158,18 +263,17 @@ export default function CTAFooter() {
             ))}
           </div>
 
-          <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-            <p>© 2025 FunnelsLibrary. جميع الحقوق محفوظة — funnelslibrary.com</p>
-            <div className="flex items-center gap-4">
-              <Link href="/privacy" className="hover:text-[#25D366] transition-colors">سياسة الخصوصية</Link>
-              <span className="opacity-30">|</span>
-              <Link href="/terms" className="hover:text-[#25D366] transition-colors">الشروط والأحكام</Link>
-              <span className="opacity-30">|</span>
-              <a href="mailto:hello@funnelslibrary.com" className="hover:text-[#25D366] transition-colors flex items-center gap-1">
-                <Mail className="w-3 h-3" />
-                hello@funnelslibrary.com
-              </a>
+          {/* Bottom bar */}
+          <div className="border-t border-white/[0.04] mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] text-[#3A3A3A]">
+            <div className="flex items-center gap-5">
+              <Link href="/privacy" className="hover:text-[#525252] transition-colors duration-150">
+                سياسة الخصوصية
+              </Link>
+              <Link href="/terms" className="hover:text-[#525252] transition-colors duration-150">
+                شروط الاستخدام
+              </Link>
             </div>
+            <span className="text-[#3A3A3A]">© 2025 FunnelsLibrary. جميع الحقوق محفوظة.</span>
           </div>
         </div>
       </footer>
