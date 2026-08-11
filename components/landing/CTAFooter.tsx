@@ -160,7 +160,7 @@ export default function CTAFooter() {
               {/* shimmer */}
               <span className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-550 bg-gradient-to-r from-transparent via-white/[0.12] to-transparent pointer-events-none" />
               <span className="relative z-10">ابدأ مجاناً 14 يوم</span>
-              <ArrowLeft className="w-4.5 h-4.5 relative z-10 transition-transform duration-200 group-hover:-translate-x-0.5" />
+              <ArrowLeft className="w-[18px] h-[18px] relative z-10 transition-transform duration-200 group-hover:-translate-x-0.5" />
             </Link>
 
             {/* Ghost CTA */}

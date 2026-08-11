@@ -67,7 +67,7 @@ function SidebarContent({
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-9 h-9 bg-[#25D366] rounded-xl flex items-center justify-center shrink-0">
-              <BookOpen className="w-4.5 h-4.5 text-white" strokeWidth={2.5} />
+              <BookOpen className="w-[18px] h-[18px] text-white" strokeWidth={2.5} />
             </div>
             <div>
               <p className="text-white font-black text-sm leading-none">

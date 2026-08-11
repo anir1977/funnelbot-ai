@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   motion,
   useMotionValue,
@@ -38,7 +38,7 @@ const sites = [
     overlay: "from-rose-950/90 via-rose-900/35 to-transparent",
     nav: ["Services", "Galerie", "RDV"],
     brand: "Studio Rose",
-    accent: "#BE185D",
+    accent: "#E11D48",
     tagline: "Beauté & Bien-être · Rabat",
     hero: "Révélez votre plus belle version",
     cta1: "Prendre RDV",
@@ -112,8 +112,10 @@ const sites = [
   },
 ];
 
-/* ─────────────  Site mockup  ───────────── */
-function SiteMockup({ site }: { site: (typeof sites)[0] }) {
+type Site = (typeof sites)[0];
+
+/* ─────────────  Desktop mockup  ───────────── */
+function SiteMockup({ site }: { site: Site }) {
   return (
     <div className="rounded-2xl overflow-hidden bg-white ring-1 ring-black/[0.08]">
       {/* Browser chrome */}
@@ -159,7 +161,7 @@ function SiteMockup({ site }: { site: (typeof sites)[0] }) {
           >
             {site.tagline}
           </div>
-          <div className="text-white font-black text-[16px] leading-[1.2] mb-3.5 max-w-[80%]">
+          <div className="text-white font-black text-[16px] leading-[1.2] mb-3.5 max-w-[78%]">
             {site.hero}
           </div>
           <div className="flex gap-2">
@@ -202,14 +204,77 @@ function SiteMockup({ site }: { site: (typeof sites)[0] }) {
       {/* Footer bar */}
       <div className="bg-slate-50 border-t border-slate-100 flex items-center justify-between px-4 py-2">
         <div className="flex gap-3">
-          {["Accueil", site.nav[0], site.nav[1], "Contact"].map((n) => (
-            <span key={n} className="text-[7px] text-slate-400 font-medium">
-              {n}
+          {["Accueil", site.nav[0], site.nav[1], "Contact"].map((nm) => (
+            <span key={nm} className="text-[7px] text-slate-400 font-medium">
+              {nm}
             </span>
           ))}
         </div>
         <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center shadow-sm shadow-green-500/40">
           <Phone className="w-3 h-3 text-white fill-white" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────  Floating phone mockup  ───────────── */
+function PhoneMockup({ site }: { site: Site }) {
+  return (
+    <div className="w-[118px] rounded-[26px] bg-slate-950 p-[5px] ring-1 ring-white/10 shadow-[0_30px_60px_-15px_rgba(15,23,42,0.5)]">
+      <div className="relative rounded-[21px] overflow-hidden bg-white">
+        {/* Notch */}
+        <div className="absolute top-1.5 left-1/2 -translate-x-1/2 w-9 h-[5px] rounded-full bg-slate-950 z-10" />
+
+        {/* Photo hero */}
+        <div className="relative h-[92px] overflow-hidden">
+          <img
+            src={site.photo}
+            alt=""
+            draggable={false}
+            className="w-full h-full object-cover"
+          />
+          <div className={`absolute inset-0 bg-gradient-to-t ${site.overlay}`} />
+          <div className="absolute bottom-0 left-0 right-0 p-2">
+            <div
+              className="text-[5px] font-bold uppercase tracking-[0.15em] mb-0.5"
+              style={{ color: site.accent }}
+            >
+              {site.brand}
+            </div>
+            <div className="text-white font-black text-[7.5px] leading-tight">
+              {site.hero}
+            </div>
+          </div>
+        </div>
+
+        {/* Mini cards */}
+        <div className="p-2 space-y-1.5">
+          {site.cards.slice(0, 2).map((c) => (
+            <div
+              key={c.label}
+              className={`${c.tint} rounded-lg p-1.5 flex items-center gap-1.5`}
+            >
+              <div className="w-6 h-6 rounded-md bg-black/[0.06] shrink-0" />
+              <div className="min-w-0">
+                <div className="text-[5.5px] font-bold text-slate-700 truncate">
+                  {c.label}
+                </div>
+                <div
+                  className="text-[5px] font-bold"
+                  style={{ color: site.accent }}
+                >
+                  {c.sub}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* WhatsApp bar */}
+        <div className="bg-green-500 flex items-center justify-center gap-1 py-1.5">
+          <Phone className="w-2 h-2 text-white fill-white" />
+          <span className="text-white text-[5.5px] font-bold">Contact WhatsApp</span>
         </div>
       </div>
     </div>
@@ -224,7 +289,12 @@ export default function Hero() {
   const stageRef = useRef<HTMLDivElement>(null);
 
   const n = sites.length;
+  const current = sites[active];
 
+  const next = useCallback(() => setActive((i) => (i + 1) % n), [n]);
+  const prev = useCallback(() => setActive((i) => (i - 1 + n) % n), [n]);
+
+  /* Responsive */
   useEffect(() => {
     const check = () => setNarrow(window.innerWidth < 768);
     check();
@@ -232,19 +302,30 @@ export default function Hero() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  /* Autoplay */
   useEffect(() => {
     if (paused) return;
-    const t = setInterval(() => setActive((i) => (i + 1) % n), 4000);
+    const t = setInterval(next, 4200);
     return () => clearInterval(t);
-  }, [paused, n]);
+  }, [paused, next]);
 
-  /* Mouse parallax tilt */
+  /* Keyboard */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [next, prev]);
+
+  /* Mouse parallax */
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const sx = useSpring(mx, { stiffness: 60, damping: 20 });
-  const sy = useSpring(my, { stiffness: 60, damping: 20 });
-  const tiltY = useTransform(sx, [-0.5, 0.5], [10, -10]);
-  const tiltX = useTransform(sy, [-0.5, 0.5], [-6, 6]);
+  const sx = useSpring(mx, { stiffness: 55, damping: 18 });
+  const sy = useSpring(my, { stiffness: 55, damping: 18 });
+  const tiltY = useTransform(sx, [-0.5, 0.5], [12, -12]);
+  const tiltX = useTransform(sy, [-0.5, 0.5], [-7, 7]);
 
   const onMove = (e: React.MouseEvent) => {
     const r = stageRef.current?.getBoundingClientRect();
@@ -252,14 +333,27 @@ export default function Hero() {
     mx.set((e.clientX - r.left) / r.width - 0.5);
     my.set((e.clientY - r.top) / r.height - 0.5);
   };
-  const onLeave = () => {
-    mx.set(0);
-    my.set(0);
+
+  /* Swipe / drag */
+  const dragX = useRef<number | null>(null);
+  const dragged = useRef(false);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    dragX.current = e.clientX;
+    dragged.current = false;
+    setPaused(true);
+  };
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (dragX.current === null) return;
+    const dx = e.clientX - dragX.current;
+    if (Math.abs(dx) > 55) {
+      dragged.current = true;
+      dx > 0 ? prev() : next();
+    }
+    dragX.current = null;
   };
 
-  const current = sites[active];
-
-  // Circular signed distance from active
+  /* Geometry */
   const offsetOf = (i: number) => {
     let d = i - active;
     if (d > n / 2) d -= n;
@@ -267,13 +361,13 @@ export default function Hero() {
     return d;
   };
 
-  const spread = narrow ? 40 : 56;
-  const depth = narrow ? 150 : 230;
-  const rot = narrow ? 28 : 40;
+  const spread = narrow ? 42 : 58;
+  const depth = narrow ? 170 : 280;
+  const rot = narrow ? 30 : 42;
   const maxVisible = narrow ? 1 : 2;
 
   return (
-    <section className="relative bg-white overflow-hidden pt-28 pb-20 lg:pt-32 lg:pb-28">
+    <section className="relative bg-white overflow-hidden pt-28 pb-24 lg:pt-32 lg:pb-32">
       {/* Grid background */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -283,11 +377,11 @@ export default function Hero() {
           backgroundSize: "44px 44px",
         }}
       />
-      {/* Ambient glow */}
+      {/* Ambient glow — follows active accent */}
       <motion.div
-        className="absolute left-1/2 top-[42%] -translate-x-1/2 w-[720px] h-[420px] rounded-full blur-[130px] pointer-events-none"
-        animate={{ backgroundColor: current.accent, opacity: 0.16 }}
-        transition={{ duration: 0.9 }}
+        className="absolute left-1/2 top-[55%] -translate-x-1/2 -translate-y-1/2 w-[820px] h-[480px] rounded-full blur-[140px] pointer-events-none"
+        animate={{ backgroundColor: current.accent, opacity: 0.18 }}
+        transition={{ duration: 1 }}
       />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -296,7 +390,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="text-center max-w-3xl mx-auto mb-14 lg:mb-20"
+          className="text-center max-w-3xl mx-auto mb-16 lg:mb-20"
         >
           <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 text-blue-700 text-[12px] font-semibold px-4 py-2 rounded-full mb-7">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
@@ -312,34 +406,17 @@ export default function Hero() {
             qui <span className="text-blue-600">inspire confiance.</span>
           </h1>
 
-          <p className="text-slate-500 text-[17px] leading-relaxed mb-9 max-w-xl mx-auto">
+          <p className="text-slate-500 text-[17px] leading-relaxed mb-8 max-w-xl mx-auto">
             Nous créons des sites web modernes, rapides et professionnels pour les
             entreprises au Maroc. Livré en 7 jours.
           </p>
 
-          <div className="flex flex-wrap gap-3 justify-center mb-8">
-            <a
-              href="#demos"
-              className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-[15px] px-7 py-4 rounded-xl transition-all duration-200"
-            >
-              Voir nos réalisations →
-            </a>
-            <a
-              href="https://wa.me/212708025467?text=Bonjour%2C%20je%20veux%20cr%C3%A9er%20mon%20site%20web."
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-[15px] px-7 py-4 rounded-xl transition-all duration-200 shadow-lg shadow-green-500/25"
-            >
-              <svg viewBox="0 0 24 24" className="w-4.5 h-4.5 fill-white shrink-0">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-              </svg>
-              Demander mon site
-            </a>
-          </div>
-
           <div className="flex flex-wrap gap-5 justify-center">
             {["Livraison en 7 jours", "Support inclus", "Mobile-first"].map((t) => (
-              <div key={t} className="flex items-center gap-1.5 text-slate-500 text-[13px]">
+              <div
+                key={t}
+                className="flex items-center gap-1.5 text-slate-500 text-[13px]"
+              >
                 <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
                 {t}
               </div>
@@ -349,21 +426,24 @@ export default function Hero() {
 
         {/* ── 3D carousel ── */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.25 }}
+          transition={{ duration: 0.9, delay: 0.25 }}
           className="relative"
         >
           <div
             ref={stageRef}
             onMouseMove={onMove}
+            onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => {
-              onLeave();
+              mx.set(0);
+              my.set(0);
               setPaused(false);
             }}
-            onMouseEnter={() => setPaused(true)}
-            className="relative h-[400px] sm:h-[440px] lg:h-[470px]"
-            style={{ perspective: "2200px", perspectiveOrigin: "50% 45%" }}
+            onPointerDown={onPointerDown}
+            onPointerUp={onPointerUp}
+            className="relative h-[420px] sm:h-[450px] lg:h-[480px] select-none touch-pan-y"
+            style={{ perspective: "2400px", perspectiveOrigin: "50% 42%" }}
           >
             <motion.div
               className="absolute inset-0"
@@ -382,12 +462,15 @@ export default function Hero() {
                 return (
                   <motion.div
                     key={site.id}
-                    onClick={() => !isActive && setActive(i)}
-                    className={`absolute top-0 left-1/2 w-[min(88vw,560px)] ${
+                    onClick={() => {
+                      if (dragged.current) return;
+                      if (!isActive) setActive(i);
+                    }}
+                    className={`absolute top-0 left-1/2 w-[min(88vw,580px)] ${
                       isActive ? "" : "cursor-pointer"
                     }`}
                     style={{
-                      marginLeft: "min(-44vw, -280px)",
+                      marginLeft: "min(-44vw, -290px)",
                       transformStyle: "preserve-3d",
                       zIndex: 30 - ad,
                       pointerEvents: hidden ? "none" : "auto",
@@ -396,47 +479,73 @@ export default function Hero() {
                       x: `${d * spread}%`,
                       z: -ad * depth,
                       rotateY: -d * rot,
-                      scale: 1 - ad * 0.14,
-                      opacity: hidden ? 0 : isActive ? 1 : 0.45,
-                      filter: isActive ? "blur(0px)" : "blur(1.5px)",
+                      scale: 1 - ad * 0.13,
+                      opacity: hidden ? 0 : isActive ? 1 : 0.5,
                     }}
                     transition={{
                       type: "spring",
-                      stiffness: 90,
-                      damping: 20,
-                      mass: 0.9,
+                      stiffness: 85,
+                      damping: 19,
+                      mass: 0.95,
                     }}
                   >
-                    {/* Card + depth shadow */}
+                    {/* Card — filter lives here so the parent keeps preserve-3d */}
                     <div
+                      className="relative"
                       style={{
                         filter: isActive
-                          ? "drop-shadow(0 40px 70px rgba(15,23,42,0.28)) drop-shadow(0 12px 24px rgba(15,23,42,0.14))"
-                          : "drop-shadow(0 20px 40px rgba(15,23,42,0.16))",
+                          ? "drop-shadow(0 45px 80px rgba(15,23,42,0.30)) drop-shadow(0 14px 28px rgba(15,23,42,0.15))"
+                          : "blur(1.8px) drop-shadow(0 22px 45px rgba(15,23,42,0.18))",
                       }}
                     >
                       <SiteMockup site={site} />
+
+                      {/* Directional light falloff on angled cards */}
+                      {!isActive && (
+                        <div
+                          className="absolute inset-0 rounded-2xl pointer-events-none"
+                          style={{
+                            background:
+                              d < 0
+                                ? "linear-gradient(to right, rgba(15,23,42,0.38), rgba(15,23,42,0.04))"
+                                : "linear-gradient(to left, rgba(15,23,42,0.38), rgba(15,23,42,0.04))",
+                          }}
+                        />
+                      )}
                     </div>
 
                     {/* Floor reflection */}
                     <div
-                      className="mt-2 h-16 rounded-2xl opacity-30"
+                      className="mt-3 h-20 rounded-2xl opacity-25 pointer-events-none"
                       style={{
-                        background: `linear-gradient(to bottom, ${site.accent}22, transparent)`,
-                        transform: "rotateX(72deg) scaleY(0.5)",
+                        background: `linear-gradient(to bottom, ${site.accent}33, transparent 70%)`,
+                        transform: "rotateX(74deg) scaleY(0.55)",
                         transformOrigin: "top",
-                        filter: "blur(10px)",
+                        filter: "blur(12px)",
                       }}
                     />
 
-                    {/* Badge on the active card */}
+                    {/* Floating phone — front layer, active card only */}
+                    {isActive && !narrow && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 24 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2, duration: 0.5 }}
+                        className="absolute -left-12 lg:-left-16 bottom-2"
+                        style={{ transform: "translateZ(110px) rotateY(9deg)" }}
+                      >
+                        <PhoneMockup site={site} />
+                      </motion.div>
+                    )}
+
+                    {/* Badge — front layer, active card only */}
                     {isActive && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.85 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.15, type: "spring", stiffness: 220 }}
-                        className="absolute -top-4 -right-3 sm:-right-6 bg-white rounded-2xl px-4 py-2.5 shadow-xl ring-1 ring-slate-900/[0.06] flex items-center gap-2.5"
-                        style={{ transform: "translateZ(60px)" }}
+                        className="absolute -top-5 -right-3 sm:-right-8 bg-white rounded-2xl px-4 py-2.5 shadow-xl ring-1 ring-slate-900/[0.06] flex items-center gap-2.5"
+                        style={{ transform: "translateZ(80px)" }}
                       >
                         <div className="w-7 h-7 rounded-xl bg-green-500 flex items-center justify-center">
                           <CheckCircle2 className="w-4 h-4 text-white" />
@@ -456,38 +565,48 @@ export default function Hero() {
           </div>
 
           {/* ── Controls ── */}
-          <div className="flex items-center justify-center gap-5 mt-8">
+          <div className="flex items-center justify-center gap-5 mt-10">
             <button
-              onClick={() => setActive((i) => (i - 1 + n) % n)}
-              aria-label="Précédent"
+              onClick={prev}
+              aria-label="Modèle précédent"
               className="w-10 h-10 rounded-full bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 flex items-center justify-center text-slate-600 transition-all duration-200"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
 
             <div className="flex items-center gap-2">
-              {sites.map((s, i) => (
-                <button
-                  key={s.id}
-                  onClick={() => setActive(i)}
-                  aria-label={s.label}
-                  className="group py-2"
-                >
+              {sites.map((s, i) =>
+                i === active ? (
                   <div
-                    className="rounded-full transition-all duration-400"
-                    style={{
-                      width: i === active ? 26 : 8,
-                      height: 8,
-                      backgroundColor: i === active ? current.accent : "#CBD5E1",
-                    }}
+                    key={s.id}
+                    className="relative w-8 h-2 rounded-full bg-slate-200 overflow-hidden"
+                  >
+                    <motion.div
+                      key={`fill-${active}-${paused}`}
+                      className="absolute inset-y-0 left-0 rounded-full"
+                      style={{ backgroundColor: current.accent }}
+                      initial={{ width: paused ? "100%" : "0%" }}
+                      animate={{ width: "100%" }}
+                      transition={{
+                        duration: paused ? 0.25 : 4.2,
+                        ease: "linear",
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <button
+                    key={s.id}
+                    onClick={() => setActive(i)}
+                    aria-label={s.label}
+                    className="w-2 h-2 rounded-full bg-slate-300 hover:bg-slate-400 transition-colors duration-200"
                   />
-                </button>
-              ))}
+                )
+              )}
             </div>
 
             <button
-              onClick={() => setActive((i) => (i + 1) % n)}
-              aria-label="Suivant"
+              onClick={next}
+              aria-label="Modèle suivant"
               className="w-10 h-10 rounded-full bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 flex items-center justify-center text-slate-600 transition-all duration-200"
             >
               <ChevronRight className="w-4 h-4" />
@@ -499,11 +618,11 @@ export default function Hero() {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35 }}
-            className="text-center mt-1"
+            className="text-center mt-3"
           >
             <span className="text-slate-400 text-[12.5px] font-medium">
-              Modèle{" "}
-              <span className="font-bold text-slate-700">{current.label}</span>
+              Modèle <span className="font-bold text-slate-700">{current.label}</span>
+              <span className="hidden sm:inline text-slate-300"> · glissez pour naviguer</span>
             </span>
           </motion.div>
         </motion.div>

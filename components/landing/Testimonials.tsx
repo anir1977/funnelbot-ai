@@ -136,7 +136,7 @@ export default function Testimonials() {
           <div className="flex items-center justify-center gap-2 mt-5">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4.5 h-4.5 text-amber-400" fill="#FBBF24" />
+                <Star key={i} className="w-[18px] h-[18px] text-amber-400" fill="#FBBF24" />
               ))}
             </div>
             <span className="text-[13px] text-gray-500 font-medium">
