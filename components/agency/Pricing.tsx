@@ -146,7 +146,7 @@ export default function Pricing() {
               </ul>
 
               <a
-                href={`https://wa.me/212600000000?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20le%20plan%20${encodeURIComponent(p.name)}.`}
+                href={`https://wa.me/212708025467?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20le%20plan%20${encodeURIComponent(p.name)}.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`w-full text-center font-bold text-[15px] py-3.5 rounded-xl transition-all duration-200 block ${
@@ -170,7 +170,7 @@ export default function Pricing() {
         >
           Vous avez un projet spécifique ?{" "}
           <a
-            href="https://wa.me/212600000000?text=Bonjour%2C%20j%27ai%20un%20projet%20sp%C3%A9cifique%20%C3%A0%20discuter."
+            href="https://wa.me/212708025467?text=Bonjour%2C%20j%27ai%20un%20projet%20sp%C3%A9cifique%20%C3%A0%20discuter."
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-400 hover:text-blue-300 underline underline-offset-2 transition-colors"

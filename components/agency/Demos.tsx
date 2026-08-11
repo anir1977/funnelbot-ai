@@ -197,7 +197,7 @@ export default function Demos() {
                 <p className="text-slate-500 text-[13px] leading-relaxed mb-4">{d.desc}</p>
 
                 <a
-                  href="https://wa.me/212600000000?text=Bonjour%2C%20je%20souhaite%20un%20site%20similaire%20pour%20mon%20entreprise."
+                  href="https://wa.me/212708025467?text=Bonjour%2C%20je%20souhaite%20un%20site%20similaire%20pour%20mon%20entreprise."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group/btn inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 font-semibold text-[13px] transition-colors"
@@ -218,7 +218,7 @@ export default function Demos() {
           className="text-center mt-12"
         >
           <a
-            href="https://wa.me/212600000000?text=Bonjour%2C%20je%20souhaite%20cr%C3%A9er%20un%20site%20web%20pour%20mon%20entreprise."
+            href="https://wa.me/212708025467?text=Bonjour%2C%20je%20souhaite%20cr%C3%A9er%20un%20site%20web%20pour%20mon%20entreprise."
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[15px] px-8 py-4 rounded-xl transition-all duration-200"

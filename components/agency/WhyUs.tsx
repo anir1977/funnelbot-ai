@@ -58,7 +58,7 @@ export default function WhyUs() {
               Un site web professionnel travaille pour vous 24h/24. Il répond aux questions de vos clients, montre votre travail et génère des contacts — même quand vous dormez.
             </p>
             <a
-              href="https://wa.me/212600000000?text=Bonjour%2C%20je%20veux%20en%20savoir%20plus%20sur%20la%20cr%C3%A9ation%20de%20site%20web."
+              href="https://wa.me/212708025467?text=Bonjour%2C%20je%20veux%20en%20savoir%20plus%20sur%20la%20cr%C3%A9ation%20de%20site%20web."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[15px] px-7 py-4 rounded-xl transition-all duration-200"

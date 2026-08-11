@@ -17,7 +17,7 @@ export default function Footer() {
               Agence web spécialisée dans la création de sites professionnels pour les entreprises au Maroc.
             </p>
             <a
-              href="https://wa.me/212600000000"
+              href="https://wa.me/212708025467"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 mt-5 bg-green-500 hover:bg-green-600 text-white font-bold text-[13px] px-4 py-2.5 rounded-lg transition-all duration-200"
@@ -57,12 +57,12 @@ export default function Footer() {
             <ul className="space-y-3 text-[13.5px]">
               <li>
                 <a
-                  href="https://wa.me/212600000000"
+                  href="https://wa.me/212708025467"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors duration-200"
                 >
-                  +212 600 000 000
+                  +212 708 025 467
                 </a>
               </li>
               <li>

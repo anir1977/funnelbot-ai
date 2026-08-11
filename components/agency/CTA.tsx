@@ -29,7 +29,7 @@ export default function CTA() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a
-              href="https://wa.me/212600000000?text=Bonjour%2C%20je%20veux%20cr%C3%A9er%20mon%20site%20web%20professionnel."
+              href="https://wa.me/212708025467?text=Bonjour%2C%20je%20veux%20cr%C3%A9er%20mon%20site%20web%20professionnel."
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 bg-white text-blue-600 hover:bg-blue-50 font-bold text-[16px] px-8 py-4 rounded-xl transition-all duration-200 shadow-xl shadow-blue-900/20"

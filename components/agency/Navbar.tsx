@@ -56,7 +56,7 @@ export default function Navbar() {
           {/* CTA */}
           <div className="hidden md:flex items-center gap-3">
             <a
-              href="https://wa.me/212600000000?text=Bonjour%2C%20je%20souhaite%20cr%C3%A9er%20un%20site%20web%20pour%20mon%20entreprise."
+              href="https://wa.me/212708025467?text=Bonjour%2C%20je%20souhaite%20cr%C3%A9er%20un%20site%20web%20pour%20mon%20entreprise."
               target="_blank"
               rel="noopener noreferrer"
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-[14px] px-5 py-2.5 rounded-xl transition-all duration-200"
@@ -96,7 +96,7 @@ export default function Navbar() {
                 </a>
               ))}
               <a
-                href="https://wa.me/212600000000?text=Bonjour%2C%20je%20souhaite%20cr%C3%A9er%20un%20site%20web%20pour%20mon%20entreprise."
+                href="https://wa.me/212708025467?text=Bonjour%2C%20je%20souhaite%20cr%C3%A9er%20un%20site%20web%20pour%20mon%20entreprise."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block mt-3 bg-blue-600 text-white font-semibold text-center py-3.5 rounded-xl"
