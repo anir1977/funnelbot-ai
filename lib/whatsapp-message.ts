@@ -39,7 +39,9 @@ export function parseEvolutionWebhook(payload: any): IncomingWhatsAppMessage | n
   const isGroup = String(remoteJid).includes("@g.us");
   const text = textFromMessage(data?.message ?? payload?.message);
   const timestampValue = data?.messageTimestamp ?? payload?.messageTimestamp;
-  const timestamp = timestampValue ? new Date(Number(timestampValue) * 1000).toISOString() : new Date().toISOString();
+  const timestamp = timestampValue
+    ? new Date(Number(timestampValue) * 1000).toISOString()
+    : new Date().toISOString();
 
   if (!instanceName || !remoteJid || !text) return null;
 

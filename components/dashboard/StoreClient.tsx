@@ -50,10 +50,10 @@ const businessTypes: { id: BusinessType; label: string; desc: string }[] = [
 ];
 
 const tones: { id: BotTone; label: string; desc: string }[] = [
-  { id: "friendly", label: "ودّي وطبيعي", desc: "دارجة مغربية قريبة ومريحة" },
-  { id: "pro", label: "احترافي", desc: "رسمي ومنظم بلا إطالة" },
-  { id: "funny", label: "مرح وخفيف", desc: "لطيف ومناسب للعلامات المرحة" },
-  { id: "brief", label: "مختصر ومباشر", desc: "أجوبة سريعة وواضحة" },
+  { id: "friendly", label: "ودّي وطبيعي", desc: "دارجة مغربية مريحة وقريبة" },
+  { id: "pro", label: "احترافي", desc: "منظم ورسمي بلا إطالة" },
+  { id: "funny", label: "مرح وخفيف", desc: "أسلوب دافئ مع لمسة لطيفة" },
+  { id: "brief", label: "مختصر ومباشر", desc: "أجوبة قصيرة وسريعة" },
 ];
 
 const moroccanCities = [
@@ -73,7 +73,7 @@ const moroccanCities = [
   "الناظور",
 ];
 
-const fieldCls = "w-full rounded-lg border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-950 outline-none transition focus:border-gray-400 focus:ring-4 focus:ring-gray-100";
+const inputCls = "w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] transition-all";
 
 function toForm(store: StoreRow): StoreForm {
   return {
@@ -97,35 +97,20 @@ function normalizePhone(value: string) {
 
 function displayPhone(value: string) {
   if (!value) return "غير محدد";
-  return `+${normalizePhone(value)}`;
+  const digits = normalizePhone(value);
+  return `+${digits}`;
 }
 
 function businessLabel(id: BusinessType) {
-  return businessTypes.find((type) => type.id === id)?.label ?? "متجر عام";
+  return businessTypes.find((t) => t.id === id)?.label ?? "متجر عام";
+}
+
+function initials(name: string) {
+  return name.trim().slice(0, 1).toUpperCase() || "F";
 }
 
 function isDirty(a: StoreForm, b: StoreForm) {
   return JSON.stringify(a) !== JSON.stringify(b);
-}
-
-function Panel({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="rounded-xl border border-gray-200 bg-white shadow-sm">
-      <div className="border-b border-gray-100 px-4 py-3">
-        <h3 className="text-sm font-bold text-gray-950">{title}</h3>
-      </div>
-      <div className="p-4">{children}</div>
-    </section>
-  );
-}
-
-function FieldLabel({ icon: Icon, children }: { icon: React.ElementType; children: React.ReactNode }) {
-  return (
-    <label className="mb-1.5 flex items-center gap-1.5 text-xs font-bold text-gray-700">
-      <Icon className="h-3.5 w-3.5 text-gray-400" />
-      {children}
-    </label>
-  );
 }
 
 export default function StoreClient({ initialStore }: { initialStore: StoreRow }) {
@@ -186,173 +171,195 @@ export default function StoreClient({ initialStore }: { initialStore: StoreRow }
   };
 
   return (
-    <div className="max-w-6xl space-y-5">
-      <header className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-xl font-extrabold text-gray-950">إعدادات المتجر</h2>
-              <span className={`rounded-full px-2.5 py-1 text-xs font-bold ring-1 ${
-                form.active ? "bg-emerald-50 text-emerald-700 ring-emerald-200" : "bg-gray-100 text-gray-600 ring-gray-200"
-              }`}>
-                {form.active ? "البوت نشط" : "البوت متوقف"}
-              </span>
-            </div>
-            <p className="mt-2 text-sm text-gray-500">بيانات أساسية يستعملها FunnelBot في الردود وتأكيد الطلبات.</p>
-          </div>
-
-          <button
-            onClick={handleSave}
-            disabled={saving || !dirty}
-            className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-bold transition ${
-              saved
-                ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
-                : dirty
-                  ? "bg-gray-950 text-white hover:bg-gray-800"
-                  : "bg-gray-100 text-gray-400"
-            } disabled:cursor-not-allowed`}
-          >
-            {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-            {saved && <CheckCircle2 className="h-4 w-4" />}
-            {saving ? "كيحفظ..." : saved ? "تم الحفظ" : "حفظ التغييرات"}
-          </button>
+    <div className="max-w-4xl space-y-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 className="text-lg font-extrabold text-gray-950">إعدادات المتجر</h2>
+          <p className="text-sm text-gray-500 mt-1">هذه البيانات يستعملها البوت في الردود وتأكيد الطلبات.</p>
         </div>
-      </header>
+        <button
+          onClick={handleSave}
+          disabled={saving || !dirty}
+          className={`inline-flex items-center justify-center gap-2 font-bold text-sm px-5 py-2.5 rounded-xl transition-all ${
+            saved
+              ? "bg-green-50 text-green-700 border border-green-200"
+              : dirty
+                ? "bg-[#25D366] hover:bg-[#1eb85a] text-white shadow-sm"
+                : "bg-gray-100 text-gray-400 cursor-not-allowed"
+          }`}
+        >
+          {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+          {saved && <CheckCircle2 className="w-4 h-4" />}
+          {saving ? "كيحفظ..." : saved ? "تم الحفظ" : "حفظ التغييرات"}
+        </button>
+      </div>
 
       {error && (
         <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
-          <AlertCircle className="h-4 w-4 shrink-0" />
+          <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
-        <aside className="xl:col-span-4">
-          <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm xl:sticky xl:top-20">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-950 text-lg font-extrabold text-white">
-                {(form.name.trim()[0] || "F").toUpperCase()}
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-extrabold text-gray-950">{form.name || "متجرك"}</p>
-                <p className="mt-1 text-xs text-gray-500">{businessLabel(form.business_type)} · {form.city || "مدينة غير محددة"}</p>
-              </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:sticky lg:top-20 lg:self-start">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-slate-900 flex items-center justify-center text-white text-2xl font-black shadow-sm">
+              {initials(form.name)}
             </div>
-
-            <div className="mt-4 divide-y divide-gray-100 rounded-lg border border-gray-100 bg-gray-50">
-              <div className="flex items-center justify-between gap-3 px-3 py-2.5 text-xs">
-                <span className="text-gray-500">واتساب</span>
-                <span className="font-semibold text-gray-950" dir="ltr">{displayPhone(form.whatsapp_number)}</span>
-              </div>
-              <div className="flex items-center justify-between gap-3 px-3 py-2.5 text-xs">
-                <span className="text-gray-500">نوع النشاط</span>
-                <span className="font-semibold text-gray-950">{businessLabel(form.business_type)}</span>
-              </div>
-              <div className="flex items-center justify-between gap-3 px-3 py-2.5 text-xs">
-                <span className="text-gray-500">آخر تحديث</span>
-                <span className="font-semibold text-gray-950">{new Date(initialStore.updated_at).toLocaleDateString("ar-MA")}</span>
-              </div>
+            <div className="min-w-0">
+              <p className="text-sm font-extrabold text-gray-950 truncate">{form.name || "متجرك"}</p>
+              <p className="text-xs text-gray-500 mt-1">{businessLabel(form.business_type)} · {form.city || "مدينة غير محددة"}</p>
             </div>
+          </div>
 
-            <button
-              type="button"
-              onClick={() => setField("active", !form.active)}
-              className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border px-3 py-2.5 text-xs font-bold transition ${
-                form.active
-                  ? "border-gray-200 bg-white text-gray-800 hover:bg-gray-50"
-                  : "border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-              }`}
-            >
-              <Power className="h-3.5 w-3.5" />
-              {form.active ? "إيقاف البوت" : "تشغيل البوت"}
-            </button>
-          </section>
-        </aside>
+          <div className="mt-5 space-y-2 rounded-xl bg-gray-50 p-3">
+            <div className="flex items-center justify-between gap-3 text-xs">
+              <span className="text-gray-500">واتساب</span>
+              <span className="font-semibold text-gray-900" dir="ltr">{displayPhone(form.whatsapp_number)}</span>
+            </div>
+            <div className="flex items-center justify-between gap-3 text-xs">
+              <span className="text-gray-500">حالة البوت</span>
+              <span className={`font-bold ${form.active ? "text-green-700" : "text-gray-500"}`}>
+                {form.active ? "نشط" : "متوقف"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-3 text-xs">
+              <span className="text-gray-500">آخر تحديث</span>
+              <span className="font-semibold text-gray-900">{new Date(initialStore.updated_at).toLocaleDateString("ar-MA")}</span>
+            </div>
+          </div>
+        </div>
 
-        <main className="space-y-5 xl:col-span-8">
-          <Panel title="معلومات المتجر">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="lg:col-span-2 space-y-5">
+          <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
+            <h3 className="font-bold text-gray-900 text-sm border-b border-gray-50 pb-3">معلومات أساسية</h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <FieldLabel icon={Store}>اسم المتجر</FieldLabel>
-                <input className={fieldCls} value={form.name} onChange={(e) => setField("name", e.target.value)} placeholder="مثال: ben daoud" />
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                  <span className="flex items-center gap-1.5"><Store className="w-3.5 h-3.5 text-gray-400" /> اسم المتجر</span>
+                </label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setField("name", e.target.value)}
+                  className={inputCls}
+                  placeholder="مثال: ben daoud"
+                />
               </div>
 
               <div>
-                <FieldLabel icon={Tag}>نوع النشاط</FieldLabel>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                  <span className="flex items-center gap-1.5"><Tag className="w-3.5 h-3.5 text-gray-400" /> نوع النشاط</span>
+                </label>
                 <div className="relative">
-                  <select className={`${fieldCls} appearance-none`} value={form.business_type} onChange={(e) => setField("business_type", e.target.value as BusinessType)}>
-                    {businessTypes.map((type) => <option key={type.id} value={type.id}>{type.label}</option>)}
+                  <select
+                    value={form.business_type}
+                    onChange={(e) => setField("business_type", e.target.value as BusinessType)}
+                    className={`${inputCls} appearance-none`}
+                  >
+                    {businessTypes.map((type) => (
+                      <option key={type.id} value={type.id}>{type.label}</option>
+                    ))}
                   </select>
-                  <ChevronDown className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 </div>
               </div>
 
               <div>
-                <FieldLabel icon={MapPin}>المدينة الرئيسية</FieldLabel>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                  <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-gray-400" /> المدينة الرئيسية</span>
+                </label>
                 <div className="relative">
-                  <select className={`${fieldCls} appearance-none`} value={form.city} onChange={(e) => setField("city", e.target.value)}>
+                  <select
+                    value={form.city}
+                    onChange={(e) => setField("city", e.target.value)}
+                    className={`${inputCls} appearance-none`}
+                  >
                     <option value="" disabled>اختار المدينة</option>
                     {moroccanCities.map((city) => <option key={city} value={city}>{city}</option>)}
                     {!moroccanCities.includes(form.city) && form.city && <option value={form.city}>{form.city}</option>}
                   </select>
-                  <ChevronDown className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <ChevronDown className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 </div>
               </div>
 
               <div>
-                <FieldLabel icon={Phone}>رقم واتساب بيزنس</FieldLabel>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                  <span className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5 text-gray-400" /> رقم واتساب بيزنس</span>
+                </label>
                 <input
-                  className={`${fieldCls} text-left font-mono`}
+                  type="tel"
                   dir="ltr"
                   value={form.whatsapp_number}
                   onChange={(e) => setField("whatsapp_number", e.target.value)}
                   onBlur={(e) => setField("whatsapp_number", normalizePhone(e.target.value))}
+                  className={`${inputCls} font-mono text-left`}
                   placeholder="212661234567"
-                  type="tel"
                 />
-                <p className="mt-1.5 text-xs text-gray-400">صيغة المغرب: 212XXXXXXXXX بلا +.</p>
+                <p className="text-[11px] text-gray-400 mt-1.5">خليه بصيغة المغرب: 212XXXXXXXXX بلا +.</p>
               </div>
             </div>
-          </Panel>
+          </section>
 
-          <Panel title="سلوك البوت">
-            <div className="space-y-4">
-              <div>
-                <FieldLabel icon={MessageSquare}>أسلوب الرد</FieldLabel>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {tones.map((tone) => {
-                    const selected = form.bot_tone === tone.id;
-                    return (
-                      <button
-                        type="button"
-                        key={tone.id}
-                        onClick={() => setField("bot_tone", tone.id)}
-                        className={`rounded-lg border p-3 text-right transition ${
-                          selected ? "border-gray-950 bg-gray-950 text-white" : "border-gray-200 bg-white hover:bg-gray-50"
-                        }`}
-                      >
-                        <p className={`text-sm font-bold ${selected ? "text-white" : "text-gray-950"}`}>{tone.label}</p>
-                        <p className={`mt-1 text-xs ${selected ? "text-gray-300" : "text-gray-500"}`}>{tone.desc}</p>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+          <section className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
+            <div className="flex items-center justify-between gap-3 border-b border-gray-50 pb-3">
+              <h3 className="font-bold text-gray-900 text-sm">البوت والردود</h3>
+              <button
+                type="button"
+                onClick={() => setField("active", !form.active)}
+                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${
+                  form.active
+                    ? "border-green-200 bg-green-50 text-green-700"
+                    : "border-gray-200 bg-gray-50 text-gray-500"
+                }`}
+              >
+                <Power className="w-3.5 h-3.5" />
+                {form.active ? "البوت نشط" : "البوت متوقف"}
+              </button>
+            </div>
 
-              <div>
-                <label className="mb-1.5 block text-xs font-bold text-gray-700">رسالة الترحيب</label>
-                <textarea
-                  rows={4}
-                  value={form.welcome_message}
-                  onChange={(e) => setField("welcome_message", e.target.value)}
-                  className={`${fieldCls} resize-none leading-relaxed`}
-                  placeholder="مثال: سلام ومرحبا بك، كيفاش نقدر نعاونك اليوم؟"
-                />
-                <p className="mt-1.5 text-xs text-gray-400">إلا خليتيها خاوية، البوت يستعمل ترحيب عام ومختصر.</p>
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-2">
+                <span className="flex items-center gap-1.5"><MessageSquare className="w-3.5 h-3.5 text-gray-400" /> أسلوب الرد</span>
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {tones.map((tone) => {
+                  const selected = form.bot_tone === tone.id;
+                  return (
+                    <button
+                      type="button"
+                      key={tone.id}
+                      onClick={() => setField("bot_tone", tone.id)}
+                      className={`text-right rounded-xl border p-3 transition-all ${
+                        selected ? "border-[#25D366] bg-green-50" : "border-gray-200 bg-white hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="text-sm font-bold text-gray-900">{tone.label}</span>
+                        <span className={`w-4 h-4 rounded-full border-2 ${selected ? "border-[#25D366] bg-[#25D366]" : "border-gray-300"}`} />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">{tone.desc}</p>
+                    </button>
+                  );
+                })}
               </div>
             </div>
-          </Panel>
-        </main>
+
+            <div>
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">رسالة الترحيب</label>
+              <textarea
+                rows={3}
+                value={form.welcome_message}
+                onChange={(e) => setField("welcome_message", e.target.value)}
+                className={`${inputCls} resize-none leading-relaxed`}
+                placeholder="مثال: سلام ومرحبا بك، كيفاش نقدر نعاونك اليوم؟"
+              />
+              <p className="text-xs text-gray-400 mt-1.5">إلا خليتيها خاوية، البوت غادي يستعمل ترحيب عام ومختصر.</p>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   );

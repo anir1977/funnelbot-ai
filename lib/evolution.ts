@@ -29,6 +29,11 @@ export function instanceNameForStore(storeId: string) {
   return `fl_${clean.slice(0, 18)}`;
 }
 
+export function storeIdFromInstance(instanceName: string) {
+  const compact = instanceName.replace(/^fl_/, "");
+  return compact || instanceName;
+}
+
 export function qrImageUrl(qrCode?: string | null) {
   if (!qrCode) return null;
   if (qrCode.startsWith("data:image")) return qrCode;
@@ -64,7 +69,14 @@ async function evolutionFetch<T>(path: string, method: EvolutionMethod = "GET", 
 
 function extractQr(payload: unknown) {
   const data = payload as Record<string, any>;
-  return data?.qrcode?.base64 || data?.qrcode?.code || data?.base64 || data?.qr || data?.code || null;
+  return (
+    data?.qrcode?.base64 ||
+    data?.qrcode?.code ||
+    data?.base64 ||
+    data?.qr ||
+    data?.code ||
+    null
+  );
 }
 
 export async function createEvolutionInstance(storeId: string, phone: string) {
