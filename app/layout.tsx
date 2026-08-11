@@ -1,5 +1,26 @@
 import type { Metadata } from "next";
+import { Playfair_Display, Oswald, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+
+/* Display faces used by the demo templates to give each sector its own voice. */
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["500", "700", "900"],
+  variable: "--font-serif",
+  display: "swap",
+});
+const oswald = Oswald({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-condensed",
+  display: "swap",
+});
+const grotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  variable: "--font-grotesk",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "FunnelsLibrary — Agence Web au Maroc",
@@ -12,7 +33,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fr">
+    <html
+      lang="fr"
+      className={`${playfair.variable} ${oswald.variable} ${grotesk.variable}`}
+    >
       <body className="font-sans antialiased bg-white text-slate-900">
         {children}
       </body>

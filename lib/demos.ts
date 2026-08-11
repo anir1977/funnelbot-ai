@@ -1163,6 +1163,47 @@ export const demos: Demo[] = [
   },
 ];
 
+/**
+ * Which visual template each sector is built on. Sectors are grouped by what a
+ * visitor is actually doing on the page — savouring, deciding, being reassured,
+ * browsing stock, or comparing listings — so neighbouring demos never read as
+ * the same site with a different colour.
+ */
+export type Template = "editorial" | "bold" | "clinical" | "catalog" | "estate";
+
+export const TEMPLATE_BY_SLUG: Record<string, Template> = {
+  // Dark, serif, full-bleed imagery, menu-style pricing
+  restaurant: "editorial",
+  hotel: "editorial",
+  evenementiel: "editorial",
+  patisserie: "editorial",
+  salon: "editorial",
+
+  // Condensed uppercase, hard colour blocks, numbered rows
+  sport: "bold",
+  "auto-ecole": "bold",
+  automobile: "bold",
+  barbier: "bold",
+
+  // Light, structured, tinted surfaces, calm two-column list
+  sante: "clinical",
+  pharmacie: "clinical",
+  services: "clinical",
+  formation: "clinical",
+
+  // Product grid first, square imagery, order buttons
+  boutique: "catalog",
+  cafe: "catalog",
+
+  // Serif over sans, search bar, wide listing cards led by price
+  immobilier: "estate",
+  architecture: "estate",
+  voyage: "estate",
+};
+
+export const templateFor = (slug: string): Template =>
+  TEMPLATE_BY_SLUG[slug] ?? "clinical";
+
 export const getDemo = (slug: string) => demos.find((d) => d.slug === slug);
 
 /** Portfolio category label → demo slug */
