@@ -8,8 +8,10 @@ import Link from "next/link";
 const links = [
   { label: "Réalisations", href: "#demos" },
   { label: "Services", href: "#services" },
+  { label: "Villes", href: "#villes" },
   { label: "Tarifs", href: "#tarifs" },
   { label: "FAQ", href: "#faq" },
+  { label: "Contact", href: "#contact" },
 ];
 
 export default function Navbar() {
