@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { demoSlugForCategory } from "@/lib/demos";
 
 type Project = {
   title: string;
@@ -128,11 +129,11 @@ const projects: Project[] = [
 const cats = ["Tous", "Restaurant", "Café", "Beauté", "Immobilier", "Boutique", "Santé", "Automobile", "Sport", "Hôtellerie", "Services"];
 
 function ProjectCard({ p, i }: { p: Project; i: number }) {
+  const slug = demoSlugForCategory(p.cat);
+
   return (
     <motion.a
-      href={`https://wa.me/212708025467?text=Bonjour%2C%20j%27ai%20vu%20le%20projet%20%22${encodeURIComponent(p.title)}%22%20et%20je%20veux%20un%20site%20similaire.`}
-      target="_blank"
-      rel="noopener noreferrer"
+      href={slug ? `/demo/${slug}` : "#contact"}
       layout
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
@@ -192,7 +193,7 @@ function ProjectCard({ p, i }: { p: Project; i: number }) {
         </div>
 
         <div className="flex items-center gap-1.5 text-blue-600 font-bold text-[13px] group-hover:gap-2.5 transition-all duration-200">
-          Je veux ce style
+          {slug ? "Voir la démo complète" : "Demander ce style"}
           <ArrowUpRight className="w-4 h-4" />
         </div>
       </div>
@@ -283,9 +284,15 @@ export default function Portfolio() {
           className="text-center mt-12"
         >
           <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-100 text-amber-700 text-[11.5px] font-medium px-3.5 py-1.5 rounded-full mb-6">
-            ✦ Concepts de démonstration — chaque site est créé sur mesure
+            ✦ Sites de démonstration navigables — le vôtre sera créé sur mesure
           </div>
-          <div>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <a
+              href="/demo"
+              className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-[15px] px-8 py-4 rounded-xl transition-all duration-200"
+            >
+              Parcourir toutes les démos
+            </a>
             <a
               href="https://wa.me/212708025467?text=Bonjour%2C%20je%20veux%20un%20devis%20pour%20mon%20site%20web."
               target="_blank"
