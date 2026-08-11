@@ -398,15 +398,14 @@ export default function Hero() {
           </div>
 
           <h1
-            className="font-black text-slate-900 leading-[1.04] mb-6"
-            style={{ fontSize: "clamp(36px, 6vw, 68px)", letterSpacing: "-0.04em" }}
+            className="font-black text-slate-900 leading-[1.04] mb-6 text-balance"
+            style={{ fontSize: "clamp(36px, 5.4vw, 62px)", letterSpacing: "-0.04em" }}
           >
-            Votre entreprise mérite un site
-            <br className="hidden sm:block" />{" "}
-            qui <span className="text-blue-600">inspire confiance.</span>
+            Votre entreprise mérite un site qui{" "}
+            <span className="text-blue-600">inspire confiance.</span>
           </h1>
 
-          <p className="text-slate-500 text-[17px] leading-relaxed mb-8 max-w-xl mx-auto">
+          <p className="text-slate-500 text-[17px] leading-relaxed mb-8 max-w-xl mx-auto text-balance">
             Nous créons des sites web modernes, rapides et professionnels pour les
             entreprises au Maroc. Livré en 7 jours.
           </p>
@@ -460,21 +459,24 @@ export default function Hero() {
                 const isActive = d === 0;
 
                 return (
-                  <motion.div
+                  <div
                     key={site.id}
-                    onClick={() => {
-                      if (dragged.current) return;
-                      if (!isActive) setActive(i);
-                    }}
-                    className={`absolute top-0 left-1/2 w-[min(88vw,580px)] ${
-                      isActive ? "" : "cursor-pointer"
-                    }`}
+                    className="absolute inset-x-0 top-0 flex justify-center"
                     style={{
-                      marginLeft: "min(-44vw, -290px)",
                       transformStyle: "preserve-3d",
                       zIndex: 30 - ad,
                       pointerEvents: hidden ? "none" : "auto",
                     }}
+                  >
+                  <motion.div
+                    onClick={() => {
+                      if (dragged.current) return;
+                      if (!isActive) setActive(i);
+                    }}
+                    className={`relative w-[min(88vw,580px)] ${
+                      isActive ? "" : "cursor-pointer"
+                    }`}
+                    style={{ transformStyle: "preserve-3d" }}
                     animate={{
                       x: `${d * spread}%`,
                       z: -ad * depth,
@@ -559,6 +561,7 @@ export default function Hero() {
                       </motion.div>
                     )}
                   </motion.div>
+                  </div>
                 );
               })}
             </motion.div>
