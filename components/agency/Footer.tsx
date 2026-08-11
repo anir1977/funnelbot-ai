@@ -1,6 +1,7 @@
 "use client";
 
 import { Phone, Mail, MapPin } from "lucide-react";
+import Logo from "./Logo";
 
 const columns = [
   {
@@ -42,12 +43,7 @@ export default function Footer() {
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 mb-14">
           {/* Brand */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center">
-                <span className="text-white font-black text-[14px]">F</span>
-              </div>
-              <span className="font-black text-white text-[17px]">FunnelsLibrary</span>
-            </div>
+            <Logo variant="light" className="mb-4" />
             <p className="text-[13.5px] leading-relaxed text-slate-400 max-w-sm mb-6">
               Agence web marocaine spécialisée dans la création de sites professionnels
               pour restaurants, commerces, salons, agences immobilières et PME. Design
