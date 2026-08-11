@@ -53,7 +53,6 @@ export const demos: Demo[] = [
       "1546069901-ba9599a7e63c",
       "1555939594-58d7cb561ad1",
       "1544025162-d76694265947",
-      "1565299624946-b28f40a0ae38",
     ],
     hero: {
       title: "Une expérience culinaire inoubliable",
@@ -71,12 +70,12 @@ export const demos: Demo[] = [
       title: "Nos spécialités",
       sub: "Une sélection de plats signature préparés chaque jour avec des produits du souk.",
       items: [
-        { name: "Tajine Royal à l'agneau", desc: "Agneau confit, pruneaux, amandes torréfiées et miel de thym.", price: "120 MAD", img: 2 },
-        { name: "Pastilla au pigeon", desc: "Feuilleté croustillant, cannelle et sucre glace. Notre classique.", price: "95 MAD", img: 3 },
+        { name: "Tajine Royal à l'agneau", desc: "Agneau confit, pruneaux, amandes torréfiées et miel de thym.", price: "120 MAD", img: 3 },
+        { name: "Pastilla au pigeon", desc: "Feuilleté croustillant, cannelle et sucre glace. Notre classique.", price: "95 MAD", img: 2 },
         { name: "Couscous Maison du vendredi", desc: "Sept légumes, viande tendre et semoule roulée à la main.", price: "85 MAD", img: 4 },
-        { name: "Méchoui d'épaule", desc: "Épaule d'agneau rôtie lentement, cumin et sel de mer.", price: "150 MAD", img: 5 },
-        { name: "Salades marocaines", desc: "Assortiment de neuf salades fraîches de saison.", price: "60 MAD", img: 1 },
-        { name: "Thé à la menthe & pâtisseries", desc: "Thé versé à l'ancienne et assortiment de cornes de gazelle.", price: "45 MAD", img: 0 },
+        { name: "Méchoui d'épaule", desc: "Épaule d'agneau rôtie lentement, cumin et sel de mer.", price: "150 MAD", img: 4 },
+        { name: "Salades marocaines", desc: "Assortiment de neuf salades fraîches de saison.", price: "60 MAD", img: 2 },
+        { name: "Thé à la menthe & pâtisseries", desc: "Thé versé à l'ancienne et assortiment de cornes de gazelle.", price: "45 MAD", img: 1 },
       ],
     },
     about: {
