@@ -23,10 +23,25 @@ const grotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.funnelslibrary.com"),
   title: "FunnelsLibrary — Agence Web au Maroc",
   description:
     "Nous créons des sites web modernes, rapides et professionnels pour les entreprises au Maroc. Restaurants, cafés, salons, immobilier et plus.",
   keywords: ["site web maroc", "agence web maroc", "création site web", "site restaurant maroc", "FunnelsLibrary"],
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
 };
 
 export default function RootLayout({
