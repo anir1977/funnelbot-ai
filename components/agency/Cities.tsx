@@ -3,12 +3,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Check } from "lucide-react";
-import MoroccoMap from "./MoroccoMap";
 
 const cities = [
   {
     name: "Casablanca",
-    x: 170, y: 48,
     title: "Création de site web à Casablanca",
     desc: "Capitale économique du Maroc, Casablanca concentre la plus forte concurrence en ligne. Nous créons des sites qui vous démarquent auprès d'une clientèle exigeante et connectée.",
     points: [
@@ -19,7 +17,6 @@ const cities = [
   },
   {
     name: "Marrakech",
-    x: 158.6, y: 85.8,
     title: "Création de site web à Marrakech",
     desc: "Ville touristique par excellence, Marrakech exige des sites multilingues et visuellement forts. Nous mettons en valeur votre établissement auprès des visiteurs marocains et internationaux.",
     points: [
@@ -30,7 +27,6 @@ const cities = [
   },
   {
     name: "Rabat",
-    x: 183, y: 39,
     title: "Création de site web à Rabat",
     desc: "Capitale administrative, Rabat rassemble professions libérales, cabinets et institutions. Nous concevons des sites sobres et crédibles qui inspirent confiance.",
     points: [
@@ -41,7 +37,6 @@ const cities = [
   },
   {
     name: "Tanger",
-    x: 196, y: 7,
     title: "Création de site web à Tanger",
     desc: "Porte de l'Europe et pôle industriel en pleine croissance, Tanger attire investisseurs et nouveaux commerces. Votre site doit refléter ce dynamisme.",
     points: [
@@ -52,7 +47,6 @@ const cities = [
   },
   {
     name: "Agadir",
-    x: 133, y: 110,
     title: "Création de site web à Agadir",
     desc: "Station balnéaire et pôle touristique du sud, Agadir vit du tourisme et des loisirs. Nous créons des sites qui captent les visiteurs avant leur arrivée.",
     points: [
@@ -63,7 +57,6 @@ const cities = [
   },
   {
     name: "Fès",
-    x: 213, y: 36,
     title: "Création de site web à Fès",
     desc: "Capitale spirituelle et artisanale, Fès abrite un patrimoine commercial unique. Nous valorisons votre savoir-faire auprès d'une audience plus large.",
     points: [
@@ -74,7 +67,6 @@ const cities = [
   },
   {
     name: "Meknès",
-    x: 202, y: 43,
     title: "Création de site web à Meknès",
     desc: "Ville en développement avec un tissu de PME et commerces de proximité. Un site professionnel vous donne une longueur d'avance sur vos concurrents locaux.",
     points: [
@@ -85,7 +77,6 @@ const cities = [
   },
   {
     name: "Laâyoune",
-    x: 72, y: 176,
     title: "Création de site web à Laâyoune",
     desc: "Capitale des provinces du Sud, Laâyoune connaît une croissance rapide portée par les investissements et le développement du secteur privé. Peu d'entreprises y sont encore présentes en ligne.",
     points: [
@@ -96,7 +87,6 @@ const cities = [
   },
   {
     name: "Dakhla",
-    x: 24, y: 245,
     title: "Création de site web à Dakhla",
     desc: "Destination touristique en plein essor, réputée pour le kitesurf et la pêche. Vos clients viennent souvent de loin et vous cherchent d'abord sur internet.",
     points: [
@@ -226,11 +216,29 @@ export default function Cities() {
               >
                 De Tanger à Lagouira 🇲🇦
               </div>
-              <p className="text-blue-200 text-[13px] mb-6">
-                Touchez un point sur la carte pour voir la ville.
+              <p className="text-blue-200 text-[13px] mb-7">
+                Nous intervenons dans tout le Royaume, du nord aux provinces du Sud.
               </p>
 
-              <MoroccoMap cities={cities} active={active} onSelect={setActive} />
+              <div className="grid grid-cols-2 gap-2.5">
+                {cities.map((city, i) => (
+                  <button
+                    key={city.name}
+                    onClick={() => setActive(i)}
+                    className={`text-left flex items-center gap-2 px-3.5 py-2.5 rounded-xl transition-all duration-200 ${
+                      i === active
+                        ? "bg-white text-blue-700 font-bold"
+                        : "bg-white/10 text-white/90 hover:bg-white/20"
+                    }`}
+                  >
+                    <MapPin className="w-3.5 h-3.5 shrink-0" />
+                    <span className="text-[13px]">{city.name}</span>
+                  </button>
+                ))}
+                <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white/10 text-white/70">
+                  <span className="text-[13px]">+ autres villes</span>
+                </div>
+              </div>
 
               <p className="text-blue-100 text-[13.5px] leading-relaxed mt-6">
                 Nous travaillons à distance avec nos clients partout au Royaume. Tout se
