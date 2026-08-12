@@ -9,6 +9,7 @@ import Process         from "@/components/agency/Process";
 import WhyUs           from "@/components/agency/WhyUs";
 import Tools           from "@/components/agency/Tools";
 import Cities          from "@/components/agency/Cities";
+import Guarantees      from "@/components/agency/Guarantees";
 import Pricing         from "@/components/agency/Pricing";
 import FAQ             from "@/components/agency/FAQ";
 import Contact         from "@/components/agency/Contact";
@@ -30,6 +31,7 @@ export default function Home() {
       <WhyUs />
       <Tools />
       <Cities />
+      <Guarantees />
       <Marquee dark />
       <Pricing />
       <FAQ />

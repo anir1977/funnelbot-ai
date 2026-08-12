@@ -2,11 +2,19 @@
 
 import { motion } from "framer-motion";
 
+/**
+ * Commitments, not social proof.
+ *
+ * These four numbers are things a visitor can check today — the demos are one
+ * click away, the response time is testable by writing to us, and the payment
+ * terms are what we put in the quote. Nothing here depends on a track record we
+ * would be asking them to take on faith.
+ */
 const stats = [
-  { value: "+120", label: "Projets réalisés", sub: "pour nos clients" },
-  { value: "+70", label: "Entreprises accompagnées", sub: "partout au Maroc" },
-  { value: "7", label: "Jours de livraison", sub: "en moyenne" },
-  { value: "98%", label: "Clients satisfaits", sub: "nous recommandent" },
+  { value: "18", label: "Modèles de sites", sub: "un par métier, à parcourir" },
+  { value: "7 jours", label: "Votre site en ligne", sub: "délai de livraison" },
+  { value: "2 h", label: "Notre délai de réponse", sub: "du lundi au samedi" },
+  { value: "0 DH", label: "Avant de voir le design", sub: "vous validez, puis vous payez" },
 ];
 
 export default function Stats() {
@@ -24,8 +32,8 @@ export default function Stats() {
               className="py-10 px-6 text-center"
             >
               <div
-                className="font-black text-slate-900 mb-1.5"
-                style={{ fontSize: "clamp(32px, 4vw, 46px)", letterSpacing: "-0.04em" }}
+                className="font-black text-slate-900 mb-1.5 whitespace-nowrap"
+                style={{ fontSize: "clamp(26px, 3.2vw, 40px)", letterSpacing: "-0.04em" }}
               >
                 {s.value}
               </div>

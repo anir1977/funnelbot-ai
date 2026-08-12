@@ -274,16 +274,18 @@ export default function Portfolio() {
           className="text-center mb-10"
         >
           <p className="text-blue-600 text-[12px] font-semibold uppercase tracking-widest mb-4">
-            Portfolio
+            Nos modèles
           </p>
           <h2
             className="font-black text-slate-900 mb-4"
             style={{ fontSize: "clamp(28px, 4.5vw, 48px)", letterSpacing: "-0.035em" }}
           >
-            Nos réalisations récentes
+            Un modèle prêt pour votre métier
           </h2>
           <p className="text-slate-500 text-[16px] max-w-xl mx-auto">
-            Découvrez le style de sites que nous créons pour les entreprises marocaines. Chaque design est adapté au métier du client.
+            Ces sites sont entièrement navigables — ouvrez celui de votre secteur et
+            parcourez-le comme le feraient vos clients. C'est exactement le niveau de
+            qualité que vous recevrez, adapté à votre nom et à vos photos.
           </p>
         </motion.div>
 
@@ -326,7 +328,7 @@ export default function Portfolio() {
               onClick={() => setShowAll(true)}
               className="inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-900 font-bold text-[14px] px-6 py-3.5 rounded-xl transition-all duration-200"
             >
-              Voir plus de réalisations ({filtered.length - 6})
+              Voir plus de modèles ({filtered.length - 6})
             </button>
           </div>
         )}
@@ -339,7 +341,7 @@ export default function Portfolio() {
           className="text-center mt-12"
         >
           <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-100 text-amber-700 text-[11.5px] font-medium px-3.5 py-1.5 rounded-full mb-6">
-            ✦ Sites de démonstration navigables — le vôtre sera créé sur mesure
+            ✦ Entreprises fictives créées pour la démonstration — votre site sera unique
           </div>
           <div className="flex flex-wrap gap-3 justify-center">
             <a
