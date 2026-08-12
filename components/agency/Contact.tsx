@@ -75,11 +75,30 @@ export default function Contact() {
       `Mon projet : ${form.message || "Je souhaite créer un site web."}`,
     ].join("\n");
 
+    // Open WhatsApp first and synchronously: browsers only allow a popup while
+    // the click is still being handled, so awaiting the fetch would get it
+    // blocked. Recording the enquiry is a safety net, not a gate — if it fails,
+    // the conversation must still happen.
     window.open(
       `https://wa.me/212708025467?text=${encodeURIComponent(text)}`,
       "_blank",
       "noopener,noreferrer"
     );
+
+    void fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nom: form.nom,
+        telephone: form.tel,
+        activite: form.type,
+        budget: form.budget,
+        message: form.message,
+      }),
+      keepalive: true,
+    }).catch(() => {
+      /* Never surface this: the prospect is already in WhatsApp. */
+    });
   };
 
   const inputClass =
