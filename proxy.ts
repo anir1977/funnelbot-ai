@@ -31,14 +31,14 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Redirect unauthenticated users away from protected routes
-  if (!user && pathname.startsWith("/dashboard")) {
+  if (!user && pathname.startsWith("/admin")) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // Redirect authenticated users away from auth pages
   const authPages = ["/login", "/signup"];
   if (user && authPages.includes(pathname)) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/admin", request.url));
   }
 
   return supabaseResponse;

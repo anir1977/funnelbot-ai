@@ -81,7 +81,7 @@ export default function WhyUs() {
                   className="flex gap-4 bg-white/[0.04] border border-white/[0.08] hover:border-white/[0.14] rounded-xl p-4 transition-all duration-300"
                 >
                   <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                    <Icon className="w-4.5 h-4.5 text-blue-400" />
+                    <Icon className="w-[18px] h-[18px] text-blue-400" />
                   </div>
                   <div>
                     <h3 className="font-bold text-white text-[14px] mb-1">{r.title}</h3>

@@ -4,12 +4,15 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
+import Logo from "./Logo";
 
 const links = [
   { label: "Réalisations", href: "#demos" },
   { label: "Services", href: "#services" },
+  { label: "Villes", href: "#villes" },
   { label: "Tarifs", href: "#tarifs" },
   { label: "FAQ", href: "#faq" },
+  { label: "Contact", href: "#contact" },
 ];
 
 export default function Navbar() {
@@ -31,13 +34,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-              <span className="text-white font-black text-sm">FL</span>
-            </div>
-            <span className="font-black text-slate-900 text-[17px] tracking-tight">
-              Funnels<span className="text-blue-600">Library</span>
-            </span>
+          <Link href="/" aria-label="FunnelsLibrary — accueil">
+            <Logo markClassName="w-8 h-8" />
           </Link>
 
           {/* Desktop nav */}

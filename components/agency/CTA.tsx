@@ -24,7 +24,9 @@ export default function CTA() {
             en 7 jours.
           </h2>
           <p className="text-blue-100 text-[17px] leading-relaxed max-w-xl mx-auto mb-10">
-            Rejoignez les entrepreneurs marocains qui ont déjà fait confiance à FunnelsLibrary pour développer leur présence en ligne.
+            Envoyez-nous un message sur WhatsApp. Nous vous proposons le modèle adapté à
+            votre métier et un devis clair — sans engagement, et sans rien à payer avant
+            d'avoir validé votre design.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

@@ -2,134 +2,104 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { BookOpen, Mail, Loader2, CheckCircle, ArrowRight, AlertCircle } from "lucide-react";
+import { ArrowLeft, MailCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import Logo from "@/components/agency/Logo";
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail]     = useState("");
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent]       = useState(false);
-  const [error, setError]     = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    setBusy(true);
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.resetPasswordForEmail(email, {
+    await supabase.auth.resetPasswordForEmail(email, {
+      // The callback exchanges the code, then forwards to /reset-password.
       redirectTo: `${window.location.origin}/auth/callback?type=recovery`,
     });
 
-    if (authError) {
-      setError("حدث خطأ، تأكد من البريد الإلكتروني وحاول مجدداً");
-      setLoading(false);
-      return;
-    }
-
-    setLoading(false);
+    // Always report success. Telling the visitor whether an address exists
+    // would let anyone probe for registered accounts.
     setSent(true);
-  };
+    setBusy(false);
+  }
+
+  const field =
+    "w-full h-12 bg-white border border-slate-200 rounded-xl px-4 text-[14.5px] text-slate-900 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-green-50/30 flex flex-col items-center justify-center p-6">
-
-      <Link href="/" className="flex items-center gap-2.5 mb-10 group">
-        <div className="w-9 h-9 bg-[#25D366] rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-          <BookOpen className="w-4 h-4 text-white" strokeWidth={2.5} />
-        </div>
-        <span className="font-black text-xl text-gray-900">
-          Funnels<span className="text-[#25D366]">Library</span>
-        </span>
-      </Link>
-
-      <div className="w-full max-w-sm bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/60 p-8">
-        {sent ? (
-          <div className="text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
-              <CheckCircle className="w-8 h-8 text-[#25D366]" />
-            </div>
-            <h1 className="text-xl font-black text-gray-900 mb-2">تم الإرسال!</h1>
-            <p className="text-gray-500 text-sm leading-relaxed mb-2">
-              راسلنا رابط إعادة تعيين كلمة المرور إلى:
-            </p>
-            <p className="text-[#25D366] font-bold text-sm mb-6 font-mono" dir="ltr">{email}</p>
-            <p className="text-xs text-gray-400 mb-6">
-              تحقق من مجلد البريد غير المرغوب إذا لم يصلك الإيميل.
-            </p>
-            <div className="space-y-3">
-              <button
-                onClick={() => { setSent(false); setEmail(""); }}
-                className="w-full bg-[#25D366] hover:bg-[#1eb85a] text-white font-bold py-3 rounded-xl transition-all hover:-translate-y-0.5 shadow-md shadow-green-200"
-              >
-                إرسال مجدداً
-              </button>
-              <Link
-                href="/login"
-                className="w-full flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900 font-semibold text-sm py-2.5 rounded-xl hover:bg-gray-50 transition-colors"
-              >
-                العودة لتسجيل الدخول
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="w-12 h-12 bg-[#25D366]/10 rounded-2xl flex items-center justify-center mb-5">
-              <Mail className="w-6 h-6 text-[#25D366]" />
-            </div>
-            <h1 className="text-xl font-black text-gray-900 mb-1">نسيت كلمة المرور؟</h1>
-            <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-              أدخل بريدك الإلكتروني وغادي نرسلك رابط لإعادة التعيين.
-            </p>
-
-            {error && (
-              <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-5">
-                <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-                <p className="text-sm text-red-600">{error}</p>
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1.5">البريد الإلكتروني</label>
-                <input
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#25D366]/30 focus:border-[#25D366] transition-all"
-                  dir="ltr"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1eb85a] disabled:opacity-70 text-white font-bold py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-green-200 hover:-translate-y-0.5 active:translate-y-0 disabled:translate-y-0"
-              >
-                {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> جاري الإرسال...</> : "إرسال رابط إعادة التعيين"}
-              </button>
-            </form>
-
-            <Link
-              href="/login"
-              className="flex items-center justify-center gap-2 text-gray-500 hover:text-gray-800 text-sm font-medium mt-5 transition-colors"
-            >
-              <ArrowRight className="w-4 h-4" />
-              العودة لتسجيل الدخول
-            </Link>
-          </>
-        )}
+    <main className="min-h-screen bg-slate-50 flex flex-col">
+      <div className="px-6 py-6">
+        <Link
+          href="/login"
+          className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 text-[13.5px] font-medium transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Retour à la connexion
+        </Link>
       </div>
 
-      <p className="text-xs text-gray-400 mt-6">
-        ما عندكش حساب؟{" "}
-        <Link href="/signup" className="text-[#25D366] font-semibold hover:underline">
-          سجّل مجاناً
-        </Link>
-      </p>
-    </div>
+      <div className="flex-1 flex items-center justify-center px-5 pb-20">
+        <div className="w-full max-w-sm">
+          <div className="flex justify-center mb-8">
+            <Logo markClassName="w-10 h-10" />
+          </div>
+
+          {sent ? (
+            <div className="bg-white border border-slate-200 rounded-3xl p-8 text-center">
+              <div className="w-12 h-12 rounded-2xl bg-green-50 border border-green-100 flex items-center justify-center mx-auto mb-5">
+                <MailCheck className="w-5 h-5 text-green-600" />
+              </div>
+              <h1 className="text-[20px] font-black text-slate-900 tracking-tight mb-2">
+                Vérifiez votre boîte mail
+              </h1>
+              <p className="text-slate-500 text-[14px] leading-relaxed">
+                Si un compte existe pour{" "}
+                <span className="font-semibold text-slate-700">{email}</span>, un
+                lien de réinitialisation vient d'y être envoyé.
+              </p>
+            </div>
+          ) : (
+            <div className="bg-white border border-slate-200 rounded-3xl p-8">
+              <h1 className="text-[22px] font-black text-slate-900 tracking-tight mb-1.5">
+                Mot de passe oublié
+              </h1>
+              <p className="text-slate-500 text-[14px] mb-7">
+                Indiquez votre email, nous vous envoyons un lien pour en choisir un
+                nouveau.
+              </p>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-[12.5px] font-semibold text-slate-700 mb-1.5">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                    placeholder="vous@funnelslibrary.com"
+                    className={field}
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={busy}
+                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-[15px] py-3.5 rounded-xl transition-colors"
+                >
+                  {busy ? "Envoi…" : "Envoyer le lien"}
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
+      </div>
+    </main>
   );
 }
