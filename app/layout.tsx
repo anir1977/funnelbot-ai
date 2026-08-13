@@ -31,6 +31,21 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  openGraph: {
+    type: "website",
+    locale: "fr_MA",
+    url: "https://www.funnelslibrary.com",
+    siteName: "FunnelsLibrary",
+    title: "FunnelsLibrary — Agence Web au Maroc",
+    description:
+      "Sites web professionnels pour les entreprises au Maroc. Livrés en 7 jours, 18 modèles par métier, devis gratuit.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FunnelsLibrary — Agence Web au Maroc",
+    description:
+      "Sites web professionnels pour les entreprises au Maroc. Livrés en 7 jours.",
+  },
   robots: {
     index: true,
     follow: true,

@@ -104,11 +104,20 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="border-t border-slate-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="border-t border-slate-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-[12.5px] text-slate-500">
             © {new Date().getFullYear()} FunnelsLibrary. Tous droits réservés.
           </p>
-          <p className="text-[12.5px] text-slate-600">Fait avec soin au Maroc 🇲🇦</p>
+
+          <div className="flex items-center gap-5 text-[12.5px]">
+            <a href="/mentions-legales" className="text-slate-500 hover:text-white transition-colors">
+              Mentions légales
+            </a>
+            <a href="/confidentialite" className="text-slate-500 hover:text-white transition-colors">
+              Confidentialité
+            </a>
+            <span className="text-slate-600 hidden sm:inline">Fait au Maroc 🇲🇦</span>
+          </div>
         </div>
       </div>
     </footer>
